@@ -15,7 +15,7 @@ include ('head.php');
     </form>
     <div style="width:700px;margin-left:auto;margin-right:auto;margin-bottom:25px;">
     <?php
-    if(isset($_POST['Submit'])) {
+    if(isset($_POST['Submit']) && !empty($_POST['Submit'])) {
         $search = $_POST["search-bar"];
 
         $sql = "SELECT DISTINCT sql_matches_scoretotal.match_id, sql_matches_scoretotal.map, sql_matches_scoretotal.team_2, sql_matches_scoretotal.team_3
