@@ -1,0 +1,16 @@
+.match-box {
+  -webkit-box-shadow:0px 0px 73px -5px rgba(0,0,0,0.58);
+  -moz-box-shadow:0px 0px 73px -5px rgba(0,0,0,0.58);
+  box-shadow:0px 0px 73px -5px rgba(0,0,0,0.58);
+  border-radius:25px;
+}
+
+.clear {
+  clear:both;
+}
+
+.bottom {
+  position: fixed;
+  bottom: 0px;
+  right: 10px;
+}
