@@ -16,7 +16,10 @@
 }
 ```
 ### Web Server
+- Upload files inside of the web server folder into your web server.
+- Enter your steam api key & database details into config.php
 
 # Preview
 
-![SQL Matches Preview](https://i.gyazo.com/13dcf7afccea22e3d7aa0c2e24df9a08.png)
+![SQL Matches Preview](https://i.gyazo.com/808a02364cb93fd701812f6eca085c6d.png)
+![SQL Matches Preview](https://i.gyazo.com/c719312683f763ba3ecd064df92dae2e.png)
