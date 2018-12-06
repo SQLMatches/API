@@ -1,6 +1,8 @@
 # Setup
 
-Edit addons/sourcemod/configs/databases.cfg
+
+- Move sqlmatch.smx into addons/sourcemod/plugins
+- Edit addons/sourcemod/configs/databases.cfg
 ```
 "sql_matches"
  {
