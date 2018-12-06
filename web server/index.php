@@ -13,7 +13,7 @@ include ('head.php');
     <form method="post">
     <div class="search-container" style="width:600px;margin-left:auto;margin-right:auto;"><input type="text" name="search-bar" placeholder="Search MatchID, Player Name or SteamID64" class="search-input"><button class="btn btn-light search-btn" style="color:#f1f1f1;" type="submit" name="Submit"> <i class="fa fa-search" style="color:rgb(0,0,0);"></i></button></div>
     </form>
-    
+    <div style="width:700px;margin-left:auto;margin-right:auto;margin-bottom:25px;">
     <?php
     if(isset($_POST['Submit'])) {
         $search = $_POST["search-bar"];
@@ -38,7 +38,7 @@ include ('head.php');
             }elseif($row["team_3"] > 15) {
                 $image = 't_icon.png';
             }
-            echo '<a class="text-white" href="scoreboard.php?id='.$row['match_id'].'"><div data-bs-hover-animate="pulse" class="match-box" style="background-image:url(&quot;assets/img/maps/'.$row['map'].'.png&quot;);background-position:center;background-size:cover;background-repeat:no-repeat;height:115px;width:700px;margin-left:auto;margin-right:auto;margin-top:25px;"><img class="float-left" src="assets/img/'.$image.'" style="width:95px;margin-top:10px;margin-left:20px;">
+            echo '<a class="text-white" href="scoreboard.php?id='.$row['match_id'].'"><div data-bs-hover-animate="pulse" class="match-box" style="background-image:url(&quot;assets/img/maps/'.$row['map'].'.png&quot;);background-position:center;background-size:cover;background-repeat:no-repeat;background-color:#F1F1F1;height:115px;margin-top:25px;"><img class="float-left" src="assets/img/'.$image.'" style="width:95px;margin-top:10px;margin-left:20px;">
             <h1 class="float-right" style="color:rgb(255,255,255);font-size:85px;margin-right:20px;">'.$row['team_2'].':'.$row['team_3'].'</h1>
             <div class="clear"></div>
             </div></a>';
@@ -49,7 +49,7 @@ include ('head.php');
     
     $conn->close();
     ?>
-    <div style="margin-bottom:25px;"></div>
+    </div>
     <div class="bottom"><a href="https://github.com/WardPearce/Sourcemod-SQLMatches" target="_blank">Created By Ward</a></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.2/js/bootstrap.bundle.min.js"></script>
