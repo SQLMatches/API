@@ -1,6 +1,6 @@
 # Setup
 
-
+## Game Server
 - Move sqlmatch.smx into addons/sourcemod/plugins
 - Edit addons/sourcemod/configs/databases.cfg
 ```
@@ -15,3 +15,4 @@
     "port"            "3306"
 }
 ```
+## Web Server
