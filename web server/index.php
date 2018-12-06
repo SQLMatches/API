@@ -31,11 +31,13 @@ include ('head.php');
 
     if($result->num_rows > 0) {
         while($row = $result->fetch_assoc()) {
-            if($row["team_2"] > 15) {
+            $half = ($row["team_2"] + $row["team_3"]) / 2;
+            
+            if($row["team_2"] > $half) {
                 $image = 'ct_icon.png';
-            }elseif($row["team_2"] == 15 && $row["team_3"] == 15) {
+            }elseif($row["team_2"] == $half && $row["team_3"] == $half) {
                 $image = 'tie_icon.png';
-            }elseif($row["team_3"] > 15) {
+            }elseif($row["team_3"] > $half) {
                 $image = 't_icon.png';
             }
             echo '<a class="text-white" href="scoreboard.php?id='.$row['match_id'].'"><div data-bs-hover-animate="pulse" class="match-box" style="background-image:url(&quot;assets/img/maps/'.$row['map'].'.png&quot;);background-position:center;background-size:cover;background-repeat:no-repeat;background-color:#F1F1F1;height:115px;margin-top:25px;"><img class="float-left" src="assets/img/'.$image.'" style="width:95px;margin-top:10px;margin-left:20px;">
