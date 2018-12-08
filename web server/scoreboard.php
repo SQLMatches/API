@@ -29,9 +29,9 @@ include ('head.php');
     if($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         echo '<div class="card pulse animated" style="width:1180px;margin-right:auto;margin-left:auto;background-color:#f1f1f1;margin-top:25px;">
-        <div class="card-body"><img class="float-left" src="assets/img/ct_icon.png" style="width:125px;margin-left:190px;">
-            <h1 class="float-left text-center" style="font-size:50px;margin-bottom:0px;margin-top:25px;width:500px;"><strong style="color:rgb(91,118,141);">'.$row["team_2"].'</strong>:<strong style="color:rgb(172,155,102);">'.$row["team_3"].'</strong></h1>
-            <img class="float-right" src="assets/img/t_icon.png" style="width:125px;margin-bottom:5px;margin-right:190px;">
+        <div class="card-body"><img class="float-left" src="assets/img/ct_icon.png" style="width:125px;margin-left:172px;">
+            <h1 class="float-left text-center" style="font-size:50px;margin-bottom:0px;margin-top:25px;width:540px;"><strong style="color:rgb(91,118,141);">'.$row["team_2"].'</strong>:<strong style="color:rgb(172,155,102);">'.$row["team_3"].'</strong></h1>
+            <img class="float-right" src="assets/img/t_icon.png" style="width:125px;margin-bottom:5px;margin-right:172px;">
             <div class="clear"></div>
             <div style="margin-top:20px;height:69px;">
                 <h1 class="text-center" style="font-size:20px;">Map: '.$row["map"].'</h1>
