@@ -25,4 +25,4 @@
 ![SQL Matches Preview](https://i.gyazo.com/808a02364cb93fd701812f6eca085c6d.png)
 
 ### Scoreboard Page
-![SQL Matches Preview](https://i.gyazo.com/c719312683f763ba3ecd064df92dae2e.png)
+![SQL Matches Preview](https://i.gyazo.com/c93fbcfe488347b5925d091ac86825a4.png)
