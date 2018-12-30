@@ -46,10 +46,10 @@ public OnPluginStart()
 		SetFailState(buffer);
 	}
 	
-	HookEventEx("sql_matches", sql_matches);
+	HookEventEx("cs_win_panel_match", cs_win_panel_match);
 }
 
-public sql_matches(Handle:event, const String:eventname[], bool:dontBroadcast)
+public cs_win_panel_match(Handle:event, const String:eventname[], bool:dontBroadcast)
 {
 	CreateTimer(0.1, delay, _, TIMER_FLAG_NO_MAPCHANGE);
 }
