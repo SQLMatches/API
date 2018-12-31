@@ -6,10 +6,6 @@ require ('config.php');
 
 <?php
 include ('head.php');
-
-function BlockSQLInjection($str) {
-    return str_replace(array("'",""","'",'"'),array("'","&quot;"'","&quot;",$str));
-}
 ?>
 
 <body>
@@ -20,7 +16,7 @@ function BlockSQLInjection($str) {
     <div style="width:700px;margin-left:auto;margin-right:auto;margin-bottom:25px;">
     <?php
     if(isset($_POST['Submit']) && !empty($_POST['search-bar'])) {
-        $search = BlockSQLInjection($_POST["search-bar"]);
+        $search = $conn->real_escape_string($_POST['search-bar']);
 
         $sql = "SELECT DISTINCT sql_matches_scoretotal.match_id, sql_matches_scoretotal.map, sql_matches_scoretotal.team_2, sql_matches_scoretotal.team_3
                 FROM sql_matches_scoretotal INNER JOIN sql_matches
