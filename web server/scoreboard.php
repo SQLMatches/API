@@ -7,6 +7,8 @@ if(isset($_GET["id"])){
     $id = 0;
 }
 
+settype($id, "integer"); 
+
 $sql = "SELECT sql_matches.match_id, sql_matches_scoretotal.timestamp, sql_matches_scoretotal.map, sql_matches_scoretotal.team_2, sql_matches_scoretotal.team_3, sql_matches.steamid64, sql_matches.name, sql_matches.kills, sql_matches.deaths, sql_matches.assists, sql_matches.team
         FROM sql_matches_scoretotal INNER JOIN sql_matches
         ON sql_matches_scoretotal.match_id = sql_matches.match_id
