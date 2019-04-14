@@ -16,6 +16,8 @@ public OnPluginStart()
 	Format(buffer, sizeof(buffer), "%s team_1 int(11) NOT NULL,", buffer);
 	Format(buffer, sizeof(buffer), "%s team_2 int(11) NOT NULL,", buffer);
 	Format(buffer, sizeof(buffer), "%s team_3 int(11) NOT NULL,", buffer);
+	Format(buffer, sizeof(buffer), "%s teamname_1 varchar(64) NOT NULL,", buffer);
+	Format(buffer, sizeof(buffer), "%s teamname_2 varchar(64) NOT NULL,", buffer);
 	Format(buffer, sizeof(buffer), "%s map varchar(128) NOT NULL,", buffer);
 	Format(buffer, sizeof(buffer), "%s PRIMARY KEY (match_id),", buffer);
 	Format(buffer, sizeof(buffer), "%s UNIQUE KEY match_id (match_id));", buffer);
@@ -60,10 +62,16 @@ public Action:delay(Handle:timer)
 
 	decl String:mapname[128];
 	GetCurrentMap(mapname, sizeof(mapname));
+	
+	char teamname1[64];
+	char teamname2[64];
+
+	GetConVarString(FindConVar("mp_teamname_1"), teamname1, sizeof(teamname1));
+	GetConVarString(FindConVar("mp_teamname_2"), teamname2, sizeof(teamname2));
 
 	new String:buffer[512];
 
-	Format(buffer, sizeof(buffer), "INSERT INTO sql_matches_scoretotal (team_0, team_1, team_2, team_3, map) VALUES (0, 0, 0, 0, '%s');", mapname);
+	Format(buffer, sizeof(buffer), "INSERT INTO sql_matches_scoretotal (team_0, team_1, team_2, team_3, teamname_1, teamname_2, map) VALUES (0, 0, 0, 0, '%s', '%s', '%s');", teamname1, teamname2, mapname);
 	SQL_AddQuery(txn, buffer);
 
 	new ent = MaxClients+1;
