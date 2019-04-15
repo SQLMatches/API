@@ -19,7 +19,7 @@
 ```
 ### Web Server
 - Upload files inside of the web server folder into your web server.
-- Enter your steam api key & database details into config.php
+- Configure config.php.
 
 # Preview
 [Live Demo](https://districtnine.host/dev/demos/sql-matches/)
