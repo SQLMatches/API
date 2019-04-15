@@ -1,7 +1,7 @@
 <?php
 require ("config.php");
 
-if(isset($_GET["page"])){
+if (isset($_GET["page"])) {
     $page_number = $_GET["page"];
 } else {
     $page_number = 0;
@@ -59,7 +59,7 @@ if(isset($_GET["page"])){
                 $image = 'ct_icon.png';
             } elseif ($row["team_2"] == $half && $row["team_3"] == $half) {
                 $image = 'tie_icon.png';
-            } elseif ($row["team_3"] > $half) {
+            } else {
                 $image = 't_icon.png';
             }
 
@@ -76,55 +76,57 @@ if(isset($_GET["page"])){
     }
 ?>
 <?php
-        $sql_pages = "SELECT COUNT(*) FROM sql_matches_scoretotal";
-        $result_pages = $conn->query($sql_pages);
-        $row_pages = $result_pages->fetch_assoc();
+        if (!isset($_POST['Submit'])) {
+            $sql_pages = "SELECT COUNT(*) FROM sql_matches_scoretotal";
+            $result_pages = $conn->query($sql_pages);
+            $row_pages = $result_pages->fetch_assoc();
 
-        $total_pages = ceil($row_pages["COUNT(*)"] / $limit);
+            $total_pages = ceil($row_pages["COUNT(*)"] / $limit);
 
-        echo '
-        <nav style="margin-top:30px;width:80%;" class="center">
-            <ul class="pagination">';
-            if ($page_number == 1) {
-                echo '
-                <li class="page-item disabled">
-                    <span class="page-link">Previous</span>
-                </li>';
-            } else {
-                $past_page = $page_number - 1;
-                echo '
-                <li class="page-item">
-                    <a class="page-link" href="?page='.$past_page.'">Previous</a>
-                </li>';
-            }
-            for ($i = max(1, $page_number - 2); $i <= min($page_number + 4, $total_pages); $i++) {
-                if ($i == $page_number) {
+            echo '
+            <nav style="margin-top:30px;width:80%;" class="center">
+                <ul class="pagination">';
+                if ($page_number == 1) {
                     echo '
-                    <li class="page-item active">
-                        <span class="page-link">
-                        '.$i.'
-                        <span class="sr-only">(current)</span>
-                        </span>
+                    <li class="page-item disabled">
+                        <span class="page-link">Previous</span>
                     </li>';
                 } else {
-                    echo '<li class="page-item"><a class="page-link" href="?page='.$i.'">'.$i.'</a></li>';
+                    $past_page = $page_number - 1;
+                    echo '
+                    <li class="page-item">
+                        <a class="page-link" href="?page='.$past_page.'">Previous</a>
+                    </li>';
                 }
-            }
-            if ($page_number == $total_pages) {
+                for ($i = max(1, $page_number - 2); $i <= min($page_number + 4, $total_pages); $i++) {
+                    if ($i == $page_number) {
+                        echo '
+                        <li class="page-item active">
+                            <span class="page-link">
+                            '.$i.'
+                            <span class="sr-only">(current)</span>
+                            </span>
+                        </li>';
+                    } else {
+                        echo '<li class="page-item"><a class="page-link" href="?page='.$i.'">'.$i.'</a></li>';
+                    }
+                }
+                if ($page_number == $total_pages) {
+                    echo '
+                    <li class="page-item disabled">
+                        <span class="page-link">Next</span>
+                    </li>';
+                } else {
+                    $next_page = $page_number + 1;
+                    echo '
+                    <li class="page-item">
+                        <a class="page-link" href="?page='.$next_page.'">Next</a>
+                    </li>';
+                }
                 echo '
-                <li class="page-item disabled">
-                    <span class="page-link">Next</span>
-                </li>';
-            } else {
-                $next_page = $page_number + 1;
-                echo '
-                <li class="page-item">
-                    <a class="page-link" href="?page='.$next_page.'">Next</a>
-                </li>';
-            }
-            echo '
-            </ul>
-        </nav>';
+                </ul>
+            </nav>';
+        }
 ?>
     </div><a class="text-info" href="https://github.com/DistrictNineHost/Sourcemod-SQLMatches" target="_blank" style="position:fixed;bottom:0px;right:10px;">Developed by DistrictNine.Host</a>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
