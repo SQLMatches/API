@@ -1,7 +1,7 @@
 <?php
 require ("config.php");
 
-if(isset($_GET["id"])){
+if (isset($_GET["id"])) {
     $match_id = $_GET["id"];
 } else {
     $match_id = 0;
