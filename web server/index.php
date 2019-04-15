@@ -73,6 +73,8 @@ if (isset($_GET["page"])) {
                 </div>
             </a>';
         }
+    } else {
+        echo '<h1 style="margin-top:20px;text-align:center;">No Results!</h1>';
     }
 ?>
 <?php
