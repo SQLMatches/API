@@ -1,7 +1,5 @@
 ![DNH Logo](https://camo.githubusercontent.com/742c455547018630cf337754b6e93a16e880dbd2/68747470733a2f2f63646e2e646973636f72646170702e636f6d2f6174746163686d656e74732f3433353630313839363836323930383433372f3533383532363832363139323936313533362f6e626664666864666864686468642e706e67)
 
-# Big improvements coming to the web panel.
-
 # Setup
 
 ### Game Server
@@ -26,7 +24,7 @@
 # Preview
 [Live Demo](https://districtnine.host/dev/demos/sql-matches/)
 ### Matches Page
-![SQL Matches Preview](https://i.gyazo.com/808a02364cb93fd701812f6eca085c6d.png)
+![SQL Matches Preview](https://i.imgur.com/p9fSWGv.png)
 
 ### Scoreboard Page
-![SQL Matches Preview](https://i.gyazo.com/c93fbcfe488347b5925d091ac86825a4.png)
+![SQL Matches Preview](https://i.imgur.com/LXYXr1j.png)
