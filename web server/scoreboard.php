@@ -53,7 +53,7 @@ if (isset($_GET["id"])) {
                     }
                     $t .= '
                     <tr>
-                        <td><a href="https://steamcommunity.com/profiles/'.$row["steamid64"].'" class="text-info" target="_blank">'.htmlspecialchars(substr($row["name"],0,12)).'</a></td>
+                        <td><a href="https://steamcommunity.com/profiles/'.$row["steamid64"].'" class="text-white" target="_blank">'.htmlspecialchars(substr($row["name"],0,12)).'</a></td>
                         <td>'.$row["kills"].'</td>
                         <td>'.$row["assists"].'</td>
                         <td>'.$row["deaths"].'</td>
@@ -70,7 +70,7 @@ if (isset($_GET["id"])) {
                     }
                     $ct .= '
                     <tr>
-                        <td><a href="https://steamcommunity.com/profiles/'.$row["steamid64"].'" class="text-info" target="_blank">'.htmlspecialchars(substr($row["name"],0,12)).'</a></td>
+                        <td><a href="https://steamcommunity.com/profiles/'.$row["steamid64"].'" class="text-white" target="_blank">'.htmlspecialchars(substr($row["name"],0,12)).'</a></td>
                         <td>'.$row["kills"].'</td>
                         <td>'.$row["assists"].'</td>
                         <td>'.$row["deaths"].'</td>
@@ -151,7 +151,7 @@ if (isset($_GET["id"])) {
             echo '<h4 style="margin-top:40px;text-align:center;">No Match with that ID!</h4>';
         }
 ?>
-    <a class="text-info" href="https://github.com/DistrictNineHost/Sourcemod-SQLMatches" target="_blank" style="position:fixed;bottom:0px;right:10px;">Developed by DistrictNine.Host</a>
+    <a class="text-white" href="https://github.com/DistrictNineHost/Sourcemod-SQLMatches" target="_blank" style="position:fixed;bottom:0px;right:10px;">Developed by DistrictNine.Host</a>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.2/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/bs-animation.js?h=98fdbbd86223499341d76166d015c405"></script>
