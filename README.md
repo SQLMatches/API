@@ -24,7 +24,7 @@
 # Preview
 [Live Demo](https://districtnine.host/dev/demos/sql-matches/)
 ### Matches Page
-![SQL Matches Preview](https://i.imgur.com/p9fSWGv.png)
+![SQL Matches Preview](https://i.imgur.com/c4Zxyvt.png)
 
 ### Scoreboard Page
-![SQL Matches Preview](https://i.imgur.com/LXYXr1j.png)
+![SQL Matches Preview](https://i.imgur.com/pAi46az.png)
