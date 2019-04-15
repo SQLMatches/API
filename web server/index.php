@@ -1,7 +1,7 @@
 <?php
 require ("config.php");
 
-if(isset($_GET["page"])){
+if (isset($_GET["page"])) {
     $page_number = $_GET["page"];
 } else {
     $page_number = 0;
