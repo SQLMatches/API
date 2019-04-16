@@ -99,7 +99,7 @@ if (isset($_GET["id"])) {
                                     <table class="table">
                                         <thead class="table-borderless" style="border: none !important;">
                                             <tr>
-                                                <th>Player</th>
+                                                <th style="width:200px;">Player</th>
                                                 <th>Kills</th>
                                                 <th>Assists</th>
                                                 <th>Deaths</th>
@@ -134,7 +134,7 @@ if (isset($_GET["id"])) {
                                     <table class="table">
                                         <thead class="table-borderless" style="border: none !important;">
                                             <tr>
-                                                <th>Player</th>
+                                                <th style="width:200px;">Player</th>
                                                 <th>Kills</th>
                                                 <th>Assists</th>
                                                 <th>Deaths</th>
