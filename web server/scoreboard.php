@@ -81,6 +81,12 @@ if (isset($_GET["id"])) {
                     </tr>';
                 }
             }
+                if (!isset($ct)) {
+                    $ct = '<h3 style="margin-top:20px;text-align:center;">No Players Recorded!</h3>';
+                }
+                if (!isset($t)) {
+                    $t = '<h3 style="margin-top:20px;text-align:center;">No Players Recorded!</h3>';
+                }
                 echo '
                 <div class="row" style="margin-top:20px;">
                     <div class="col-md-12">
