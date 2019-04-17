@@ -104,7 +104,7 @@ public Action delay(Handle timer)
 
 	if ((ent = FindEntityByClassname(-1, "cs_player_manager")) != -1)
 	{
-		for(int i = 1; i <= MaxClients; i++)
+		for (int i = 1; i <= MaxClients; i++)
 		{
 			if (!IsClientInGame(i))
 			{
