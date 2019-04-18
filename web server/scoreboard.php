@@ -47,7 +47,7 @@ if (isset($_GET["id"])) {
                 }
                 if ($row["team"] == 2) {
                     $t_score = $row["team_3"];
-                    $t_name = $row["teamname_1"];
+                    $t_name = $row["teamname_2"];
                     if ($t_name == NULL) {
                         $t_name = "Terrorists";
                     }
@@ -64,7 +64,7 @@ if (isset($_GET["id"])) {
                     </tr>';
                 } elseif ($row["team"] == 3) {
                     $ct_score = $row["team_2"];
-                    $ct_name = $row["teamname_2"];
+                    $ct_name = $row["teamname_1"];
                     if ($ct_name == NULL) {
                         $ct_name = "Counter-Terrorists";
                     }
