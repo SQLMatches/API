@@ -19,6 +19,7 @@ $maps = array(
     "assets/img/maps/dust2.jpg" => "de_dust2",
     "assets/img/maps/mirage.jpg" => "de_mirage",
     "assets/img/maps/nuke.jpg" => "de_nuke",
+    "assets/img/maps/nuke.jpg" => "de_shortnuke",
     "assets/img/maps/overpass.jpg" => "de_overpass",
     "assets/img/maps/train.jpg" => "de_train",
     "assets/img/maps/inferno.jpg" => "de_inferno"
