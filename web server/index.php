@@ -55,7 +55,7 @@ if (isset($_GET["page"])) {
         while($row = $result->fetch_assoc()) {
             $half = ($row["team_2"] + $row["team_3"]) / 2;
 
-            if ($row["team_2"] > $half) {
+            if ($row["team_3"] > $half) {
                 $image = 'ct_icon.png';
             } elseif ($row["team_2"] == $half && $row["team_3"] == $half) {
                 $image = 'tie_icon.png';
@@ -69,7 +69,7 @@ if (isset($_GET["page"])) {
             <a href="scoreboard.php?id='.$row["match_id"].'">
                 <div class="card match-card center" data-bs-hover-animate="pulse" style="margin-top:35px;"><img class="card-img w-100 d-block matches-img rounded-borders" style="background-image:url(&quot;'.$map_img.'&quot;);height:150px;">
                     <div class="card-img-overlay">
-                        <h4 class="text-white float-left" style="font-size:70px;margin-top:15px;">'.$row['team_2'].':'.$row['team_3'].'</h4><img class="float-right" src="assets/img/icons/'.$image.'?h=4347d1d6c5595286f4b1acacc902fedd" style="width:110px;"></div>
+                        <h4 class="text-white float-left" style="font-size:70px;margin-top:15px;">'.$row['team_3'].':'.$row['team_2'].'</h4><img class="float-right" src="assets/img/icons/'.$image.'?h=4347d1d6c5595286f4b1acacc902fedd" style="width:110px;"></div>
                 </div>
             </a>';
         }
