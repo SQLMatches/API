@@ -27,6 +27,15 @@ if (isset($_GET["id"])) {
 <?php
         require ("head.php");
 
+        function unicode2html($str){
+            // Set the locale to something that's UTF-8 capable
+            setlocale(LC_ALL, 'en_US.UTF-8');
+            // Convert the codepoints to entities
+            $str = preg_replace("/u([0-9a-fA-F]{4})/", "&#x\\1;", $str);
+            // Convert the entities to a UTF-8 string
+            return iconv("UTF-8", "ISO-8859-1//TRANSLIT", $str);
+        }
+
         $match_id = $conn->real_escape_string($match_id);
 
         $sql = "SELECT sql_matches_scoretotal.*, sql_matches.*
@@ -53,7 +62,7 @@ if (isset($_GET["id"])) {
                     }
                     $t .= '
                     <tr>
-                        <td><a href="https://steamcommunity.com/profiles/'.$row["steamid64"].'" class="text-white" target="_blank">'.htmlspecialchars(substr($row["name"],0,12)).'</a></td>
+                        <td><a href="https://steamcommunity.com/profiles/'.$row["steamid64"].'" class="text-white" target="_blank">'.unicode2html(htmlspecialchars(substr($row["name"],0,12))).'</a></td>
                         <td>'.$row["kills"].'</td>
                         <td>'.$row["assists"].'</td>
                         <td>'.$row["deaths"].'</td>
@@ -70,7 +79,7 @@ if (isset($_GET["id"])) {
                     }
                     $ct .= '
                     <tr>
-                        <td><a href="https://steamcommunity.com/profiles/'.$row["steamid64"].'" class="text-white" target="_blank">'.htmlspecialchars(substr($row["name"],0,12)).'</a></td>
+                        <td><a href="https://steamcommunity.com/profiles/'.$row["steamid64"].'" class="text-white" target="_blank">'.unicode2html(htmlspecialchars(substr($row["name"],0,12))).'</a></td>
                         <td>'.$row["kills"].'</td>
                         <td>'.$row["assists"].'</td>
                         <td>'.$row["deaths"].'</td>
