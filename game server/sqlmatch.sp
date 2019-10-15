@@ -27,7 +27,7 @@ public void OnPluginStart()
 	Format(buffer, sizeof(buffer), "%s teamname_2 varchar(64) NOT NULL,", buffer);
 	Format(buffer, sizeof(buffer), "%s map varchar(128) NOT NULL,", buffer);
 	Format(buffer, sizeof(buffer), "%s PRIMARY KEY (match_id),", buffer);
-	Format(buffer, sizeof(buffer), "%s UNIQUE KEY match_id (match_id));", buffer);
+	Format(buffer, sizeof(buffer), "%s UNIQUE KEY match_id (match_id)) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;", buffer);
 
 	if (!SQL_FastQuery(db, buffer))
 	{
@@ -47,7 +47,7 @@ public void OnPluginStart()
 	Format(buffer, sizeof(buffer), "%s assists int(11) NOT NULL,", buffer);
 	Format(buffer, sizeof(buffer), "%s deaths int(11) NOT NULL,", buffer);
 	Format(buffer, sizeof(buffer), "%s mvps int(11) NOT NULL,", buffer);
-	Format(buffer, sizeof(buffer), "%s score int(11) NOT NULL);", buffer);
+	Format(buffer, sizeof(buffer), "%s score int(11) NOT NULL) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;", buffer);
 
 	if (!SQL_FastQuery(db, buffer))
 	{
