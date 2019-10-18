@@ -14,6 +14,7 @@ $maps = array(
     "assets/img/maps/austria.jpg" => "de_austria",
     "assets/img/maps/cache.jpg" => "de_cache",
     "assets/img/maps/cache_new.jpg" => "workshop/1855851320/de_cache_new",
+    "assets/img/maps/cache_new.jpg" => "workshop/1855851320/de_cache",
     "assets/img/maps/canals.jpg" => "de_canals",
     "assets/img/maps/cbble.jpg" => "de_cbble",
     "assets/img/maps/dust.png" => "de_dust",
