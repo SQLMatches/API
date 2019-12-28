@@ -22,8 +22,6 @@ Re-write in python coming soon.
 - Upload files inside of the web server folder into your web server.
 - Configure config.php.
 
-# Preview
-[Live Demo](https://districtnine.host/dev/demos/sql-matches/)
 ### Matches Page
 ![SQL Matches Preview](https://i.imgur.com/c4Zxyvt.png)
 
