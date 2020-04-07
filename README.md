@@ -1,5 +1,5 @@
 ### Development status
-Re-write in python coming soon.
+This project will remain archived until I have time to re-write it.
 
 # Setup
 
