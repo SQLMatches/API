@@ -73,4 +73,3 @@ class HomePage(HTTPEndpoint):
                 ),
                 status_code=303
             )
-

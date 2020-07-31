@@ -24,7 +24,7 @@ DEALINGS IN THE SOFTWARE.
 from sqlalchemy.sql import select
 
 from ..resources import Sessions
-from ..tables import community, scoreboard_total
+from ..tables import community
 
 from .exceptions import CommunityTaken, AlreadyCommunity, InvalidCommunity, \
     NoOwnership
