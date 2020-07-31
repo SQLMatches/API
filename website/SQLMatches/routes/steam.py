@@ -35,8 +35,10 @@ class SteamLogin(HTTPEndpoint):
     async def get(self, request):
         paramters = {
             "openid.ns": "http://specs.openid.net/auth/2.0",
-            "openid.identity": "http://specs.openid.net/auth/2.0/identifier_select",
-            "openid.claimed_id": "http://specs.openid.net/auth/2.0/identifier_select",
+            "openid.identity":
+            "http://specs.openid.net/auth/2.0/identifier_select",
+            "openid.claimed_id":
+            "http://specs.openid.net/auth/2.0/identifier_select",
             "openid.mode": "checkid_setup",
             "openid.return_to": "{}login/validate?return={}".format(
                 Config.url,
