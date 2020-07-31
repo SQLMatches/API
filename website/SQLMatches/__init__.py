@@ -52,11 +52,14 @@ class SQLMatches(Starlette):
             Optionally pass your own url safe secrect key.
         """
 
+        startup_tasks = [self._startup]
+        shutdown_tasks = [self._shutdown]
+
         if "on_startup" in kwargs:
-            self._startup_tasks = self._startup_tasks + kwargs["on_startup"]
+            startup_tasks = startup_tasks + kwargs["on_startup"]
 
         if "on_shutdown" in kwargs:
-            self._shutdown_tasks = self._shutdown_tasks + kwargs["on_shutdown"]
+            shutdown_tasks = shutdown_tasks + kwargs["on_shutdown"]
 
         middlewares = []
         if "middleware" in kwargs:
@@ -99,6 +102,8 @@ class SQLMatches(Starlette):
         Starlette.__init__(
             self,
             routes=routes,
+            on_startup=startup_tasks,
+            on_shutdown=shutdown_tasks,
             **kwargs
         )
 
@@ -117,8 +122,3 @@ class SQLMatches(Starlette):
 
         await Sessions.database.disconnect()
         await Sessions.aiohttp.close()
-
-    # Show be at the top of the class
-    # but can't access _startup & _shutdown otherwise.
-    _startup_tasks = [_startup]
-    _shutdown_tasks = [_shutdown]
