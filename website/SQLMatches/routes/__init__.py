@@ -28,14 +28,20 @@ from .home import HomePage
 from .community import CommunityPage
 from .scoreboard import ScoreboardPage
 
+from .steam import SteamLogin, SteamValidate
+
 from ..resources import Config
 
 
 ROUTES = [
     Route("/", HomePage, name="HomePage"),
+    Mount("/login", routes=[
+        Route("/steam", SteamLogin),
+        Route("/validate", SteamValidate)
+    ]),
+    Mount("/assets", StaticFiles(directory=Config.assets_dir), name="assets"),
     Mount("/{community}", routes=[
         Route("/", CommunityPage),
         Route("/{scoreboard_id}", ScoreboardPage)
     ]),
-    Mount("/assets", StaticFiles(directory=Config.assets_dir), name="assets"),
 ]

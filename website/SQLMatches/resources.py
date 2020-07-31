@@ -22,11 +22,13 @@ DEALINGS IN THE SOFTWARE.
 
 
 import os
+from aiohttp import ClientSession
 from databases import Database
 
 
 class Sessions:
     database: Database
+    aiohttp: ClientSession
 
 
 class Config:
@@ -36,3 +38,5 @@ class Config:
     )
     assets_dir = os.path.join(frontend_dir, "assets")
     templates_dir = os.path.join(frontend_dir, "templates")
+    steam_openid_url = "https://steamcommunity.com/openid/login"
+    url: str

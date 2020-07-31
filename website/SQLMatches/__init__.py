@@ -22,22 +22,34 @@ DEALINGS IN THE SOFTWARE.
 
 
 from starlette.applications import Starlette
+from starlette.middleware import Middleware
+from starlette.middleware.sessions import SessionMiddleware
+
+from secrets import token_urlsafe
+
 from databases import Database
+from aiohttp import ClientSession
 
 from .tables import create_tables
-from .resources import Sessions
+from .resources import Sessions, Config
 from .settings import DatabaseSettings
 from .routes import ROUTES
 
 
 class SQLMatches(Starlette):
     def __init__(self, database_settings: DatabaseSettings,
-                 *args, **kwargs) -> None:
+                 friendly_url: str,
+                 secrect_key: str = token_urlsafe(),
+                 **kwargs) -> None:
         """
         SQLMatches server.
 
         database_settings: DatabaseSettings
             Holds settings for database.
+        friendly_url: str
+            URL to project.
+        secrect_key: str
+            Optionally pass your own url safe secrect key.
         """
 
         if "on_startup" in kwargs:
@@ -46,8 +58,23 @@ class SQLMatches(Starlette):
         if "on_shutdown" in kwargs:
             self._shutdown_tasks = self._shutdown_tasks + kwargs["on_shutdown"]
 
-        # Overwriting routes is only bad news.
-        kwargs.pop("routes", None)
+        middlewares = []
+        if "middleware" in kwargs:
+            middlewares = kwargs["middleware"]
+
+        middlewares.append(
+            Middleware(SessionMiddleware, secrect_key=secrect_key)
+        )
+
+        if "routes" in kwargs:
+            routes = kwargs["routes"] + ROUTES
+        else:
+            routes = ROUTES
+
+        if friendly_url[:1] != "/":
+            friendly_url += "/"
+
+        Config.url = friendly_url
 
         database_url = "://{}:{}@{}:{}/{}?charset=utf8mb4".format(
             database_settings.username,
@@ -71,8 +98,7 @@ class SQLMatches(Starlette):
 
         Starlette.__init__(
             self,
-            routes=ROUTES,
-            *args,
+            routes=routes,
             **kwargs
         )
 
@@ -82,6 +108,7 @@ class SQLMatches(Starlette):
         """
 
         await Sessions.database.connect()
+        Sessions.aiohttp = ClientSession()
 
     async def _shutdown(self) -> None:
         """
@@ -89,6 +116,7 @@ class SQLMatches(Starlette):
         """
 
         await Sessions.database.disconnect()
+        await Sessions.aiohttp.close()
 
     # Show be at the top of the class
     # but can't access _startup & _shutdown otherwise.

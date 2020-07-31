@@ -11,7 +11,8 @@ app = SQLMatches(
         server="localhost",
         port=3306,
         database="sqlmatches"
-    )
+    ),
+    friendly_url="http://127.0.0.1:8000"
 )
 
 if __name__ == "__main__":
