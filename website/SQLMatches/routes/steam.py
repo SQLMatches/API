@@ -45,7 +45,7 @@ class SteamLogin(HTTPEndpoint):
                 request.query_params["return"] if
                 "return" in request.query_params else ""
             ),
-            "openid.realm": request.url,
+            "openid.realm": Config.url,
         }
 
         return RedirectResponse(
@@ -84,8 +84,10 @@ class SteamValidate(HTTPEndpoint):
 
                 await sleep(0.0001)
 
+            validation["openid.mode"] = "check_authentication"
+
             async with Sessions.aiohttp.post(
-                    Config.steam_openid_url, json=validation) as resp:
+                    Config.steam_openid_url, data=validation) as resp:
                 if resp.status == 200:
                     data = await resp.text()
 

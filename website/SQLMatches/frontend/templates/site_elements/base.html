@@ -23,7 +23,9 @@
             <div
                 class="collapse navbar-collapse" id="collapse">
                 <ul class="nav navbar-nav ml-auto">
-                    <li class="nav-item" role="presentation" style="margin-left: 10px;"><button class="btn btn-light" type="button" style="font-size: 18px;"><i class="icon-social-steam"></i>&nbsp;Login</button></li>
+                    <li class="nav-item" role="presentation" style="margin-left: 10px;">
+                        <a href="{{ url_for('SteamLogin') }}?return={{ request.url.path }}"><button class="btn btn-light" type="button" style="font-size: 18px;"><i class="icon-social-steam"></i>&nbsp;Login</button>
+                    </a></li>
                 </ul>
         </div>
         </div>

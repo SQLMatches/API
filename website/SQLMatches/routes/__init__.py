@@ -36,7 +36,7 @@ from ..resources import Config
 ROUTES = [
     Route("/", HomePage, name="HomePage"),
     Mount("/login", routes=[
-        Route("/steam", SteamLogin),
+        Route("/steam", SteamLogin, name="SteamLogin"),
         Route("/validate", SteamValidate)
     ]),
     Mount("/assets", StaticFiles(directory=Config.assets_dir), name="assets"),

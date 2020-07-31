@@ -36,10 +36,13 @@ from .settings import DatabaseSettings
 from .routes import ROUTES
 
 
+__version__ = "0.0.1"
+
+
 class SQLMatches(Starlette):
     def __init__(self, database_settings: DatabaseSettings,
                  friendly_url: str,
-                 secrect_key: str = token_urlsafe(),
+                 secret_key: str = token_urlsafe(),
                  **kwargs) -> None:
         """
         SQLMatches server.
@@ -48,8 +51,8 @@ class SQLMatches(Starlette):
             Holds settings for database.
         friendly_url: str
             URL to project.
-        secrect_key: str
-            Optionally pass your own url safe secrect key.
+        secret_key: str
+            Optionally pass your own url safe secret key.
         """
 
         startup_tasks = [self._startup]
@@ -66,7 +69,7 @@ class SQLMatches(Starlette):
             middlewares = kwargs["middleware"]
 
         middlewares.append(
-            Middleware(SessionMiddleware, secrect_key=secrect_key)
+            Middleware(SessionMiddleware, secret_key=secret_key)
         )
 
         if "routes" in kwargs:
@@ -102,6 +105,7 @@ class SQLMatches(Starlette):
         Starlette.__init__(
             self,
             routes=routes,
+            middleware=middlewares,
             on_startup=startup_tasks,
             on_shutdown=shutdown_tasks,
             **kwargs
