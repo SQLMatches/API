@@ -21,13 +21,9 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-from starlette.endpoints import HTTPEndpoint
-from ..templating import TEMPLATE
+class UnSupportedEngine(Exception):
+    """
+    Raised when the database engine isn't supported.
+    """
 
-
-class CommunityPage(HTTPEndpoint):
-    async def get(self, request):
-        return TEMPLATE.TemplateResponse(
-            "community.html",
-            {"request": request}
-        )
+    pass
