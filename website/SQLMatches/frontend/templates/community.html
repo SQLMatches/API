@@ -1,0 +1,37 @@
+{% extends 'site_elements/base.html' %}
+
+{% block title %}Community name{% endblock %}
+
+{% block content %}
+    <div class="container d-flex d-xl-flex flex-column align-items-center align-items-xl-center main-container">
+        <div class="card text-light" style="background-color: #151415;margin-bottom: 50px;width: 50%;">
+            <div class="card-body">
+                <h4 class="card-title">Owner Panel</h4>
+                <p>API Key:&nbsp;<span class="key-hidden"><br>r7VY5Dm9C3rMxwPO3Z90pv2p<br></span></p>
+                <p class="text-danger" style="font-size: 10px;">NEVER SHARE YOUR API KEY WITH ANYONE, MISS USING OUR API WILL RESULT IN A PERMANENT BAN!</p>
+                <button class="btn btn-warning btn-sm" type="button"><i class="icon-fire"></i>&nbsp;Generate API Key</button>
+                <button class="btn btn-danger btn-sm" type="button"><i class="icon-exclamation"></i>&nbsp;Delete Page</button></div>
+        </div>
+        <!-- Start: Search Field With Icon -->
+        <div class="d-xl-flex justify-content-xl-center search-container">
+            <input type="text" class="search-input" name="search-bar" placeholder="Name, SteamID64 or MatchID">
+            <button class="btn btn-primary search-btn" type="button"> <i class="fa fa-search"></i></button>
+        </div>
+        <!-- End: Search Field With Icon -->
+        <div class="card match-card border-0" data-bs-hover-animate="pulse">
+            <div class="card-img w-100 d-block"></div>
+            <div class="card-img-overlay d-flex d-xl-flex align-items-center justify-content-xl-center align-items-xl-center" style="padding: 20px;">
+                <div class="row">
+                    <div class="col-md-4 col-xl-4 d-flex justify-content-center">
+                        <h1 class="text-light"><span style="font-size: 20px;">Team</span>&nbsp;Ward</h1>
+                    </div>
+                    <div class="col-md-4 d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <h1 class="text-light"><span class="won">16</span>:<span class="lost">9</span></h1>
+                    </div>
+                    <div class="col-md-4 d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <h1 class="text-light"><span style="font-size: 20px;">Team</span>&nbsp;Jam</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}

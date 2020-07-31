@@ -1,0 +1,13 @@
+{% extends 'site_elements/base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+    <div class="card text-light create-card" style="background-color: #151415;width: 60%;">
+        <div class="card-body">
+            <h4 class="card-title">Create your own page!</h4>
+            <h6 class="text-muted card-subtitle mb-2">Make it your own :3</h6>
+            <form><label for="name-input">Community Name</label><input class="form-control" type="text" name="name-input" placeholder="Nexus League"><button class="btn btn-outline-light btn-block" type="submit" style="margin-top: 20px;">Create</button></form>
+        </div>
+    </div>
+{% endblock %}

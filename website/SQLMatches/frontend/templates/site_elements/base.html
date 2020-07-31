@@ -4,22 +4,22 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>sqlmatches</title>
-    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <title>{% block title %}{% endblock %} - SQLMatches</title>
+    <link rel="stylesheet" href="{{ url_for('assets', path='bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
-    <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
-    <link rel="stylesheet" href="assets/fonts/simple-line-icons.min.css">
-    <link rel="stylesheet" href="assets/css/Footer-Dark.css">
+    <link rel="stylesheet" href="{{ url_for('assets', path='fonts/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('assets', path='fonts/simple-line-icons.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('assets', path='css/Footer-Dark.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
-    <link rel="stylesheet" href="assets/css/Navigation-Clean.css">
-    <link rel="stylesheet" href="assets/css/Search-Field-With-Icon.css">
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="{{ url_for('assets', path='css/Navigation-Clean.css') }}">
+    <link rel="stylesheet" href="{{ url_for('assets', path='css/Search-Field-With-Icon.css') }}">
+    <link rel="stylesheet" href="{{ url_for('assets', path='css/styles.css') }}">
 </head>
 
 <body>
     <!-- Start: Navigation Clean -->
     <nav class="navbar navbar-light navbar-expand-md navigation-clean">
-        <div class="container"><a class="navbar-brand text-light" href="#">SQLMatches</a><button data-toggle="collapse" class="navbar-toggler" data-target="#collapse"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon" style="border-style: none;"></span></button>
+        <div class="container"><a class="navbar-brand text-light" href="{{ url_for('HomePage') }}">SQLMatches</a><button data-toggle="collapse" class="navbar-toggler" data-target="#collapse"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon" style="border-style: none;"></span></button>
             <div
                 class="collapse navbar-collapse" id="collapse">
                 <ul class="nav navbar-nav ml-auto">
@@ -30,13 +30,9 @@
     </nav>
     <!-- End: Navigation Clean -->
     <div class="container d-flex d-xl-flex flex-column align-items-center align-items-xl-center main-container">
-        <div class="card text-light create-card" style="background-color: #151415;width: 60%;">
-            <div class="card-body">
-                <h4 class="card-title">Create your own page!</h4>
-                <h6 class="text-muted card-subtitle mb-2">Make it your own :3</h6>
-                <form><label for="name-input">Community Name</label><input class="form-control" type="text" name="name-input" placeholder="Nexus League"><button class="btn btn-outline-light btn-block" type="submit" style="margin-top: 20px;">Create</button></form>
-            </div>
-        </div>
+
+        {% block content %}{% endblock %}
+
         <footer class="footer-dark">
             <div class="container">
                 <div class="row">
@@ -44,9 +40,9 @@
                     <div class="col-sm-6 col-md-3 item">
                         <h3>Index</h3>
                         <ul>
-                            <li><a href="#">Home</a></li>
-                            <li><a href="#">Create page</a></li>
-                            <li><a href="#">Donate</a></li>
+                            <li><a href="{{ url_for('HomePage') }}">Home</a></li>
+                            <li><a href="{{ url_for('HomePage') }}">Create page</a></li>
+                            <li><a href="https://www.patreon.com/wardweeb">Donate</a></li>
                         </ul>
                     </div>
                     <!-- End: Services -->
@@ -54,9 +50,9 @@
                     <div class="col-sm-6 col-md-3 item">
                         <h3>External</h3>
                         <ul>
-                            <li><a href="#">Discord</a></li>
-                            <li><a href="#">Twitter</a></li>
-                            <li><a href="#">GitHub</a></li>
+                            <li><a href="https://discord.gg/2KBAxf">Discord</a></li>
+                            <li><a href="https://twitter.com/wardweeb">Twitter</a></li>
+                            <li><a href="https://github.com/WardPearce/SQLMatches">GitHub</a></li>
                         </ul>
                     </div>
                     <!-- End: About -->
@@ -73,9 +69,9 @@
             </div>
         </footer>
     </div>
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/bs-init.js"></script>
+    <script src="{{ url_for('assets', path='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('assets', path='bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('assets', path='js/bs-init.js') }}"></script>
 </body>
 
 </html>

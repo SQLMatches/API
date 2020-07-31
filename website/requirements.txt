@@ -1,0 +1,8 @@
+starlette
+aiomysql
+databases
+aiofiles
+jinja2
+itsdangerous
+uvicorn
+sqlalchemy
