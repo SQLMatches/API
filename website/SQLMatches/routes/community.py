@@ -22,12 +22,26 @@ DEALINGS IN THE SOFTWARE.
 
 
 from starlette.endpoints import HTTPEndpoint
+from starlette.responses import RedirectResponse
 from ..templating import TEMPLATE
+
+from ..community import Community
+from ..community.exceptions import InvalidCommunity
 
 
 class CommunityPage(HTTPEndpoint):
     async def get(self, request):
-        return TEMPLATE.TemplateResponse(
-            "community.html",
-            {"request": request}
-        )
+        community = Community(request.path_params["community"])
+
+        try:
+            base_details = await community.get()
+        except InvalidCommunity:
+            return RedirectResponse("/")
+        else:
+            return TEMPLATE.TemplateResponse(
+                "community.html",
+                {
+                    "request": request,
+                    "base_details": base_details,
+                }
+            )

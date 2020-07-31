@@ -28,9 +28,17 @@ from .home import HomePage
 from .community import CommunityPage
 from .scoreboard import ScoreboardPage
 
+from .errors import server_error, not_found
+
 from .steam import SteamLogin, SteamValidate, SteamLogout
 
 from ..resources import Config
+
+
+ERROR_HANDLERS = {
+    404: not_found,
+    500: server_error
+}
 
 
 ROUTES = [
@@ -41,8 +49,8 @@ ROUTES = [
         Route("/logout", SteamLogout, name="SteamLogout")
     ]),
     Mount("/assets", StaticFiles(directory=Config.assets_dir), name="assets"),
-    Mount("/{community}", routes=[
-        Route("/", CommunityPage),
-        Route("/{scoreboard_id}", ScoreboardPage)
+    Mount("/c/{community}", routes=[
+        Route("/", CommunityPage, name="CommunityPage"),
+        Route("/{scoreboard_id}", ScoreboardPage, name="ScoreboardPage")
     ]),
 ]

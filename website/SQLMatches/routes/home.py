@@ -41,7 +41,9 @@ class HomePage(HTTPEndpoint):
             except NoOwnership:
                 pass
             else:
-                return RedirectResponse("/{}".format(community_name))
+                return RedirectResponse(
+                    request.url_for("CommunityPage", community=community_name)
+                )
 
         form = await CreatePage.from_formdata(request)
 
@@ -65,6 +67,10 @@ class HomePage(HTTPEndpoint):
             )
 
             return RedirectResponse(
-                "/{}".format(community.community_name),
+                request.url_for(
+                    "CommunityPage",
+                    community=community.community_name
+                ),
                 status_code=303
             )
+

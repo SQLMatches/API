@@ -34,7 +34,7 @@ from aiohttp import ClientSession
 from .tables import create_tables
 from .resources import Sessions, Config
 from .settings import DatabaseSettings
-from .routes import ROUTES
+from .routes import ROUTES, ERROR_HANDLERS
 
 
 __version__ = "0.0.1"
@@ -84,6 +84,11 @@ class SQLMatches(Starlette):
         else:
             routes = ROUTES
 
+        if "exception_handlers" in kwargs:
+            exception_handlers = kwargs["exception_handlers"] + ERROR_HANDLERS
+        else:
+            exception_handlers = ERROR_HANDLERS
+
         if friendly_url[:1] != "/":
             friendly_url += "/"
 
@@ -112,6 +117,7 @@ class SQLMatches(Starlette):
         Starlette.__init__(
             self,
             routes=routes,
+            exception_handlers=exception_handlers,
             middleware=middlewares,
             on_startup=startup_tasks,
             on_shutdown=shutdown_tasks,

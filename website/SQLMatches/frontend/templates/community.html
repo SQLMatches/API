@@ -1,17 +1,19 @@
 {% extends 'site_elements/base.html' %}
 
-{% block title %}Community name{% endblock %}
+{% block title %}{{ request.path_params['community'] }}{% endblock %}
 
 {% block content %}
-    <div class="container d-flex d-xl-flex flex-column align-items-center align-items-xl-center main-container">
-        <div class="card text-light" style="background-color: #151415;margin-bottom: 50px;width: 50%;">
-            <div class="card-body">
-                <h4 class="card-title">Owner Panel</h4>
-                <p>API Key:&nbsp;<span class="key-hidden"><br>r7VY5Dm9C3rMxwPO3Z90pv2p<br></span></p>
-                <p class="text-danger" style="font-size: 10px;">NEVER SHARE YOUR API KEY WITH ANYONE, MISS USING OUR API WILL RESULT IN A PERMANENT BAN!</p>
-                <button class="btn btn-warning btn-sm" type="button"><i class="icon-fire"></i>&nbsp;Generate API Key</button>
-                <button class="btn btn-danger btn-sm" type="button"><i class="icon-exclamation"></i>&nbsp;Disable Page <span style="font-size: 0.7em;">(this action can NOT be undone.)</span></button></div>
-        </div>
+        {% if 'steam_id' in request.session and request.session['steam_id'] == base_details.owner_id %}
+            <div class="card text-light" style="background-color: #151415;margin-bottom: 50px;width: 50%;">
+                <div class="card-body">
+                    <h4 class="card-title">Owner Panel</h4>
+                    <p>API Key:&nbsp;<span class="key-hidden"><br>{{ base_details.api_key }}<br></span></p>
+                    <p class="text-danger" style="font-size: 10px;">NEVER SHARE YOUR API KEY WITH ANYONE, MISS USING OUR API WILL RESULT IN A PERMANENT BAN!</p>
+                    <button class="btn btn-warning btn-sm" type="button"><i class="icon-fire"></i>&nbsp;Generate API Key</button>
+                    <button class="btn btn-danger btn-sm" type="button"><i class="icon-exclamation"></i>&nbsp;Disable Page <span style="font-size: 0.7em;">(this action can NOT be undone.)</span></button>
+                </div>
+            </div>
+        {% endif %}
         <!-- Start: Search Field With Icon -->
         <div class="d-xl-flex justify-content-xl-center search-container">
             <input type="text" class="search-input" name="search-bar" placeholder="Name, SteamID64 or MatchID">
@@ -34,4 +36,19 @@
                 </div>
             </div>
         </div>
+            <nav aria-label="..." style="margin-top: 25px;">
+                <ul class="pagination">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">Previous</a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                <li class="page-item active">
+                    <a class="page-link" href="#">2 <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Next</a>
+                </li>
+                </ul>
+            </nav>
 {% endblock %}

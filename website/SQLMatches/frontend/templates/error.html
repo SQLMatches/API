@@ -1,0 +1,12 @@
+{% extends 'site_elements/base.html' %}
+
+{% block title %}{{ error.status_code }} Error{% endblock %}
+
+{% block content %}
+    <div class="card text-light create-card" style="background-color: #151415;width: 60%;">
+        <div class="card-body">
+            <h4 class="card-title">An {{ error.status_code }} error has occurred.</h4>
+            <p>Something went wrong!, <a href="{{ url_for('HomePage') }}">click here to take yourself home.</a></p>
+        </div>
+    </div>
+{% endblock %}

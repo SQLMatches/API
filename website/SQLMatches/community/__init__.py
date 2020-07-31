@@ -24,11 +24,11 @@ DEALINGS IN THE SOFTWARE.
 from sqlalchemy.sql import select
 
 from ..resources import Sessions
-from ..tables import community
+from ..tables import community, scoreboard_total
 
 from .exceptions import CommunityTaken, AlreadyCommunity, InvalidCommunity, \
     NoOwnership
-from .models import CommunityModel
+from .models import CommunityModel, MatchModel
 
 from secrets import token_urlsafe
 
@@ -56,6 +56,9 @@ class Community:
         )
 
         return await Sessions.database.fetch_val(query=query) > 0
+
+    async def matches(self) -> MatchModel:
+        pass
 
     async def get(self) -> CommunityModel:
         """
@@ -155,7 +158,7 @@ async def create_community(steam_id: str, community_name: str,
         Edit name of community
     """
 
-    community_name = community_name.replace(" ", "-")
+    community_name = community_name.strip().replace(" ", "-")
 
     if await Community(community_name).exists():
         raise CommunityTaken()
