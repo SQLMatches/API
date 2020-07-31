@@ -30,7 +30,6 @@ from .exceptions import CommunityTaken, AlreadyCommunity, InvalidCommunity, \
     NoOwnership
 from .models import CommunityModel
 
-from uuid import uuid4
 from secrets import token_urlsafe
 
 
