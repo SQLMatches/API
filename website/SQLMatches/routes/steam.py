@@ -91,7 +91,7 @@ class SteamValidate(HTTPEndpoint):
 
                     if "is_valid:true" in data:
                         matched = search(
-                            "https://steamcommunity.com/openid/id/(\d+)",
+                            "https://steamcommunity.com/openid/id/(\\d+)",
                             params["openid.claimed_id"]
                         )
 
