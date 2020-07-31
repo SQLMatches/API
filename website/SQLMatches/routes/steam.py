@@ -106,3 +106,10 @@ class SteamValidate(HTTPEndpoint):
                                 redirect = params["return"]
 
         return RedirectResponse(redirect)
+
+
+class SteamLogout(HTTPEndpoint):
+    async def get(self, request):
+        request.session.pop("steam_id", None)
+
+        return RedirectResponse("/")

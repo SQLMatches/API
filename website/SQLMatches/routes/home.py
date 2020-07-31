@@ -22,9 +22,49 @@ DEALINGS IN THE SOFTWARE.
 
 
 from starlette.endpoints import HTTPEndpoint
+from starlette.responses import RedirectResponse
 from ..templating import TEMPLATE
+
+from ..forms.home import CreatePage
+
+from ..community import create_community, get_community_name, Community
+from ..community.exceptions import NoOwnership
 
 
 class HomePage(HTTPEndpoint):
     async def get(self, request):
-        return TEMPLATE.TemplateResponse("home.html", {"request": request})
+        if "steam_id" in request.session:
+            try:
+                community_name = await get_community_name(
+                    request.session["steam_id"]
+                )
+            except NoOwnership:
+                pass
+            else:
+                return RedirectResponse("/{}".format(community_name))
+
+        form = await CreatePage.from_formdata(request)
+
+        return TEMPLATE.TemplateResponse("home.html", {
+            "request": request,
+            "form": form,
+        })
+
+    async def post(self, request):
+        form = await CreatePage.from_formdata(request)
+
+        if "steam_id" not in request.session or not form.validate_on_submit():
+            return RedirectResponse("/", status_code=303)
+
+        if await Community(form.name.data).exists():
+            return RedirectResponse("/?taken=True", status_code=303)
+        else:
+            community = await create_community(
+                steam_id=request.session["steam_id"],
+                community_name=form.name.data
+            )
+
+            return RedirectResponse(
+                "/{}".format(community.community_name),
+                status_code=303
+            )

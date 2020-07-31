@@ -27,6 +27,30 @@ from sqlalchemy import Table, MetaData, String, \
 
 metadata = MetaData()
 
+
+community = Table(
+    "community",
+    metadata,
+    Column(
+        "name",
+        String(length=32),
+        primary_key=True
+    ),
+    Column(
+        "owner_id",
+        String(length=64)
+    ),
+    Column(
+        "api_key",
+        String(length=32)
+    ),
+    Column(
+        "disabled",
+        Boolean,
+        default=False
+    )
+)
+
 # Scoreboard total table
 # Status codes
 # 0 - Finished
@@ -38,6 +62,11 @@ scoreboard_total = Table(
         "match_id",
         String(length=36),
         primary_key=True
+    ),
+    Column(
+        "name",
+        String(length=32),
+        ForeignKey("community.name")
     ),
     Column(
         "timestamp",

@@ -21,28 +21,33 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-from starlette.routing import Route, Mount
-from starlette.staticfiles import StaticFiles
+class CommunityTaken(Exception):
+    """
+    Raised when community name is taken.
+    """
 
-from .home import HomePage
-from .community import CommunityPage
-from .scoreboard import ScoreboardPage
-
-from .steam import SteamLogin, SteamValidate, SteamLogout
-
-from ..resources import Config
+    pass
 
 
-ROUTES = [
-    Route("/", HomePage, name="HomePage"),
-    Mount("/login", routes=[
-        Route("/steam", SteamLogin, name="SteamLogin"),
-        Route("/validate", SteamValidate),
-        Route("/logout", SteamLogout, name="SteamLogout")
-    ]),
-    Mount("/assets", StaticFiles(directory=Config.assets_dir), name="assets"),
-    Mount("/{community}", routes=[
-        Route("/", CommunityPage),
-        Route("/{scoreboard_id}", ScoreboardPage)
-    ]),
-]
+class AlreadyCommunity(Exception):
+    """
+    Raised when user already owns a community.
+    """
+
+    pass
+
+
+class InvalidCommunity(Exception):
+    """
+    Raised when community ID doesn't exist.
+    """
+
+    pass
+
+
+class NoOwnership(Exception):
+    """
+    Raised when steam id doesn't own any communties.
+    """
+
+    pass

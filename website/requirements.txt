@@ -7,3 +7,5 @@ itsdangerous
 uvicorn
 sqlalchemy
 aiohttp
+wtforms
+starlette-wtf

@@ -24,6 +24,7 @@ DEALINGS IN THE SOFTWARE.
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
+from starlette_wtf import CSRFProtectMiddleware
 
 from secrets import token_urlsafe
 
@@ -43,6 +44,7 @@ class SQLMatches(Starlette):
     def __init__(self, database_settings: DatabaseSettings,
                  friendly_url: str,
                  secret_key: str = token_urlsafe(),
+                 csrf_secret: str = token_urlsafe(),
                  **kwargs) -> None:
         """
         SQLMatches server.
@@ -51,6 +53,8 @@ class SQLMatches(Starlette):
             Holds settings for database.
         friendly_url: str
             URL to project.
+        csrf_secret: str
+            Optionally pass your own url safe secret key.
         secret_key: str
             Optionally pass your own url safe secret key.
         """
@@ -70,6 +74,9 @@ class SQLMatches(Starlette):
 
         middlewares.append(
             Middleware(SessionMiddleware, secret_key=secret_key)
+        )
+        middlewares.append(
+            Middleware(CSRFProtectMiddleware, csrf_secret=csrf_secret)
         )
 
         if "routes" in kwargs:

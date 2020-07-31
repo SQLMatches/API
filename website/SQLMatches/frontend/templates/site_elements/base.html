@@ -24,7 +24,11 @@
                 class="collapse navbar-collapse" id="collapse">
                 <ul class="nav navbar-nav ml-auto">
                     <li class="nav-item" role="presentation" style="margin-left: 10px;">
-                        <a href="{{ url_for('SteamLogin') }}?return={{ request.url.path }}"><button class="btn btn-light" type="button" style="font-size: 18px;"><i class="icon-social-steam"></i>&nbsp;Login</button>
+                        {% if "steam_id" not in request.session %}
+                            <a href="{{ url_for('SteamLogin') }}?return={{ request.url.path }}"><button class="btn btn-light" type="button" style="font-size: 18px;"><i class="icon-social-steam"></i>&nbsp;Login</button>
+                        {% else %}
+                        <a href="{{ url_for('SteamLogout') }}"><button class="btn btn-light" type="button" style="font-size: 18px;"><i class="icon-logout"></i>&nbsp;Logout</button>
+                        {% endif %}
                     </a></li>
                 </ul>
         </div>
