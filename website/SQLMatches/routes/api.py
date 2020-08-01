@@ -23,6 +23,9 @@ DEALINGS IN THE SOFTWARE.
 
 from starlette.endpoints import HTTPEndpoint
 
+from webargs import fields
+from webargs_starlette import use_args
+
 from ..api import error_response, response
 from ..api.model_convertor import scoreboard_to_dict
 
@@ -43,8 +46,17 @@ class MatchAPI(HTTPEndpoint):
     async def post(self, request):
         pass
 
-    async def patch(self, request):
-        pass
-
     async def delete(self, request):
         pass
+
+
+class CreateMatchAPI(HTTPEndpoint):
+    @use_args({"team_1_name": fields.Str(min=1, max=64, required=True),
+               "team_2_name": fields.Str(min=1, max=64, required=True),
+               "team_1_side": fields.Int(required=True),
+               "team_2_side": fields.Int(required=True),
+               "map_name": fields.Str(min=1, max=24, required=True)})
+    async def post(self, request, kwargs):
+        match = await request.state.community.create_match(**kwargs)
+
+        return response({"match_id": match.match_id})

@@ -50,7 +50,18 @@ class Match:
         pass
 
     async def end(self):
-        pass
+        """ Sets match status to 0 """
+
+        query = scoreboard_total.update().values(
+            status=0
+        ).where(
+            and_(
+                scoreboard_total.c.match_id == self.match_id,
+                scoreboard_total.c.name == self.community_name
+            )
+        )
+
+        await Sessions.database.execute(query=query)
 
     async def scoreboard(self) -> ScoreboardModel:
         """
@@ -90,10 +101,12 @@ class Match:
         ]).select_from(
             scoreboard_total.join(
                 scoreboard,
-                and_(
-                    scoreboard_total.c.match_id == self.match_id,
-                    scoreboard_total.c.name == self.community_name
-                )
+                scoreboard.c.match_id == scoreboard_total.c.match_id
+            )
+        ).where(
+            and_(
+                scoreboard_total.c.match_id == self.match_id,
+                scoreboard_total.c.name == self.community_name
             )
         )
 

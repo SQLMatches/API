@@ -22,6 +22,7 @@ DEALINGS IN THE SOFTWARE.
 
 
 from ..templating import TEMPLATE
+from .api import error_response
 
 
 async def not_found(request, exc):
@@ -36,3 +37,11 @@ async def server_error(request, exc):
         "request": request,
         "error": exc
     })
+
+
+async def api_error(request, exc):
+    return error_response(
+        error=exc.messages,
+        status_code=exc.status_code,
+        headers=exc.headers
+    )

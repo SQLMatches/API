@@ -9,3 +9,5 @@ sqlalchemy
 aiohttp
 wtforms
 starlette-wtf
+webargs
+webargs-starlette

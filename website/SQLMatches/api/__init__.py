@@ -24,7 +24,7 @@ DEALINGS IN THE SOFTWARE.
 from starlette.responses import JSONResponse
 
 
-def error_response(error: str) -> JSONResponse:
+def error_response(error: str, **kwargs) -> JSONResponse:
     """
     Handles errors within the api.
 
@@ -34,7 +34,7 @@ def error_response(error: str) -> JSONResponse:
         Same of called expection.
     """
 
-    return JSONResponse({"data": None, "error": error})
+    return JSONResponse({"data": None, "error": error}, **kwargs)
 
 
 def response(data: dict) -> JSONResponse:

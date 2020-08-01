@@ -25,6 +25,10 @@ import typing
 
 from sqlalchemy.sql import select, and_, or_
 
+from secrets import token_urlsafe
+from datetime import datetime
+from uuid import uuid4
+
 from ..resources import Sessions
 from ..tables import community, scoreboard_total
 
@@ -32,8 +36,6 @@ from .exceptions import CommunityTaken, AlreadyCommunity, InvalidCommunity, \
     NoOwnership, InvalidAPIKey
 from .models import CommunityModel, MatchModel
 from .match import Match
-
-from secrets import token_urlsafe
 
 
 class Community:
@@ -49,10 +51,37 @@ class Community:
 
         self.community_name = community_name
 
-    async def create_match(self) -> Match:
+    async def create_match(self, team_1_name: str, team_2_name: str,
+                           team_1_side: int, team_2_side: int,
+                           map_name: str) -> Match:
         """
         Creates a match.
+
+        Returns
+        -------
+        Match
+            Used for interacting with matches.
         """
+
+        match_id = str(uuid4())
+
+        query = scoreboard_total.insert().values(
+            match_id=match_id,
+            team_1_name=team_1_name,
+            team_2_name=team_2_name,
+            team_1_side=team_1_side,
+            team_2_side=team_2_side,
+            map=map_name,
+            name=self.community_name,
+            team_1_score=0,
+            team_2_score=0,
+            status=1,
+            timestamp=datetime.now()
+        )
+
+        await Sessions.database.execute(query=query)
+
+        return self.match(match_id)
 
     def match(self, match_id) -> Match:
         """

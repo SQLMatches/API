@@ -24,6 +24,8 @@ DEALINGS IN THE SOFTWARE.
 from sqlalchemy import Table, MetaData, String, \
     Column, TIMESTAMP, ForeignKey, Integer, Boolean, create_engine
 
+from datetime import datetime
+
 
 metadata = MetaData()
 
@@ -79,7 +81,8 @@ scoreboard_total = Table(
     ),
     Column(
         "timestamp",
-        TIMESTAMP
+        TIMESTAMP,
+        default=datetime.now
     ),
     Column(
         "status",
@@ -91,8 +94,7 @@ scoreboard_total = Table(
     ),
     Column(
         "map",
-        String(length=24),
-        default=None
+        String(length=24)
     ),
     Column(
         "team_1_name",

@@ -24,13 +24,15 @@ DEALINGS IN THE SOFTWARE.
 from starlette.routing import Route, Mount
 from starlette.staticfiles import StaticFiles
 
+from webargs_starlette import WebargsHTTPException
+
 from .home import HomePage
 from .community import CommunityPage
 from .scoreboard import ScoreboardPage
 
-from .api import MatchAPI
+from .api import MatchAPI, CreateMatchAPI
 
-from .errors import server_error, not_found
+from .errors import server_error, not_found, api_error
 
 from .steam import SteamLogin, SteamValidate, SteamLogout
 
@@ -38,6 +40,7 @@ from ..resources import Config
 
 
 ERROR_HANDLERS = {
+    WebargsHTTPException: api_error,
     404: not_found,
     500: server_error
 }
@@ -57,6 +60,9 @@ ROUTES = [
         Route("/s/{match_id}", ScoreboardPage, name="ScoreboardPage")
     ]),
     Mount("/api", routes=[
-        Route("/match/{match_id}", MatchAPI)
+        Mount("/match", routes=[
+            Route("/create", CreateMatchAPI),
+            Route("/{match_id}", MatchAPI)
+        ])
     ])
 ]
