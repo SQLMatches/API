@@ -26,16 +26,15 @@ from starlette.endpoints import HTTPEndpoint
 from ..api import error_response, response
 from ..api.model_convertor import scoreboard_to_dict
 
-from ..community import Community
 from ..community.exceptions import InvalidMatchID
 
 
 class MatchAPI(HTTPEndpoint):
     async def get(self, request):
         try:
-            scoreboard = await Community(
-                request.path_params["community"]
-            ).match(request.path_params["match_id"]).scoreboard()
+            scoreboard = await request.state.community.match(
+                request.path_params["match_id"]
+            ).scoreboard()
         except InvalidMatchID:
             return error_response("InvalidMatchID")
         else:
@@ -45,4 +44,7 @@ class MatchAPI(HTTPEndpoint):
         pass
 
     async def patch(self, request):
+        pass
+
+    async def delete(self, request):
         pass

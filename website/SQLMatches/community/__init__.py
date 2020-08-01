@@ -29,7 +29,7 @@ from ..resources import Sessions
 from ..tables import community, scoreboard_total
 
 from .exceptions import CommunityTaken, AlreadyCommunity, InvalidCommunity, \
-    NoOwnership
+    NoOwnership, InvalidAPIKey
 from .models import CommunityModel, MatchModel
 from .match import Match
 
@@ -48,6 +48,11 @@ class Community:
         """
 
         self.community_name = community_name
+
+    async def create_match(self) -> Match:
+        """
+        Creates a match.
+        """
 
     def match(self, match_id) -> Match:
         """
@@ -179,6 +184,32 @@ class Community:
         await Sessions.database.execute(query=query)
 
 
+async def api_key_to_community(api_key: str) -> Community:
+    """
+    Converts API key to community name.
+
+    Raises
+    ------
+    InvalidAPIKey
+
+    Returns
+    -------
+    str
+        Community name
+    """
+
+    query = select([community.c.name]).select_from(
+        community
+    ).where(community.c.api_key == api_key)
+
+    row = await Sessions.database.fetch_val(query=query)
+
+    if row:
+        return Community(row)
+    else:
+        raise InvalidAPIKey()
+
+
 async def get_community_name(steam_id: str) -> str:
     """
     Gets community name from owners steamID.
@@ -235,6 +266,13 @@ async def create_community(steam_id: str, community_name: str,
         Used for interacting with a community
     str
         Edit name of community
+
+    Raises
+    ------
+    CommunityTaken
+        Raised when community name is taken.
+    AlreadyCommunity
+        Raised when owner already owns a community.
     """
 
     community_name = community_name.strip().replace(" ", "-")

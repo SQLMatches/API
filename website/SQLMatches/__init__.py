@@ -35,6 +35,7 @@ from .tables import create_tables
 from .resources import Sessions, Config
 from .settings import DatabaseSettings
 from .routes import ROUTES, ERROR_HANDLERS
+from .http_middleware import APIMiddleware
 
 
 __version__ = "0.0.1"
@@ -95,6 +96,9 @@ class SQLMatches(Starlette):
         )
         middlewares.append(
             Middleware(CSRFProtectMiddleware, csrf_secret=csrf_secret)
+        )
+        middlewares.append(
+            Middleware(APIMiddleware)
         )
 
         if "routes" in kwargs:

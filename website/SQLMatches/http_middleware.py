@@ -21,49 +21,25 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-class CommunityTaken(Exception):
-    """
-    Raised when community name is taken.
-    """
+from starlette.middleware.base import BaseHTTPMiddleware
 
-    pass
-
-
-class AlreadyCommunity(Exception):
-    """
-    Raised when user already owns a community.
-    """
-
-    pass
+from .api import error_response
+from .community import api_key_to_community
+from .community.exceptions import InvalidAPIKey
 
 
-class InvalidCommunity(Exception):
-    """
-    Raised when community ID doesn't exist.
-    """
+class APIMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        if "/api/" in request.url.path and \
+                "/c/" not in request.url.path \
+                and "api_key" in request.query_params:
+            try:
+                community = await api_key_to_community(
+                    request.query_params["api_key"]
+                )
+            except InvalidAPIKey:
+                return error_response("InvalidAPIKey")
+            else:
+                request.state.community = community
 
-    pass
-
-
-class NoOwnership(Exception):
-    """
-    Raised when steam id doesn't own any communties.
-    """
-
-    pass
-
-
-class InvalidMatchID(Exception):
-    """
-    Raised when match ID is invalid.
-    """
-
-    pass
-
-
-class InvalidAPIKey(Exception):
-    """
-    Raised when API key is invalid.
-    """
-
-    pass
+        return await call_next(request)

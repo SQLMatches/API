@@ -56,8 +56,8 @@ def scoreboard_to_dict(model: ScoreboardModel) -> dict:
         "team_2": []
     }
 
-    team_1_append = scoreboard_data["team_1"]
-    team_2_append = scoreboard_data["team_2"]
+    team_1_append = scoreboard_data["team_1"].append
+    team_2_append = scoreboard_data["team_2"].append
 
     for player in chain(model.team_1(), model.team_2()):
         if player.team == 0:

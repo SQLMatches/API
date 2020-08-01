@@ -56,7 +56,7 @@ ROUTES = [
         Route("/{page:int}", CommunityPage, name="CommunityPagePagination"),
         Route("/s/{match_id}", ScoreboardPage, name="ScoreboardPage")
     ]),
-    Mount("/api/{api_key}", routes=[
+    Mount("/api", routes=[
         Route("/match/{match_id}", MatchAPI)
     ])
 ]
