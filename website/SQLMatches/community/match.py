@@ -21,8 +21,6 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-import typing
-
 from sqlalchemy.sql import select, and_
 
 from ..tables import scoreboard_total, scoreboard
