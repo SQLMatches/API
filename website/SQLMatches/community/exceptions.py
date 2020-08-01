@@ -51,3 +51,11 @@ class NoOwnership(Exception):
     """
 
     pass
+
+
+class InvalidMatchID(Exception):
+    """
+    Raised when match ID is invalid.
+    """
+
+    pass

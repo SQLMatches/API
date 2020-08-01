@@ -22,12 +22,29 @@ DEALINGS IN THE SOFTWARE.
 
 
 from starlette.endpoints import HTTPEndpoint
+from starlette.responses import RedirectResponse
 from ..templating import TEMPLATE
+
+from ..community import Community
+from ..community.exceptions import InvalidMatchID
 
 
 class ScoreboardPage(HTTPEndpoint):
     async def get(self, request):
-        return TEMPLATE.TemplateResponse(
-            "scoreboard.html",
-            {"request": request}
-        )
+        try:
+            scoreboard = await Community(
+                request.path_params["community"]
+            ).match(request.path_params["scoreboard"]).scoreboard()
+        except InvalidMatchID:
+            return RedirectResponse(
+                request.url_for(
+                    "CommunityPage",
+                    community=request.path_params["community"]
+                )
+            )
+        else:
+            return TEMPLATE.TemplateResponse(
+                "scoreboard.html", {
+                    "request": request,
+                    "scoreboard": scoreboard
+                })

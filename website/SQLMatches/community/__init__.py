@@ -31,6 +31,7 @@ from ..tables import community, scoreboard_total
 from .exceptions import CommunityTaken, AlreadyCommunity, InvalidCommunity, \
     NoOwnership
 from .models import CommunityModel, MatchModel
+from .match import Match
 
 from secrets import token_urlsafe
 
@@ -47,6 +48,18 @@ class Community:
         """
 
         self.community_name = community_name
+
+    def match(self, match_id) -> Match:
+        """
+        Handles interactions with a match
+
+        Paramters
+        ---------
+        match_id: str
+            ID of match
+        """
+
+        return Match(match_id, self.community_name)
 
     async def exists(self) -> bool:
         """
@@ -78,6 +91,8 @@ class Community:
         ------
         MatchModel
             Holds basic match details.
+        Match
+            Used for interacting with a match.
         """
 
         like_search = "%{}%".format(search) if search else ""
@@ -91,7 +106,9 @@ class Community:
             scoreboard_total.c.team_1_name,
             scoreboard_total.c.team_2_name,
             scoreboard_total.c.team_1_score,
-            scoreboard_total.c.team_2_score
+            scoreboard_total.c.team_2_score,
+            scoreboard_total.c.team_1_side,
+            scoreboard_total.c.team_2_side
         ]).select_from(
             scoreboard_total
         ).where(
@@ -109,7 +126,7 @@ class Community:
         ).limit(limit).offset((page - 1) * limit if page > 1 else 0)
 
         async for row in Sessions.database.iterate(query=query):
-            yield MatchModel(row)
+            yield MatchModel(row), self.match(row["match_id"])
 
     async def get(self) -> CommunityModel:
         """

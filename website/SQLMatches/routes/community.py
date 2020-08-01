@@ -40,7 +40,7 @@ class CommunityPage(HTTPEndpoint):
         except InvalidCommunity:
             return RedirectResponse("/")
         else:
-            matches = [match async for match in community.matches(
+            matches = [data async for data, _ in community.matches(
                 page=request.path_params["page"] if "page" in
                 request.path_params else 1
             )]

@@ -27,8 +27,9 @@ from ..templating import TEMPLATE
 
 from ..forms.home import CreatePage
 
-from ..community import create_community, get_community_name, Community
-from ..community.exceptions import NoOwnership
+from ..community import get_community_name, create_community
+from ..community.exceptions import NoOwnership, CommunityTaken, \
+    AlreadyCommunity
 
 
 class HomePage(HTTPEndpoint):
@@ -58,14 +59,16 @@ class HomePage(HTTPEndpoint):
         if "steam_id" not in request.session or not form.validate_on_submit():
             return RedirectResponse("/", status_code=303)
 
-        if await Community(form.name.data).exists():
-            return RedirectResponse("/?taken=True", status_code=303)
-        else:
+        try:
             community = await create_community(
                 steam_id=request.session["steam_id"],
                 community_name=form.name.data
             )
-
+        except CommunityTaken:
+            return RedirectResponse("/?taken=True", status_code=303)
+        except AlreadyCommunity:
+            return RedirectResponse("/", status_code=303)
+        else:
             return RedirectResponse(
                 request.url_for(
                     "CommunityPage",

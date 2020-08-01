@@ -11,7 +11,7 @@
 {% block content %}
         <div class="card text-light scoreboard-card">
             <div class="card-body scoreboard-body">
-                <h4 class="text-center card-title" style="background: rgb(91,118,141); background: linear-gradient(90deg, rgba(91,118,141,1) 0%, rgba(10,47,78,1) 100%);margin: 0px;">Team Ward</h4>
+                <h4 class="text-center card-title" style="background: {% if scoreboard.team_1_side == 0 %}rgb(91,118,141); background: linear-gradient(90deg, rgba(91,118,141,1) 0%, rgba(10,47,78,1) 100%){% else %}rgb(172,155,102); background: linear-gradient(90deg, rgba(172,155,102,1) 0%, rgba(99,79,15,1) 100%){% endif %};margin: 0px;">Team {{ scoreboard.team_1_name }}</h4>
                 <div class="table-responsive text-light scoreboard">
                     <table class="table table-hover">
                         <thead class="text-light">
@@ -29,76 +29,46 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="text-light">
-                                <td>Ward</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                            </tr>
-                            <tr class="text-light">
-                                <td>Ward</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                            </tr>
-                            <tr class="text-light">
-                                <td>Ward</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                            </tr>
-                            <tr class="text-light">
-                                <td>Ward</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                            </tr>
-                            <tr class="text-light">
-                                <td>Ward</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                            </tr>
+                            {% for player in scoreboard.team_1() %}
+                                <tr class="text-light" style="cursor: pointer;" onclick="location.href = 'https://steamcommunity.com/profiles/{{ player.steam_id }}';">
+                                    <td>{{ player.name }}</td>
+                                    <td class="text-center">{{ player.kills }}</td>
+                                    <td class="text-center">{{ player.assists }}</td>
+                                    <td class="text-center">{{ player.deaths }}</td>
+                                    <td class="text-center">{{ player.kdr }}</td>
+                                    <td class="text-center">{{ player.hs_percentage }}%</td>
+                                    <td class="text-center">{{ player.hit_percentage }}%</td>
+                                    <td class="text-center">{{ player.mvps }}</td>
+                                    <td class="text-center">{{ player.score }}</td>
+                                    <td class="text-center">{{ player.ping }}</td>
+                                </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
         <div class="text-center" style="margin: 25px 0;">
-            <h1 class="text-light"><span class="won">16</span>:<span class="lost">9</span></h1><button class="btn btn-success btn-sm" type="button"><i class="icon-cloud-download"></i>&nbsp;Download</button></div>
+            <h1 class="text-light">
+                {% if scoreboard.status == 0 and scoreboard.team_1_score != scoreboard.team_2_score %}
+                    {% if scoreboard.team_1_score > scoreboard.team_2_score %}
+                        <span class="won">{{ scoreboard.team_1_score }}</span>
+                        :
+                        <span class="lost">{{ scoreboard.team_2_score }}</span>
+                    {% else %}
+                        <span class="lost">{{ scoreboard.team_1_score }}</span>
+                        :
+                        <span class="won">{{ scoreboard.team_2_score }}</span>
+                    {% endif %}
+                {% else %}
+                    <span>{{ scoreboard.team_1_score }}</span>:<span>{{ scoreboard.team_2_score }}</span>
+                {% endif %}
+            </h1>
+            <button class="btn btn-success btn-sm" type="button"><i class="icon-cloud-download"></i>&nbsp;Download</button>
+        </div>
         <div class="card text-light scoreboard-card">
             <div class="card-body scoreboard-body">
-                <h4 class="text-center card-title" style="background: rgb(172,155,102); background: linear-gradient(90deg, rgba(172,155,102,1) 0%, rgba(99,79,15,1) 100%);margin: 0px;">Team Ward</h4>
+                <h4 class="text-center card-title" style="background: {% if scoreboard.team_2_side == 0 %}rgb(91,118,141); background: linear-gradient(90deg, rgba(91,118,141,1) 0%, rgba(10,47,78,1) 100%){% else %}rgb(172,155,102); background: linear-gradient(90deg, rgba(172,155,102,1) 0%, rgba(99,79,15,1) 100%){% endif %};margin: 0px;">Team {{ scoreboard.team_2_name }}</h4>
                 <div class="table-responsive text-light scoreboard">
                     <table class="table table-hover">
                         <thead class="text-light">
@@ -116,66 +86,20 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="text-light">
-                                <td>Ward</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                            </tr>
-                            <tr class="text-light">
-                                <td>Ward</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                            </tr>
-                            <tr class="text-light">
-                                <td>Ward</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                            </tr>
-                            <tr class="text-light">
-                                <td>Ward</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                            </tr>
-                            <tr class="text-light">
-                                <td>Ward</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                                <td class="text-center">999</td>
-                            </tr>
+                            {% for player in scoreboard.team_2() %}
+                                <tr class="text-light" style="cursor: pointer;" onclick="location.href = 'https://steamcommunity.com/profiles/{{ player.steam_id }}';">
+                                    <td>{{ player.name }}</td>
+                                    <td class="text-center">{{ player.kills }}</td>
+                                    <td class="text-center">{{ player.assists }}</td>
+                                    <td class="text-center">{{ player.deaths }}</td>
+                                    <td class="text-center">{{ player.kdr }}</td>
+                                    <td class="text-center">{{ player.hs_percentage }}%</td>
+                                    <td class="text-center">{{ player.hit_percentage }}%</td>
+                                    <td class="text-center">{{ player.mvps }}</td>
+                                    <td class="text-center">{{ player.score }}</td>
+                                    <td class="text-center">{{ player.ping }}</td>
+                                </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
