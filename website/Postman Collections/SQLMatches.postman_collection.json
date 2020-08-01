@@ -1,0 +1,59 @@
+{
+	"info": {
+		"_postman_id": "6d6e03a8-d43f-48d7-852b-d4574953517c",
+		"name": "SQLMatches",
+		"description": "Tests to run on SQLMatches API.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Match",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"team_1_name\": \"Mike\",\r\n    \"team_2_name\": \"George\",\r\n    \"team_1_side\": 0,\r\n    \"team_2_side\": 1,\r\n    \"map_name\": \"de_mirage\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/match/create/?api_key={{API_KEY}}",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"match",
+						"create",
+						""
+					],
+					"query": [
+						{
+							"key": "api_key",
+							"value": "{{API_KEY}}"
+						}
+					]
+				},
+				"description": "Creates a match"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"id": "a1f5ed25-f229-4802-8b3a-de7717399fa5",
+			"key": "API_KEY",
+			"value": "XZY5lhuK3ahWZIjRbWT9jRYLoFyP58OS"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
