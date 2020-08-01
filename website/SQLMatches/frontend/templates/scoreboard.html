@@ -1,5 +1,7 @@
 {% extends 'site_elements/base.html' %}
 
+{% block description %}Team {{ scoreboard.team_1_name }} ({{ scoreboard.team_1_score }}) vs Team {{ scoreboard.team_2_name }} ({{ scoreboard.team_2_score }}) | Map: {{ scoreboard.map }} | Match ID: {{ scoreboard.match_id }}{% endblock %}
+
 {% block title %}Home{% endblock %}
 
 {% block nav_title %}

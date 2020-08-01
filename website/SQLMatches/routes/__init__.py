@@ -28,6 +28,8 @@ from .home import HomePage
 from .community import CommunityPage
 from .scoreboard import ScoreboardPage
 
+from .api import MatchAPI
+
 from .errors import server_error, not_found
 
 from .steam import SteamLogin, SteamValidate, SteamLogout
@@ -52,6 +54,9 @@ ROUTES = [
     Mount("/c/{community}", routes=[
         Route("/", CommunityPage, name="CommunityPage"),
         Route("/{page:int}", CommunityPage, name="CommunityPagePagination"),
-        Route("/s/{scoreboard}", ScoreboardPage, name="ScoreboardPage")
+        Route("/s/{match_id}", ScoreboardPage, name="ScoreboardPage")
     ]),
+    Mount("/api/{api_key}", routes=[
+        Route("/match/{match_id}", MatchAPI)
+    ])
 ]

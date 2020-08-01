@@ -33,7 +33,13 @@ setup(
     author_email="wardpearce@protonmail.com",
     install_requires=get_requirements(),
     license="GPL v3",
-    packages=["SQLMatches"],
+    packages=[
+        "SQLMatches",
+        "SQLMatches.api",
+        "SQLMatches.community",
+        "SQLMatches.forms",
+        "SQLMatches.routes"
+    ],
     python_requires=">=3.6",
     include_package_data=True,
     zip_safe=False

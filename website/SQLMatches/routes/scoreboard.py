@@ -34,7 +34,7 @@ class ScoreboardPage(HTTPEndpoint):
         try:
             scoreboard = await Community(
                 request.path_params["community"]
-            ).match(request.path_params["scoreboard"]).scoreboard()
+            ).match(request.path_params["match_id"]).scoreboard()
         except InvalidMatchID:
             return RedirectResponse(
                 request.url_for(
