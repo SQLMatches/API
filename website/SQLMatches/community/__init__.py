@@ -61,6 +61,17 @@ class Community:
 
         return Match(match_id, self.community_name)
 
+    async def regenerate(self) -> None:
+        """
+        Regenerates API key.
+        """
+
+        query = community.update().values(
+            api_key=token_urlsafe(24)
+        ).where(community.c.name == self.community_name)
+
+        await Sessions.database.execute(query=query)
+
     async def exists(self) -> bool:
         """
         Checks if community exists with name.

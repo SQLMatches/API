@@ -14,9 +14,16 @@
                 <div class="card-body">
                     <h4 class="card-title">Owner Panel</h4>
                     <p>API Key:&nbsp;<span class="key-hidden"><br>{{ base_details.api_key }}<br></span></p>
-                    <p class="text-danger" style="font-size: 10px;">NEVER SHARE YOUR API KEY WITH ANYONE, MISS USING OUR API WILL RESULT IN A PERMANENT BAN!</p>
-                    <button class="btn btn-warning btn-sm" type="button"><i class="icon-fire"></i>&nbsp;Regenerate API Key</button>
-                    <button class="btn btn-danger btn-sm" type="button"><i class="icon-exclamation"></i>&nbsp;Disable Page <span style="font-size: 0.7em;">(this action can NOT be undone.)</span></button>
+                    <p class="text-danger" style="font-size: 10px; margin-bottom: 0;">NEVER SHARE YOUR API KEY WITH ANYONE, MISS USING OUR API WILL RESULT IN A PERMANENT BAN!</p>
+                    <a href="#">Check out our setup guide & API documentation here.</a>
+                    <div class="d-xl-flex justify-content-xl-center" style="margin-top: 15px;">
+                        <form action="{{ request.url_for('CommunityPage', community=request.path_params['community']) }}" method="POST">
+                            <button class="btn btn-warning btn-sm" type="submit"><i class="icon-fire"></i>&nbsp;Regenerate API Key</button>
+                        </form>
+                        <form>
+                            <button class="btn btn-danger btn-sm" type="button"><i class="icon-exclamation"></i>&nbsp;Disable Page <span style="font-size: 0.7em;">(this action can NOT be undone.)</span></button>
+                        </form>
+                    </div>
                 </div>
             </div>
         {% endif %}
