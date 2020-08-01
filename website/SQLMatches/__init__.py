@@ -40,11 +40,27 @@ from .routes import ROUTES, ERROR_HANDLERS
 __version__ = "0.0.1"
 
 
+MAP_IMAGES = {
+    "de_austria": "austria.jpg",
+    "de_cache": "cache.jpg",
+    "de_canals": "canals.jpg",
+    "de_cbble": "cbble.jpg",
+    "de_dust": "dust.jpg",
+    "de_dust2": "dust2.jpg",
+    "de_inferno": "inferno.jpg",
+    "de_mirage": "mirage.jpg",
+    "de_nuke": "nuke.jpg",
+    "de_overpass": "overpass.jpg",
+    "de_train": "train.jpg",
+}
+
+
 class SQLMatches(Starlette):
     def __init__(self, database_settings: DatabaseSettings,
                  friendly_url: str,
                  secret_key: str = token_urlsafe(),
                  csrf_secret: str = token_urlsafe(),
+                 map_images: dict = MAP_IMAGES,
                  **kwargs) -> None:
         """
         SQLMatches server.
@@ -57,6 +73,8 @@ class SQLMatches(Starlette):
             Optionally pass your own url safe secret key.
         secret_key: str
             Optionally pass your own url safe secret key.
+        map_images: dict
+            Key as actual map name, value as image name.
         """
 
         startup_tasks = [self._startup]
@@ -93,6 +111,7 @@ class SQLMatches(Starlette):
             friendly_url += "/"
 
         Config.url = friendly_url
+        Config.map_images = map_images
 
         database_url = "://{}:{}@{}:{}/{}?charset=utf8mb4".format(
             database_settings.username,

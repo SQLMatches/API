@@ -28,6 +28,8 @@ from ..templating import TEMPLATE
 from ..community import Community
 from ..community.exceptions import InvalidCommunity
 
+from ..resources import Config
+
 
 class CommunityPage(HTTPEndpoint):
     async def get(self, request):
@@ -38,10 +40,17 @@ class CommunityPage(HTTPEndpoint):
         except InvalidCommunity:
             return RedirectResponse("/")
         else:
+            matches = [match async for match in community.matches(
+                page=request.path_params["page"] if "page" in
+                request.path_params else 1
+            )]
+
             return TEMPLATE.TemplateResponse(
                 "community.html",
                 {
                     "request": request,
                     "base_details": base_details,
+                    "matches": matches,
+                    "map_images": Config.map_images
                 }
             )

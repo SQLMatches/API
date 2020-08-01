@@ -28,6 +28,17 @@ from sqlalchemy import Table, MetaData, String, \
 metadata = MetaData()
 
 
+bans = Table(
+    "bans",
+    metadata,
+    Column(
+        "steam_id",
+        String(length=64),
+        primary_key=True
+    )
+)
+
+
 community = Table(
     "community",
     metadata,
@@ -55,6 +66,11 @@ community = Table(
 # Status codes
 # 0 - Finished
 # 1 - Live
+
+# Demo status codes
+# 0 - No demo
+# 1 - Processing
+# 2 - Download
 scoreboard_total = Table(
     "scoreboard_total",
     metadata,
@@ -74,6 +90,10 @@ scoreboard_total = Table(
     ),
     Column(
         "status",
+        Integer
+    ),
+    Column(
+        "demo_status",
         Integer
     ),
     Column(

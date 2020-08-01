@@ -40,3 +40,4 @@ class Config:
     templates_dir = os.path.join(frontend_dir, "templates")
     steam_openid_url = "https://steamcommunity.com/openid/login"
     url: str
+    map_images: str

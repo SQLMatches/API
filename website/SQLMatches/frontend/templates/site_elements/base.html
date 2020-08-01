@@ -19,7 +19,11 @@
 <body>
     <!-- Start: Navigation Clean -->
     <nav class="navbar navbar-light navbar-expand-md navigation-clean">
-        <div class="container"><a class="navbar-brand text-light" href="{{ url_for('HomePage') }}">SQLMatches</a><button data-toggle="collapse" class="navbar-toggler" data-target="#collapse"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon" style="border-style: none;"></span></button>
+        <div class="container">
+            {% block nav_title %}
+                <a class="navbar-brand text-light" href="{{ url_for('HomePage') }}">SQLMatches</a>
+            {% endblock %}
+            <button data-toggle="collapse" class="navbar-toggler" data-target="#collapse"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon" style="border-style: none;"></span></button>
             <div
                 class="collapse navbar-collapse" id="collapse">
                 <ul class="nav navbar-nav ml-auto">

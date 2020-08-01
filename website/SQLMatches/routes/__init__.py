@@ -51,6 +51,7 @@ ROUTES = [
     Mount("/assets", StaticFiles(directory=Config.assets_dir), name="assets"),
     Mount("/c/{community}", routes=[
         Route("/", CommunityPage, name="CommunityPage"),
-        Route("/{scoreboard_id}", ScoreboardPage, name="ScoreboardPage")
+        Route("/{page:int}", CommunityPage, name="CommunityPagePagination"),
+        Route("/s/{scoreboard}", ScoreboardPage, name="ScoreboardPage")
     ]),
 ]

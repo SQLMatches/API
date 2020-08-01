@@ -2,6 +2,12 @@
 
 {% block title %}Home{% endblock %}
 
+{% block nav_title %}
+    <a class="navbar-brand text-light" href="{{ request.url_for('CommunityPage', community=request.path_params['community']) }}">
+        {{ request.path_params['community'] }} <span style="font-size: 10px;">&nbsp;hosted by SQLMatches</span>
+    </a>
+{% endblock %}
+
 {% block content %}
         <div class="card text-light scoreboard-card">
             <div class="card-body scoreboard-body">

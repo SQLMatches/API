@@ -30,4 +30,12 @@ class CommunityModel:
 
 class MatchModel:
     def __init__(self, data) -> None:
-        pass
+        self.match_id = data["match_id"]
+        self.timestamp = data["timestamp"]
+        self.status = data["status"]
+        self.demo_status = data["demo_status"]
+        self.map = data["map"]
+        self.team_1_name = data["team_1_name"]
+        self.team_2_name = data["team_2_name"]
+        self.team_1_score = data["team_1_score"]
+        self.team_2_score = data["team_2_score"]

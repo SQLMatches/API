@@ -21,10 +21,12 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-from sqlalchemy.sql import select
+import typing
+
+from sqlalchemy.sql import select, and_, or_
 
 from ..resources import Sessions
-from ..tables import community
+from ..tables import community, scoreboard_total
 
 from .exceptions import CommunityTaken, AlreadyCommunity, InvalidCommunity, \
     NoOwnership
@@ -57,8 +59,57 @@ class Community:
 
         return await Sessions.database.fetch_val(query=query) > 0
 
-    async def matches(self) -> MatchModel:
-        pass
+    async def matches(self, search: str = None,
+                      page: int = 1, limit: int = 5
+                      ) -> typing.AsyncGenerator[typing.Any, None]:
+        """
+        Lists matches.
+
+        Paramters
+        ---------
+        search: str
+            Defaults to None, parameters to search.
+        page: int
+            What page we on booiiiiii.
+        limit: int
+            Max amount of matches to display at once.
+
+        Yields
+        ------
+        MatchModel
+            Holds basic match details.
+        """
+
+        like_search = "%{}%".format(search) if search else ""
+
+        query = select([
+            scoreboard_total.c.match_id,
+            scoreboard_total.c.timestamp,
+            scoreboard_total.c.status,
+            scoreboard_total.c.demo_status,
+            scoreboard_total.c.map,
+            scoreboard_total.c.team_1_name,
+            scoreboard_total.c.team_2_name,
+            scoreboard_total.c.team_1_score,
+            scoreboard_total.c.team_2_score
+        ]).select_from(
+            scoreboard_total
+        ).where(
+            or_(
+                scoreboard_total.c.name == self.community_name,
+                and_(
+                    scoreboard_total.c.match_id == search,
+                    scoreboard_total.c.map.like(like_search),
+                    scoreboard_total.c.team_1_name.like(like_search),
+                    scoreboard_total.c.team_2_name.like(like_search),
+                )
+            )
+        ).order_by(
+            scoreboard_total.c.timestamp.desc()
+        ).limit(limit).offset((page - 1) * limit if page > 1 else 0)
+
+        async for row in Sessions.database.iterate(query=query):
+            yield MatchModel(row)
 
     async def get(self) -> CommunityModel:
         """
