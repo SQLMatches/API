@@ -53,6 +53,7 @@ class Community:
 
     async def create_match(self, team_1_name: str, team_2_name: str,
                            team_1_side: int, team_2_side: int,
+                           team_1_score: int, team_2_score: int,
                            map_name: str) -> Match:
         """
         Creates a match.
@@ -73,8 +74,8 @@ class Community:
             team_2_side=team_2_side,
             map=map_name,
             name=self.community_name,
-            team_1_score=0,
-            team_2_score=0,
+            team_1_score=team_1_score,
+            team_2_score=team_2_score,
             status=1,
             timestamp=datetime.now()
         )

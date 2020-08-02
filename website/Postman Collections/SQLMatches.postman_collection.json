@@ -13,7 +13,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"team_1_name\": \"Mike\",\r\n    \"team_2_name\": \"George\",\r\n    \"team_1_side\": 0,\r\n    \"team_2_side\": 1,\r\n    \"map_name\": \"de_mirage\"\r\n}",
+					"raw": "{\r\n    \"team_1_name\": \"Mike\",\r\n    \"team_2_name\": \"George\",\r\n    \"team_1_side\": 0,\r\n    \"team_2_side\": 1,\r\n    \"team_1_score\": 2,\r\n    \"team_2_score\": 1,\r\n    \"map_name\": \"de_mirage\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -50,7 +50,7 @@
 	],
 	"variable": [
 		{
-			"id": "a1f5ed25-f229-4802-8b3a-de7717399fa5",
+			"id": "22639080-ed87-404e-8e75-c55948b37d29",
 			"key": "API_KEY",
 			"value": "XZY5lhuK3ahWZIjRbWT9jRYLoFyP58OS"
 		}

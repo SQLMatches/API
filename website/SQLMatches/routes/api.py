@@ -55,6 +55,8 @@ class CreateMatchAPI(HTTPEndpoint):
                "team_2_name": fields.Str(min=1, max=64, required=True),
                "team_1_side": fields.Int(required=True),
                "team_2_side": fields.Int(required=True),
+               "team_1_score": fields.Int(required=True),
+               "team_2_score": fields.Int(required=True),
                "map_name": fields.Str(min=1, max=24, required=True)})
     async def post(self, request, kwargs):
         match = await request.state.community.create_match(**kwargs)
