@@ -37,6 +37,7 @@ class DatabaseSettings:
                 ) -> None:
         """
         A class for creating a URL for the Database.
+
         Attributes
         ----------
         username: str
@@ -70,3 +71,20 @@ class DatabaseSettings:
             raise UnSupportedEngine()
 
         Config.db_engine = engine
+
+
+class B2Settings:
+    def __init__(self, key_id: str, application_key: str) -> None:
+        """
+        Stores b2 settings.
+
+        Attributes
+        ----------
+        key_id: str
+            B2 key ID.
+        application_key: str
+            B2 app key.
+        """
+
+        self.key_id = key_id
+        self.application_key = application_key

@@ -13,3 +13,4 @@ wtforms
 starlette-wtf
 webargs
 webargs-starlette
+aiob2

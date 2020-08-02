@@ -31,9 +31,11 @@ from secrets import token_urlsafe
 from databases import Database
 from aiohttp import ClientSession
 
+import aiob2
+
 from .tables import create_tables
 from .resources import Sessions, Config
-from .settings import DatabaseSettings
+from .settings import DatabaseSettings, B2Settings
 from .routes import ROUTES, ERROR_HANDLERS
 from .http_middleware import APIMiddleware
 
@@ -58,6 +60,7 @@ MAP_IMAGES = {
 
 class SQLMatches(Starlette):
     def __init__(self, database_settings: DatabaseSettings,
+                 b2_settings: B2Settings,
                  friendly_url: str,
                  secret_key: str = token_urlsafe(),
                  csrf_secret: str = token_urlsafe(),
@@ -129,6 +132,11 @@ class SQLMatches(Starlette):
             database_settings.engine + database_url
         )
 
+        Sessions.aiob2 = aiob2.client(
+            b2_settings.key_id,
+            b2_settings.application_key
+        )
+
         create_tables(
             "{}+{}{}".format(
                 database_settings.engine,
@@ -153,6 +161,7 @@ class SQLMatches(Starlette):
         """
 
         await Sessions.database.connect()
+        await Sessions.aiob2.connect()
         Sessions.aiohttp = ClientSession()
 
     async def _shutdown(self) -> None:
@@ -161,4 +170,5 @@ class SQLMatches(Starlette):
         """
 
         await Sessions.database.disconnect()
+        await Sessions.aiob2.close()
         await Sessions.aiohttp.close()

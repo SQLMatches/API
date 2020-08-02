@@ -22,6 +22,7 @@ DEALINGS IN THE SOFTWARE.
 
 
 import os
+import aiob2
 from aiohttp import ClientSession
 from databases import Database
 
@@ -29,6 +30,7 @@ from databases import Database
 class Sessions:
     database: Database
     aiohttp: ClientSession
+    aiob2: aiob2.client
 
 
 class Config:

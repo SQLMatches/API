@@ -31,7 +31,7 @@ def error_response(error: str, **kwargs) -> JSONResponse:
     Paramters
     ---------
     error_code: str
-        Same of called expection.
+        If expection, just use the name of that.
     """
 
     return JSONResponse({"data": None, "error": error}, **kwargs)
