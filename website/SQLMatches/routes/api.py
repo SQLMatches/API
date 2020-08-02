@@ -47,7 +47,11 @@ class MatchAPI(HTTPEndpoint):
         pass
 
     async def delete(self, request):
-        pass
+        await request.state.community.match(
+            request.path_params["match_id"]
+        ).end()
+
+        return response(True)
 
 
 class CreateMatchAPI(HTTPEndpoint):

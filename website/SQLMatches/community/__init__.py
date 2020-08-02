@@ -77,6 +77,7 @@ class Community:
             team_1_score=team_1_score,
             team_2_score=team_2_score,
             status=1,
+            demo_status=0,
             timestamp=datetime.now()
         )
 
