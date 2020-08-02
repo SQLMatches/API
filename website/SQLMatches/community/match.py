@@ -23,6 +23,9 @@ DEALINGS IN THE SOFTWARE.
 
 from sqlalchemy.sql import select, and_
 
+from asyncio import sleep
+
+from ..on_conflict import player_insert_on_conflict_update
 from ..tables import scoreboard_total, scoreboard
 from ..resources import Sessions
 
@@ -46,47 +49,94 @@ class Match:
         self.match_id = match_id
         self.community_name = community_name
 
+    async def exists(self) -> bool:
+        """
+        Returns a bool depending if the match
+        exists or not.
+        """
+
+        query = scoreboard_total.count().where(
+            and_(
+                scoreboard_total.c.match_id == self.match_id,
+                scoreboard_total.c.name == self.community_name
+            )
+        )
+
+        return await Sessions.database.fetch_val(query=query) > 0
+
     async def update(self, team_1_score: int, team_2_score: int,
+                     players: list = None,
                      team_1_side: int = None, team_2_side: int = None,
-                     end: bool = False):
+                     end: bool = False) -> None:
         """
         Updates match details.
+
+        Raises
+        ------
+        InvalidMatchID
+            Raised when match ID is invalid.
         """
 
-        team_sides = {}
-        if team_1_side:
-            team_sides["team_1_side"] = team_1_side
+        if await self.exists():
+            team_sides = {}
+            if team_1_side:
+                team_sides["team_1_side"] = team_1_side
 
-        if team_2_side:
-            team_sides["team_2_side"] = team_2_side
+            if team_2_side:
+                team_sides["team_2_side"] = team_2_side
 
-        query = scoreboard_total.update().values(
-            team_1_score=team_1_score,
-            team_2_score=team_2_score,
-            status=0 if end else 1,
-            **team_sides
-        ).where(
-            and_(
-                scoreboard_total.c.match_id == self.match_id,
-                scoreboard_total.c.name == self.community_name
+            query = scoreboard_total.update().values(
+                team_1_score=team_1_score,
+                team_2_score=team_2_score,
+                status=0 if end else 1,
+                **team_sides
+            ).where(
+                and_(
+                    scoreboard_total.c.match_id == self.match_id,
+                    scoreboard_total.c.name == self.community_name
+                )
             )
-        )
 
-        await Sessions.database.execute(query=query)
+            await Sessions.database.execute(query=query)
 
-    async def end(self):
-        """ Sets match status to 0 """
+            if players:
+                query = player_insert_on_conflict_update()
 
-        query = scoreboard_total.update().values(
-            status=0
-        ).where(
-            and_(
-                scoreboard_total.c.match_id == self.match_id,
-                scoreboard_total.c.name == self.community_name
+                for player in players:
+                    player["match_id"] = self.match_id
+
+                    await sleep(0.0001)
+
+                await Sessions.database.execute_many(
+                    query=query,
+                    values=players
+                )
+        else:
+            raise InvalidMatchID()
+
+    async def end(self) -> None:
+        """
+        Sets match status to 0
+
+        Raises
+        ------
+        InvalidMatchID
+            Raised when match ID is invalid.
+        """
+
+        if await self.exists():
+            query = scoreboard_total.update().values(
+                status=0
+            ).where(
+                and_(
+                    scoreboard_total.c.match_id == self.match_id,
+                    scoreboard_total.c.name == self.community_name
+                )
             )
-        )
 
-        await Sessions.database.execute(query=query)
+            await Sessions.database.execute(query=query)
+        else:
+            raise InvalidMatchID()
 
     async def scoreboard(self) -> ScoreboardModel:
         """

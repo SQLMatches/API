@@ -84,7 +84,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"team_1_score\": 3,\r\n    \"team_2_score\": 1,\r\n    \"team_1_side\": 0,\r\n    \"team_2_side\": 1,\r\n    \"end\": true\r\n}",
+					"raw": "{\r\n    \"team_1_score\": 3,\r\n    \"team_2_score\": 1,\r\n    \"players\": [\r\n        {\r\n            \"name\": \"Ward\",\r\n            \"steam_id\": \"76561198077228213\",\r\n            \"team\": 0,\r\n            \"alive\": false,\r\n            \"ping\": 0,\r\n            \"kills\": 322,\r\n            \"headshots\": 0,\r\n            \"assists\": 0,\r\n            \"deaths\": 0,\r\n            \"shots_fired\": 0,\r\n            \"shots_hit\": 0,\r\n            \"mvps\": 0,\r\n            \"score\": 0,\r\n            \"disconnected\": false\r\n        }\r\n    ],\r\n    \"team_1_side\": 0,\r\n    \"team_2_side\": 1,\r\n    \"end\": true\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -92,7 +92,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/match/6da24bab-07b8-4420-bd7c-c1c7ab16e4da?api_key={{API_KEY}}",
+					"raw": "http://127.0.0.1:8000/api/match/f5ebbf1f-0410-43aa-a6ef-526afd36e08a?api_key={{API_KEY}}",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -104,7 +104,7 @@
 					"path": [
 						"api",
 						"match",
-						"6da24bab-07b8-4420-bd7c-c1c7ab16e4da"
+						"f5ebbf1f-0410-43aa-a6ef-526afd36e08a"
 					],
 					"query": [
 						{
@@ -147,11 +147,33 @@
 			"response": []
 		}
 	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "e980221c-c547-4b1f-bf04-45a5e24add48",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "7fac1fef-ed9b-464f-aa9a-c4ec48cc48ec",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
 	"variable": [
 		{
-			"id": "fa4a208c-163e-49a3-a952-462fa4060aa8",
+			"id": "fcdd6f4d-9b50-47d2-8805-85abc75d6c81",
 			"key": "API_KEY",
-			"value": "XZY5lhuK3ahWZIjRbWT9jRYLoFyP58OS"
+			"value": "4JZx_WQGnGFb9A2_WZvURZfeznIcCGJJ"
 		}
 	],
 	"protocolProfileBehavior": {}

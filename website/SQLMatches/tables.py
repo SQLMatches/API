@@ -22,7 +22,8 @@ DEALINGS IN THE SOFTWARE.
 
 
 from sqlalchemy import Table, MetaData, String, \
-    Column, TIMESTAMP, ForeignKey, Integer, Boolean, create_engine
+    Column, TIMESTAMP, ForeignKey, Integer, Boolean, create_engine, \
+    UniqueConstraint
 
 from datetime import datetime
 
@@ -136,11 +137,13 @@ scoreboard = Table(
     Column(
         "match_id",
         String(length=36),
-        ForeignKey("scoreboard_total.match_id")
+        ForeignKey("scoreboard_total.match_id"),
+        primary_key=True
     ),
     Column(
         "steam_id",
-        String(length=64)
+        String(length=64),
+        primary_key=True
     ),
     Column(
         "name",
@@ -153,7 +156,7 @@ scoreboard = Table(
     Column(
         "alive",
         Boolean,
-        default=0
+        default=True
     ),
     Column(
         "ping",
@@ -205,6 +208,10 @@ scoreboard = Table(
         Boolean,
         default=False
     ),
+    UniqueConstraint(
+        "steam_id",
+        sqlite_on_conflict="REPLACE"
+    )
 )
 
 

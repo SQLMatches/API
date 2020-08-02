@@ -22,6 +22,7 @@ DEALINGS IN THE SOFTWARE.
 
 
 from .exceptions import UnSupportedEngine
+from .resources import Config
 
 
 class DatabaseSettings:
@@ -67,3 +68,5 @@ class DatabaseSettings:
             self.alchemy_engine = "psycopg2"
         else:
             raise UnSupportedEngine()
+
+        Config.db_engine = engine

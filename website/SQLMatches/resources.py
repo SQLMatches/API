@@ -41,3 +41,4 @@ class Config:
     steam_openid_url = "https://steamcommunity.com/openid/login"
     url: str
     map_images: str
+    db_engine: str

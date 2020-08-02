@@ -1,5 +1,7 @@
 starlette
+asyncpg
 aiomysql
+aiosqlite
 databases
 aiofiles
 jinja2
