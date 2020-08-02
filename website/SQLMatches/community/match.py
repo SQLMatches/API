@@ -46,8 +46,33 @@ class Match:
         self.match_id = match_id
         self.community_name = community_name
 
-    async def update(self):
-        pass
+    async def update(self, team_1_score: int, team_2_score: int,
+                     team_1_side: int = None, team_2_side: int = None,
+                     end: bool = False):
+        """
+        Updates match details.
+        """
+
+        team_sides = {}
+        if team_1_side:
+            team_sides["team_1_side"] = team_1_side
+
+        if team_2_side:
+            team_sides["team_2_side"] = team_2_side
+
+        query = scoreboard_total.update().values(
+            team_1_score=team_1_score,
+            team_2_score=team_2_score,
+            status=0 if end else 1,
+            **team_sides
+        ).where(
+            and_(
+                scoreboard_total.c.match_id == self.match_id,
+                scoreboard_total.c.name == self.community_name
+            )
+        )
+
+        await Sessions.database.execute(query=query)
 
     async def end(self):
         """ Sets match status to 0 """

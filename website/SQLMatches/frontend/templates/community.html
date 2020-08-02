@@ -44,15 +44,13 @@
                             </div>
                             <div class="col-md-4 d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                                 <h1 class="text-light">
-                                    {% if match.status == 0 and match.team_1_score != match.team_2_score %}
+                                    {% if match.status == 0 %}
                                         {% if match.team_1_score > match.team_2_score %}
-                                            <span class="won">{{ match.team_1_score }}</span>
-                                            :
-                                            <span class="lost">{{ match.team_2_score }}</span>
+                                            <span class="won">{{ match.team_1_score }}</span>:<span class="lost">{{ match.team_2_score }}</span>
+                                        {% elif match.team_1_score == match.team_2_score %}
+                                            <span class="text-info">{{ match.team_1_score }}</span>:<span class="text-info">{{ match.team_2_score }}</span>
                                         {% else %}
-                                            <span class="lost">{{ match.team_1_score }}</span>
-                                            :
-                                            <span class="won">{{ match.team_2_score }}</span>
+                                            <span class="lost">{{ match.team_1_score }}</span>:<span class="won">{{ match.team_2_score }}</span>
                                         {% endif %}
                                     {% else %}
                                         <span>{{ match.team_1_score }}</span>:<span>{{ match.team_2_score }}</span>

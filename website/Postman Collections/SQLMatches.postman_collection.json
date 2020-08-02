@@ -78,6 +78,45 @@
 			"response": []
 		},
 		{
+			"name": "Update Match",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"team_1_score\": 3,\r\n    \"team_2_score\": 1,\r\n    \"team_1_side\": 0,\r\n    \"team_2_side\": 1,\r\n    \"end\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/match/6da24bab-07b8-4420-bd7c-c1c7ab16e4da?api_key={{API_KEY}}",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"match",
+						"6da24bab-07b8-4420-bd7c-c1c7ab16e4da"
+					],
+					"query": [
+						{
+							"key": "api_key",
+							"value": "{{API_KEY}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "End Match",
 			"request": {
 				"method": "DELETE",
@@ -110,7 +149,7 @@
 	],
 	"variable": [
 		{
-			"id": "75ec3ef1-32c6-4dd8-8cdf-ad6c12427d6f",
+			"id": "fa4a208c-163e-49a3-a952-462fa4060aa8",
 			"key": "API_KEY",
 			"value": "XZY5lhuK3ahWZIjRbWT9jRYLoFyP58OS"
 		}

@@ -43,8 +43,17 @@ class MatchAPI(HTTPEndpoint):
         else:
             return response(scoreboard_to_dict(scoreboard))
 
-    async def post(self, request):
-        pass
+    @use_args({"team_1_score": fields.Int(required=True),
+               "team_2_score": fields.Int(required=True),
+               "team_1_side": fields.Int(),
+               "team_2_side": fields.Int(),
+               "end": fields.Bool()})
+    async def post(self, request, kwargs):
+        await request.state.community.match(
+            request.path_params["match_id"]
+        ).update(**kwargs)
+
+        return response(True)
 
     async def delete(self, request):
         await request.state.community.match(
