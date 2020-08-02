@@ -306,7 +306,7 @@ async def create_community(steam_id: str, community_name: str,
         Raised when owner already owns a community.
     """
 
-    community_name = community_name.strip().replace(" ", "-")
+    community_name = "".join(char for char in community_name if char.isalnum())
 
     if await Community(community_name).exists():
         raise CommunityTaken()

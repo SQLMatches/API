@@ -30,9 +30,10 @@ from .community.exceptions import InvalidAPIKey
 
 class APIMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
-        if "/api/" in request.url.path and \
-                "/c/" not in request.url.path \
-                and "api_key" in request.query_params:
+        if "/api/" in request.url.path:
+            if "api_key" not in request.query_params:
+                return error_response("APIKeyRequired")
+
             try:
                 community = await api_key_to_community(
                     request.query_params["api_key"]

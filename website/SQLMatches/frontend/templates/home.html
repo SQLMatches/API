@@ -16,7 +16,7 @@
                 {{ form.csrf_token }}
 
                 <label for="name-input">Community Name</label>
-                <p style="font-size: 0.7em;">Note: Any spaces become a '-', e.g. 'Nexus League' would become 'Nexus-League'</p>
+                <p style="font-size: 0.7em;">No special characters!</p>
                 {{ form.name(placeholder='NexusLeague',
                     autofocus='true',
                     spellcheck='false',
@@ -24,7 +24,8 @@
                     class='form-control',
                     id='name-input',
                     maxlength='32',
-                    minlength='6') }}
+                    minlength='6',
+                    pattern='[a-zA-Z0-9 ]+') }}
                 {% if 'steam_id' not in request.session %}
                     <button class="btn btn-outline-light btn-block" disabled type="submit" style="margin-top: 20px;">You must login!</button>
                 {% else %}
