@@ -1,4 +1,4 @@
-## SQLMatches 0.0.3
+## SQLMatches 0.0.4
 SQLMatches is a completely free & open source CS:GO match statistics & demo recording tool. If you need any help feel free to ask on our [discord](https://discord.gg/guYFTjt), please don't open a issue unless if its code related.
 
 [Consider donating to help support hosting this project!](https://www.patreon.com/wardweeb)
