@@ -1,6 +1,8 @@
 ## SQLMatches 0.0.3
 SQLMatches is a completely free & open source CS:GO match statistics & demo recording tool.
 
+[Consider donating to help support hosting this project!](https://www.patreon.com/wardweeb)
+
 ## Setup
 ### Self-hosted
 - Install SQLMatches with ``pip3 install SQLMatches``.
