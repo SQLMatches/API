@@ -79,6 +79,8 @@ class SQLMatches(Starlette):
             Optionally pass your own url safe secret key.
         map_images: dict
             Key as actual map name, value as image name.
+        kwargs
+            Additional parameters to pass to the Starlette instance.
         """
 
         startup_tasks = [self._startup]
