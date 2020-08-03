@@ -62,7 +62,7 @@ community = Table(
 # Demo status codes
 # 0 - No demo
 # 1 - Processing
-# 2 - Download
+# 2 - Ready for Download
 
 # Team Sides
 # 0 - CT

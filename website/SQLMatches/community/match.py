@@ -49,6 +49,55 @@ class Match:
         self.match_id = match_id
         self.community_name = community_name
 
+    async def set_demo_status(self, status):
+        """
+        Sets demo status to given value.
+
+        Raises
+        ------
+        InvalidMatchID
+            Raised when match ID is invalid.
+        """
+
+        try:
+            query = scoreboard_total.update().values(
+                demo_status=status
+            ).where(
+                and_(
+                    scoreboard_total.c.match_id == self.match_id,
+                    scoreboard_total.c.name == self.community_name
+                )
+            )
+
+            await Sessions.database.execute(query=query)
+        except Exception:
+            raise InvalidMatchID()
+
+    async def demo_status(self):
+        """
+        Gets demo status.
+
+        Raises
+        ------
+        InvalidMatchID
+            Raised when match ID is invalid.
+        """
+
+        query = select([scoreboard_total.c.demo_status]).select_from(
+            scoreboard_total
+        ).where(
+            and_(
+                scoreboard_total.c.match_id == self.match_id,
+                scoreboard_total.c.name == self.community_name
+            )
+        )
+
+        demo_status = await Sessions.database.fetch_val(query=query)
+        if demo_status is not None:
+            return demo_status
+        else:
+            raise InvalidMatchID()
+
     async def exists(self) -> bool:
         """
         Returns a bool depending if the match

@@ -30,7 +30,7 @@ from databases import Database
 class Sessions:
     database: Database
     aiohttp: ClientSession
-    aiob2: aiob2.client
+    demo_bucket: aiob2.client.bucket
 
 
 class Config:
@@ -41,6 +41,9 @@ class Config:
     assets_dir = os.path.join(frontend_dir, "assets")
     templates_dir = os.path.join(frontend_dir, "templates")
     steam_openid_url = "https://steamcommunity.com/openid/login"
+
     url: str
     map_images: str
     db_engine: str
+    cdn_url: str
+    demo_pathway: str

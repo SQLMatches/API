@@ -27,6 +27,8 @@ from marshmallow import Schema
 from webargs import fields
 from webargs_starlette import use_args
 
+from ..resources import Sessions, Config
+
 from ..api import error_response, response
 from ..api.model_convertor import scoreboard_to_dict
 
@@ -75,7 +77,7 @@ class MatchAPI(HTTPEndpoint):
         except InvalidMatchID:
             return error_response("InvalidMatchID")
         else:
-            return response(True)
+            return response()
 
     async def delete(self, request):
         try:
@@ -85,7 +87,7 @@ class MatchAPI(HTTPEndpoint):
         except InvalidMatchID:
             return error_response("InvalidMatchID")
         else:
-            return response(True)
+            return response()
 
 
 class CreateMatchAPI(HTTPEndpoint):
@@ -100,3 +102,36 @@ class CreateMatchAPI(HTTPEndpoint):
         match = await request.state.community.create_match(**kwargs)
 
         return response({"match_id": match.match_id})
+
+
+class DemoUploadAPI(HTTPEndpoint):
+    async def post(self, request):
+        match = request.state.community.match(request.path_params["match_id"])
+
+        try:
+            demo_status = await match.demo_status()
+        except InvalidMatchID:
+            return error_response("InvalidMatchID")
+        else:
+            if demo_status == 0:
+                await match.set_demo_status(1)
+
+                demo_data = b""
+                async for chunk in request.stream():
+                    demo_data += chunk
+
+                if len(demo_data) > 80000000:
+                    return error_response("FileToLarge")
+
+                await Sessions.demo_bucket.upload.data(
+                    data=demo_data,
+                    file_name=Config.demo_pathway + "{}.dem".format(
+                        match.match_id
+                    )
+                )
+
+                await match.set_demo_status(2)
+
+                return response()
+            else:
+                return error_response("DemoAlreadyUploaded")

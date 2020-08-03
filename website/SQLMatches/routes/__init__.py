@@ -30,7 +30,7 @@ from .home import HomePage
 from .community import CommunityPage
 from .scoreboard import ScoreboardPage
 
-from .api import MatchAPI, CreateMatchAPI
+from .api import MatchAPI, CreateMatchAPI, DemoUploadAPI
 
 from .errors import server_error, not_found, api_error
 
@@ -62,7 +62,10 @@ ROUTES = [
     Mount("/api", routes=[
         Mount("/match", routes=[
             Route("/create", CreateMatchAPI),
-            Route("/{match_id}", MatchAPI)
+            Mount("/{match_id}", routes=[
+                Route("/upload", DemoUploadAPI),
+                Route("/", MatchAPI)
+            ])
         ])
     ])
 ]

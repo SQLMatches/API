@@ -119,6 +119,8 @@ class SQLMatches(Starlette):
 
         Config.url = friendly_url
         Config.map_images = map_images
+        Config.demo_pathway = b2_settings.pathway
+        Config.cdn_url = b2_settings.cdn_url
 
         database_url = "://{}:{}@{}:{}/{}?charset=utf8mb4".format(
             database_settings.username,
@@ -132,9 +134,13 @@ class SQLMatches(Starlette):
             database_settings.engine + database_url
         )
 
-        Sessions.aiob2 = aiob2.client(
+        self.aiob2 = aiob2.client(
             b2_settings.key_id,
             b2_settings.application_key
+        )
+
+        Sessions.demo_bucket = self.aiob2.bucket(
+            b2_settings.bucket_id
         )
 
         create_tables(
@@ -161,7 +167,7 @@ class SQLMatches(Starlette):
         """
 
         await Sessions.database.connect()
-        await Sessions.aiob2.connect()
+        await self.aiob2.connect()
         Sessions.aiohttp = ClientSession()
 
     async def _shutdown(self) -> None:
@@ -170,5 +176,5 @@ class SQLMatches(Starlette):
         """
 
         await Sessions.database.disconnect()
-        await Sessions.aiob2.close()
+        await self.aiob2.close()
         await Sessions.aiohttp.close()

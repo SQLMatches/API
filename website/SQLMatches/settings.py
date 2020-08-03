@@ -74,7 +74,8 @@ class DatabaseSettings:
 
 
 class B2Settings:
-    def __init__(self, key_id: str, application_key: str) -> None:
+    def __init__(self, key_id: str, application_key: str,
+                 bucket_id: str, pathway: str, cdn_url: str) -> None:
         """
         Stores b2 settings.
 
@@ -84,7 +85,16 @@ class B2Settings:
             B2 key ID.
         application_key: str
             B2 app key.
+        bucket_id: str
+            Bucket to upload demos to.
+        pathway: str
+            Pathway to store demos to.
+        cdn_url: str
+            URL to access files.
         """
 
         self.key_id = key_id
         self.application_key = application_key
+        self.bucket_id = bucket_id
+        self.cdn_url = cdn_url
+        self.pathway = pathway if pathway[-1:] == "/" else pathway + "/"
