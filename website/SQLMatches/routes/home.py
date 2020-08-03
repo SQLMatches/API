@@ -60,7 +60,7 @@ class HomePage(HTTPEndpoint):
         form = await CreatePage.from_formdata(request)
 
         if "steam_id" not in request.session or not form.validate_on_submit():
-            return RedirectResponse("/", status_code=303)
+            return RedirectResponse("/?invalid_name=True", status_code=303)
 
         try:
             community = await create_community(

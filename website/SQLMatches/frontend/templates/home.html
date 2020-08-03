@@ -8,6 +8,10 @@
             <div class="alert alert-danger" role="alert">
                 Sorry that name is already taken :(
             </div>
+        {% elif 'invalid_name' in request.query_params %}
+            <div class="alert alert-danger" role="alert">
+                Sorry only alphanumeric characters are allowed!
+            </div>
         {% endif %}
         <div class="card-body">
             <h4 class="card-title">Create your own page!</h4>
