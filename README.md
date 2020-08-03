@@ -2,7 +2,7 @@
 SQLMatches is a completely free & open source CS:GO match statistics & demo recording tool.
 
 ## Setup
-#### Self-hosted
+### Self-hosted
 - Install SQLMatches with ``pip3 install SQLMatches``.
 - Create a file like [run.py](/blob/master/website/run.py).
 - Set up [uvicorn](https://www.uvicorn.org/deployment/) with Starlette.
