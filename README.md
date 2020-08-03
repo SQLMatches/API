@@ -1,5 +1,5 @@
 ## SQLMatches 0.0.3
-SQLMatches is a completely free & open source CS:GO match statistics & demo recording tool.
+SQLMatches is a completely free & open source CS:GO match statistics & demo recording tool. If you need any help feel free to ask on our [discord](https://discord.gg/guYFTjt), please don't open a issue unless if its code related.
 
 [Consider donating to help support hosting this project!](https://www.patreon.com/wardweeb)
 
@@ -23,5 +23,10 @@ SQLMatches is a completely free & open source CS:GO match statistics & demo reco
 - Set ``sm_sqlmatches_key`` CVAR as your API key located on your community page, under 'Owner Panel'.
 - Sit back and relax!
 
+
+## Supported database engines
+- MySQL (Fully tested)
+- Postgresql (Not tested)
+- SQLite (Not tested)
 
 [Looking for the super ugly & out of date PHP version? Check it out here](https://github.com/WardPearce/SQLMatches/tree/Legacy-PHP)
