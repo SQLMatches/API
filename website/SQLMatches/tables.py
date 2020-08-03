@@ -210,6 +210,7 @@ scoreboard = Table(
     ),
     UniqueConstraint(
         "steam_id",
+        "match_id",
         sqlite_on_conflict="REPLACE"
     )
 )
