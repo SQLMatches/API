@@ -1,0 +1,98 @@
+body {
+  font-family: 'Open Sans', sans-serif;
+  background: rgb(27,25,28);
+}
+
+:root {
+  height: 100%;
+}
+
+.navbar-light .navbar-toggler {
+  background-color: #fff;
+}
+
+.match-card {
+  margin-top: 25px;
+  border: none;
+  background-color: rgba(0,0,0,0);
+  width: 75%;
+}
+
+.match-card > .card-img {
+  border-radius: 25px;
+  filter: blur(2px) brightness(49%);
+  height: 150px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.winner-icon {
+  height: 100%;
+}
+
+.match-card h1 {
+  margin-bottom: 0px;
+}
+
+.match-stats {
+  width: 100%;
+}
+
+.main-container {
+  margin-top: 25px;
+}
+
+.won {
+  color: #00a010;
+}
+
+.lost {
+  color: #a0000a;
+}
+
+.key-hidden {
+  filter: blur(5px);
+}
+
+.key-hidden:hover {
+  transition-duration: 0.6s;
+  filter: blur(0px);
+}
+
+.player-cell {
+  min-width: 7vw;
+}
+
+.stat-cell {
+  width: 4vw;
+}
+
+.scoreboard-body {
+  padding: 0;
+}
+
+.scoreboard-card {
+  border: none;
+  background-color: #121111;
+  box-shadow: 0px 0px 23px 0px rgb(13,12,12);
+  width: 100%;
+}
+
+.stats-cell {
+  width: 7vh;
+  text-align: center;
+}
+
+.scoreboard th {
+  border-top: none !important;
+}
+
+.scoreboard td, tr {
+  border-color: rgba(255,255,255,0.09) !important;
+}
+
+.player-cell {
+  width: 60px;
+}
+

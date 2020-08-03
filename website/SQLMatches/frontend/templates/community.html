@@ -1,0 +1,108 @@
+{% extends 'site_elements/base.html' %}
+
+{% block title %}{{ request.path_params['community'] }}{% endblock %}
+
+{% block nav_title %}
+    <a class="navbar-brand text-light" href="{{ request.url_for('CommunityPage', community=request.path_params['community']) }}">
+        {{ request.path_params['community'] }} <span style="font-size: 10px;">&nbsp;hosted by SQLMatches</span>
+    </a>
+{% endblock %}
+
+{% block content %}
+        {% if base_details.disabled == 0 %}
+            {% if 'steam_id' in request.session and request.session['steam_id'] == base_details.owner_id %}
+                <div class="card text-light" style="background-color: #151415;margin-bottom: 50px;width: 50%;">
+                    <div class="card-body">
+                        <h4 class="card-title">Owner Panel</h4>
+                        <p>API Key:&nbsp;<span class="key-hidden"><br>{{ base_details.api_key }}<br></span></p>
+                        <p class="text-danger" style="font-size: 10px; margin-bottom: 0;">NEVER SHARE YOUR API KEY WITH ANYONE, MISS USING OUR API WILL RESULT IN A PERMANENT BAN!</p>
+                        <p><a href="#" class="text-light">Check out our setup guide & API documentation here.</a></p>
+                        <div class="d-xl-flex justify-content-xl-center" style="margin-top: 15px;">
+                            <form action="{{ request.url_for('CommunityUpdateKeyPage', community=request.path_params['community']) }}" method="POST">
+                                <button class="btn btn-warning btn-sm" type="submit"><i class="icon-fire"></i>&nbsp;Regenerate API Key</button>
+                            </form>
+                            <form action="{{ request.url_for('CommunityDisablePage', community=request.path_params['community']) }}" method="POST">
+                                <button class="btn btn-danger btn-sm" type="submit"><i class="icon-exclamation"></i>&nbsp;Disable Page <span style="font-size: 0.7em;">(this action can NOT be undone.)</span></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="alert alert-danger" role="alert">
+                This community has been disabled, the owner may contact us on our Discord to re-enable it.
+            </div>
+        {% endif %}
+        <!-- Start: Search Field With Icon -->
+        <form class="d-xl-flex justify-content-xl-center search-container" id="search" onsubmit="search()">
+            <input type="text" class="search-input" name="search" placeholder="Name, SteamID64 or MatchID">
+            <button class="btn btn-primary search-btn" type="submit"><i class="fa fa-search"></i></button>
+        </form>
+        <!-- End: Search Field With Icon -->
+        {% if matches|length > 0 %}
+            {% for match in matches %}
+                <div style="cursor: pointer;" onclick="location.href = '{{ request.url_for('ScoreboardPage', community=request.path_params['community'], match_id=match.match_id) }}';" class="card match-card border-0" data-bs-hover-animate="pulse">
+                    <div class="card-img w-100 d-block" style="background-image: url('{{ request.url_for('assets', path='img/maps/' + map_images[match.map] if match.map in map_images else '') }}');"></div>
+                    <div class="card-img-overlay d-flex d-xl-flex align-items-center justify-content-xl-center align-items-xl-center" style="padding: 20px;">
+                        <div class="row">
+                            <div class="col-md-4 col-xl-4 d-flex justify-content-center">
+                                <h1 class="text-light"><span style="font-size: 20px;">Team</span>&nbsp;{{ match.team_1_name }}</h1>
+                            </div>
+                            <div class="col-md-4 d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <h1 class="text-light">
+                                    {% if match.status == 0 %}
+                                        {% if match.team_1_score > match.team_2_score %}
+                                            <span class="won">{{ match.team_1_score }}</span>:<span class="lost">{{ match.team_2_score }}</span>
+                                        {% elif match.team_1_score == match.team_2_score %}
+                                            <span class="text-info">{{ match.team_1_score }}</span>:<span class="text-info">{{ match.team_2_score }}</span>
+                                        {% else %}
+                                            <span class="lost">{{ match.team_1_score }}</span>:<span class="won">{{ match.team_2_score }}</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span>{{ match.team_1_score }}</span>:<span>{{ match.team_2_score }}</span>
+                                    {% endif %}
+                                </h1>
+                            </div>
+                            <div class="col-md-4 d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <h1 class="text-light"><span style="font-size: 20px;">Team</span>&nbsp;{{ match.team_2_name }}</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <h3 class="text-light" style="margin-top: 15px;">No results!</h3>
+        {% endif %}
+        <div class="btn-group" role="group" aria-label="Pages" style="margin-top: 25px;">
+            {% if 'page' in request.path_params and request.path_params['page'] > 1 %}
+                <a href="
+                {{ request.url_for(
+                    'CommunityPagePagination',
+                    community=request.path_params['community'],
+                    page=request.path_params['page'] - 1) 
+                }}{{ '?search=' + request.query_params['search'] if 'search' in request.query_params }}">
+                    <button type="button" class="btn btn-light" style="margin-right: 10px;"><i class="icon-arrow-left"></i>&nbsp;Previous</button>
+                </a>
+            {% else %}
+                <button type="button" class="btn btn-light" style="margin-right: 10px;" disabled><i class="icon-arrow-left"></i>&nbsp;Previous</button>
+            {% endif %}
+            <a href="{{ 
+                request.url_for(
+                    'CommunityPagePagination',
+                    community=request.path_params['community'],
+                    page=request.path_params['page'] + 1 if 'page' in request.path_params else 2
+                )}}{{ '?search=' + request.query_params['search'] if 'search' in request.query_params }}">
+                <button type="button" class="btn btn-light" {% if matches|length == 0 %}disabled{% endif %}>Next&nbsp;<i class="icon-arrow-right"></i></button>
+            </a>
+        </div>
+{% endblock %}
+
+{% block js %}
+<script>
+function search(){
+    var action_src = window.location.href + document.getElementsByName('search')[0].value;
+    var your_form = document.getElementById('search');
+    your_form.action = action_src;
+}
+</script>
+{% endblock %}

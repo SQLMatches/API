@@ -1,0 +1,37 @@
+{% extends 'site_elements/base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+    <div class="card text-light create-card" style="background-color: #151415;width: 60%;">
+        {% if 'taken' in request.query_params %}
+            <div class="alert alert-danger" role="alert">
+                Sorry that name is already taken :(
+            </div>
+        {% endif %}
+        <div class="card-body">
+            <h4 class="card-title">Create your own page!</h4>
+            <h6 class="text-muted card-subtitle mb-2">Make it your own :3</h6>
+            <form method="POST">
+                {{ form.csrf_token }}
+
+                <label for="name-input">Community Name</label>
+                <p style="font-size: 0.7em;">No special characters!</p>
+                {{ form.name(placeholder='NexusLeague',
+                    autofocus='true',
+                    spellcheck='false',
+                    required='',
+                    class='form-control',
+                    id='name-input',
+                    maxlength='32',
+                    minlength='6',
+                    pattern='[a-zA-Z0-9 ]+') }}
+                {% if 'steam_id' not in request.session %}
+                    <button class="btn btn-outline-light btn-block" disabled type="submit" style="margin-top: 20px;">You must login!</button>
+                {% else %}
+                <button class="btn btn-outline-light btn-block" type="submit" style="margin-top: 20px;">Create</button>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+{% endblock %}

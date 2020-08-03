@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="{% block description %}SQLMatches is a free & open source CS:GO match recording system what's perfect for CS:GO Leagues, 10man, scrims & PUGs.{% endblock %}">
+    <meta name="keywords" content="sqlmatches, matches, csgo, league, cs:go, counter strike, free, demo, s3, b2">
+    <meta name="author" content="WardPearce">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>{% block title %}{% endblock %} - SQLMatches</title>
+    <link rel="stylesheet" href="{{ url_for('assets', path='bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
+    <link rel="stylesheet" href="{{ url_for('assets', path='fonts/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('assets', path='fonts/simple-line-icons.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('assets', path='css/Footer-Dark.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="{{ url_for('assets', path='css/Navigation-Clean.css') }}">
+    <link rel="stylesheet" href="{{ url_for('assets', path='css/Search-Field-With-Icon.css') }}">
+    <link rel="stylesheet" href="{{ url_for('assets', path='css/styles.css') }}">
+</head>
+
+<body>
+    <!-- Start: Navigation Clean -->
+    <nav class="navbar navbar-light navbar-expand-md navigation-clean">
+        <div class="container">
+            {% block nav_title %}
+                <a class="navbar-brand text-light" href="{{ url_for('HomePage') }}">SQLMatches</a>
+            {% endblock %}
+            <button data-toggle="collapse" class="navbar-toggler" data-target="#collapse"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon" style="border-style: none;"></span></button>
+            <div
+                class="collapse navbar-collapse" id="collapse">
+                <ul class="nav navbar-nav ml-auto">
+                    <li class="nav-item" role="presentation" style="margin-left: 10px;">
+                        {% if "steam_id" not in request.session %}
+                            <a href="{{ url_for('SteamLogin') }}?return={{ request.url.path }}"><button class="btn btn-light" type="button" style="font-size: 18px;"><i class="icon-social-steam"></i>&nbsp;Login</button>
+                        {% else %}
+                        <a href="{{ url_for('SteamLogout') }}"><button class="btn btn-light" type="button" style="font-size: 18px;"><i class="icon-logout"></i>&nbsp;Logout</button>
+                        {% endif %}
+                    </a></li>
+                </ul>
+        </div>
+        </div>
+    </nav>
+    <!-- End: Navigation Clean -->
+    <div class="container d-flex d-xl-flex flex-column align-items-center align-items-xl-center main-container">
+
+        {% block content %}{% endblock %}
+
+        <footer class="footer-dark">
+            <div class="container">
+                <div class="row">
+                    <!-- Start: Services -->
+                    <div class="col-sm-6 col-md-3 item">
+                        <h3>Index</h3>
+                        <ul>
+                            <li><a href="{{ url_for('HomePage') }}">Home</a></li>
+                            <li><a href="{{ url_for('HomePage') }}">Create page</a></li>
+                            <li><a href="https://www.patreon.com/wardweeb">Donate</a></li>
+                        </ul>
+                    </div>
+                    <!-- End: Services -->
+                    <!-- Start: About -->
+                    <div class="col-sm-6 col-md-3 item">
+                        <h3>External</h3>
+                        <ul>
+                            <li><a href="https://discord.gg/2KBAxf">Discord</a></li>
+                            <li><a href="https://twitter.com/wardweeb">Twitter</a></li>
+                            <li><a href="https://github.com/WardPearce/SQLMatches">GitHub</a></li>
+                        </ul>
+                    </div>
+                    <!-- End: About -->
+                    <!-- Start: Footer Text -->
+                    <div class="col-md-6 item text">
+                        <h3>About Us</h3>
+                        <p>SQLMatches is a free &amp; open source software built around giving players &amp; communities easy access to match records &amp; demos.</p>
+                    </div>
+                    <!-- End: Footer Text -->
+                </div>
+                <!-- Start: Copyright -->
+                <p class="copyright">SQLMatches is proudly licensed under GPL-3.0</p>
+                <!-- End: Copyright -->
+            </div>
+        </footer>
+    </div>
+    <script src="{{ url_for('assets', path='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('assets', path='bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('assets', path='js/bs-init.js') }}"></script>
+    {% block js %}{% endblock %}
+</body>
+
+</html>
