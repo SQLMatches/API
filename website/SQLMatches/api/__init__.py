@@ -34,6 +34,9 @@ def error_response(error: str, **kwargs) -> JSONResponse:
         If expection, just use the name of that.
     """
 
+    if "status_code" not in kwargs:
+        kwargs["status_code"] = 500
+
     return JSONResponse({"data": None, "error": error}, **kwargs)
 
 
