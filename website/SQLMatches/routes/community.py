@@ -25,7 +25,7 @@ from starlette.endpoints import HTTPEndpoint
 from starlette.responses import RedirectResponse
 from ..templating import TEMPLATE
 
-from ..community import Community, get_community_name
+from ..community import Community, get_community_from_owner
 from ..community.exceptions import InvalidCommunity, NoOwnership
 
 from ..resources import Config
@@ -60,15 +60,41 @@ class CommunityPage(HTTPEndpoint):
             return RedirectResponse("/", status_code=303)
 
         try:
-            community_name = await get_community_name(
+            community = await get_community_from_owner(
                 request.session["steam_id"]
             )
         except NoOwnership:
             return RedirectResponse("/", status_code=303)
         else:
-            await Community(community_name).regenerate()
+            await community.regenerate()
 
             return RedirectResponse(
-                request.url_for("CommunityPage", community=community_name),
+                request.url_for(
+                    "CommunityPage",
+                    community=community.community_name
+                ),
+                status_code=303
+            )
+
+
+class CommunityDisablePage(HTTPEndpoint):
+    async def post(self, request):
+        if "steam_id" not in request.session:
+            return RedirectResponse("/", status_code=303)
+        
+        try:
+            community = await get_community_from_owner(
+                request.session["steam_id"]
+            )
+        except NoOwnership:
+            return RedirectResponse("/", status_code=303)
+        else:
+            await community.disable()
+
+            return RedirectResponse(
+                request.url_for(
+                    "CommunityPage",
+                    community=community.community_name
+                ),
                 status_code=303
             )

@@ -27,7 +27,7 @@ from ..templating import TEMPLATE
 
 from ..forms.home import CreatePage
 
-from ..community import get_community_name, create_community
+from ..community import get_community_from_owner, create_community
 from ..community.exceptions import NoOwnership, CommunityTaken, \
     AlreadyCommunity
 
@@ -36,14 +36,17 @@ class HomePage(HTTPEndpoint):
     async def get(self, request):
         if "steam_id" in request.session:
             try:
-                community_name = await get_community_name(
+                community = await get_community_from_owner(
                     request.session["steam_id"]
                 )
             except NoOwnership:
                 pass
             else:
                 return RedirectResponse(
-                    request.url_for("CommunityPage", community=community_name)
+                    request.url_for(
+                        "CommunityPage",
+                        community=community.community_name
+                    )
                 )
 
         form = await CreatePage.from_formdata(request)

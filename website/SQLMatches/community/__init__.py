@@ -241,7 +241,7 @@ async def api_key_to_community(api_key: str) -> Community:
         raise InvalidAPIKey()
 
 
-async def get_community_name(steam_id: str) -> str:
+async def get_community_from_owner(steam_id: str) -> Community:
     """
     Gets community name from owners steamID.
 
@@ -262,7 +262,7 @@ async def get_community_name(steam_id: str) -> str:
     name = await Sessions.database.fetch_val(query=query)
 
     if name:
-        return name
+        return Community(name)
     else:
         raise NoOwnership()
 

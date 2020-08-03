@@ -20,7 +20,7 @@
                         <form action="{{ request.url_for('CommunityPage', community=request.path_params['community']) }}" method="POST">
                             <button class="btn btn-warning btn-sm" type="submit"><i class="icon-fire"></i>&nbsp;Regenerate API Key</button>
                         </form>
-                        <form>
+                        <form action="{{ request.url_for('CommunityDisablePage', community=request.path_params['community']) }}">
                             <button class="btn btn-danger btn-sm" type="button"><i class="icon-exclamation"></i>&nbsp;Disable Page <span style="font-size: 0.7em;">(this action can NOT be undone.)</span></button>
                         </form>
                     </div>
