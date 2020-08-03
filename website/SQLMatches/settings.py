@@ -96,5 +96,5 @@ class B2Settings:
         self.key_id = key_id
         self.application_key = application_key
         self.bucket_id = bucket_id
-        self.cdn_url = cdn_url
+        self.cdn_url = cdn_url if cdn_url[-1:] == "/" else cdn_url + "/"
         self.pathway = pathway if pathway[-1:] == "/" else pathway + "/"

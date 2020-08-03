@@ -41,8 +41,9 @@
         <!-- End: Search Field With Icon -->
         {% if matches|length > 0 %}
             {% for match in matches %}
-                <div style="cursor: pointer;" onclick="location.href = '{{ request.url_for('ScoreboardPage', community=request.path_params['community'], match_id=match.match_id) }}';" class="card match-card border-0" data-bs-hover-animate="pulse">
+                <div style="cursor: pointer;" data-toggle="tooltip" data-placement="top" data-html="true" title="Time: {{match.timestamp}} <br> Map: {{match.map}}" onclick="location.href = '{{ request.url_for('ScoreboardPage', community=request.path_params['community'], match_id=match.match_id) }}';" class="card match-card border-0" data-bs-hover-animate="pulse">
                     <div class="card-img w-100 d-block" style="background-image: url('{{ request.url_for('assets', path='img/maps/' + map_images[match.map] if match.map in map_images else '') }}');"></div>
+
                     <div class="card-img-overlay d-flex d-xl-flex align-items-center justify-content-xl-center align-items-xl-center" style="padding: 20px;">
                         <div class="row">
                             <div class="col-md-4 col-xl-4 d-flex justify-content-center">
@@ -104,5 +105,9 @@ function search(){
     var your_form = document.getElementById('search');
     your_form.action = action_src;
 }
+
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
 </script>
 {% endblock %}

@@ -54,19 +54,27 @@
             <h1 class="text-light">
                 {% if scoreboard.status == 0 and scoreboard.team_1_score != scoreboard.team_2_score %}
                     {% if scoreboard.team_1_score > scoreboard.team_2_score %}
-                        <span class="won">{{ scoreboard.team_1_score }}</span>
-                        :
-                        <span class="lost">{{ scoreboard.team_2_score }}</span>
+                        <span class="won">{{ scoreboard.team_1_score }}</span>:<span class="lost">{{ scoreboard.team_2_score }}</span>
                     {% else %}
-                        <span class="lost">{{ scoreboard.team_1_score }}</span>
-                        :
-                        <span class="won">{{ scoreboard.team_2_score }}</span>
+                        <span class="lost">{{ scoreboard.team_1_score }}</span>:<span class="won">{{ scoreboard.team_2_score }}</span>
                     {% endif %}
                 {% else %}
                     <span>{{ scoreboard.team_1_score }}</span>:<span>{{ scoreboard.team_2_score }}</span>
                 {% endif %}
             </h1>
-            <button class="btn btn-success btn-sm" type="button"><i class="icon-cloud-download"></i>&nbsp;Download</button>
+            {% if scoreboard.demo_status == 2 %}
+                <a href="{{ request.url_for('DownloadPage', match_id=request.path_params['match_id']) }}">
+                    <button class="btn btn-success btn-sm" type="button"><i class="icon-cloud-download"></i>&nbsp;Download</button>
+                </a>
+            {% elif scoreboard.demo_status == 1 %}
+                <button class="btn btn-warning btn-sm" type="button" disabled><i class="icon-reload"></i>&nbsp;Processing</button>
+            {% elif scoreboard.demo_status == 0 %}
+                {% if scoreboard.status == 1 %}
+                    <button class="btn btn-info btn-sm" type="button" disabled><i class="icon-shield"></i>&nbsp;Match in progress</button>
+                {% else %}
+                    <button class="btn btn-danger btn-sm" type="button" disabled><i class="icon-minus"></i>&nbsp;No download</button>
+                {% endif %}
+            {% endif %}
         </div>
         <div class="card text-light scoreboard-card">
             <div class="card-body scoreboard-body">

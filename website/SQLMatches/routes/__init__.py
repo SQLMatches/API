@@ -30,6 +30,7 @@ from .home import HomePage
 from .community import CommunityPage, CommunityDisablePage, \
     CommunityUpdateKeyPage
 from .scoreboard import ScoreboardPage
+from .download import DownloadPage
 
 from .api import MatchAPI, CreateMatchAPI, DemoUploadAPI
 
@@ -54,6 +55,7 @@ ROUTES = [
         Route("/validate", SteamValidate),
         Route("/logout", SteamLogout, name="SteamLogout")
     ]),
+    Route("/download/{match_id}", DownloadPage, name="DownloadPage"),
     Mount("/assets", StaticFiles(directory=Config.assets_dir), name="assets"),
     Mount("/c/{community}", routes=[
         Route("/disable", CommunityDisablePage, name="CommunityDisablePage"),
