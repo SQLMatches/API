@@ -22,3 +22,6 @@ SQLMatches is a completely free & open source CS:GO match statistics & demo reco
 - Install the plugin.
 - Set ``sm_sqlmatches_key`` CVAR as your API key located on your community page, under 'Owner Panel'.
 - Sit back and relax!
+
+
+[Looking for the super ugly & out of date PHP version? Check it out here](https://github.com/WardPearce/SQLMatches/tree/Legacy-PHP)
