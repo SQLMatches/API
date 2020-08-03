@@ -85,6 +85,7 @@
     <script src="{{ url_for('assets', path='js/jquery.min.js') }}"></script>
     <script src="{{ url_for('assets', path='bootstrap/js/bootstrap.min.js') }}"></script>
     <script src="{{ url_for('assets', path='js/bs-init.js') }}"></script>
+    {% block js %}{% endblock %}
 </body>
 
 </html>

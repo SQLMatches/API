@@ -142,8 +142,6 @@ class Community:
             Used for interacting with a match.
         """
 
-        like_search = "%{}%".format(search) if search else ""
-
         query = select([
             scoreboard_total.c.match_id,
             scoreboard_total.c.timestamp,
@@ -158,17 +156,27 @@ class Community:
             scoreboard_total.c.team_2_side
         ]).select_from(
             scoreboard_total
-        ).where(
-            or_(
-                scoreboard_total.c.name == self.community_name,
+        )
+
+        if search:
+            like_search = "%{}%".format(search)
+
+            query = query.where(
                 and_(
-                    scoreboard_total.c.match_id == search,
-                    scoreboard_total.c.map.like(like_search),
-                    scoreboard_total.c.team_1_name.like(like_search),
-                    scoreboard_total.c.team_2_name.like(like_search),
+                    scoreboard_total.c.name == self.community_name,
+                    or_(
+                        scoreboard_total.c.map.like(like_search),
+                        scoreboard_total.c.team_1_name.like(like_search),
+                        scoreboard_total.c.team_2_name.like(like_search)
+                    )
                 )
             )
-        ).order_by(
+        else:
+            query = query.where(
+                scoreboard_total.c.name == self.community_name,
+            )
+
+        query = query.order_by(
             scoreboard_total.c.timestamp.desc()
         ).limit(limit).offset((page - 1) * limit if page > 1 else 0)
 

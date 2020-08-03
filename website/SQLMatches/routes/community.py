@@ -25,6 +25,8 @@ from starlette.endpoints import HTTPEndpoint
 from starlette.responses import RedirectResponse
 from ..templating import TEMPLATE
 
+from urllib.parse import unquote_plus
+
 from ..community import Community, get_community_from_owner
 from ..community.exceptions import InvalidCommunity, NoOwnership
 
@@ -42,7 +44,9 @@ class CommunityPage(HTTPEndpoint):
         else:
             matches = [data async for data, _ in community.matches(
                 page=request.path_params["page"] if "page" in
-                request.path_params else 1
+                request.path_params else 1,
+                search=unquote_plus(request.query_params["search"])
+                if "search" in request.query_params else None
             )]
 
             return TEMPLATE.TemplateResponse(
