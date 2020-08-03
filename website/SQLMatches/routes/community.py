@@ -81,7 +81,7 @@ class CommunityDisablePage(HTTPEndpoint):
     async def post(self, request):
         if "steam_id" not in request.session:
             return RedirectResponse("/", status_code=303)
-        
+
         try:
             community = await get_community_from_owner(
                 request.session["steam_id"]
