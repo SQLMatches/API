@@ -9,22 +9,28 @@
 {% endblock %}
 
 {% block content %}
-        {% if 'steam_id' in request.session and request.session['steam_id'] == base_details.owner_id %}
-            <div class="card text-light" style="background-color: #151415;margin-bottom: 50px;width: 50%;">
-                <div class="card-body">
-                    <h4 class="card-title">Owner Panel</h4>
-                    <p>API Key:&nbsp;<span class="key-hidden"><br>{{ base_details.api_key }}<br></span></p>
-                    <p class="text-danger" style="font-size: 10px; margin-bottom: 0;">NEVER SHARE YOUR API KEY WITH ANYONE, MISS USING OUR API WILL RESULT IN A PERMANENT BAN!</p>
-                    <p><a href="#" class="text-light">Check out our setup guide & API documentation here.</a></p>
-                    <div class="d-xl-flex justify-content-xl-center" style="margin-top: 15px;">
-                        <form action="{{ request.url_for('CommunityPage', community=request.path_params['community']) }}" method="POST">
-                            <button class="btn btn-warning btn-sm" type="submit"><i class="icon-fire"></i>&nbsp;Regenerate API Key</button>
-                        </form>
-                        <form action="{{ request.url_for('CommunityDisablePage', community=request.path_params['community']) }}">
-                            <button class="btn btn-danger btn-sm" type="button"><i class="icon-exclamation"></i>&nbsp;Disable Page <span style="font-size: 0.7em;">(this action can NOT be undone.)</span></button>
-                        </form>
+        {% if base_details.disabled == 0 %}
+            {% if 'steam_id' in request.session and request.session['steam_id'] == base_details.owner_id %}
+                <div class="card text-light" style="background-color: #151415;margin-bottom: 50px;width: 50%;">
+                    <div class="card-body">
+                        <h4 class="card-title">Owner Panel</h4>
+                        <p>API Key:&nbsp;<span class="key-hidden"><br>{{ base_details.api_key }}<br></span></p>
+                        <p class="text-danger" style="font-size: 10px; margin-bottom: 0;">NEVER SHARE YOUR API KEY WITH ANYONE, MISS USING OUR API WILL RESULT IN A PERMANENT BAN!</p>
+                        <p><a href="#" class="text-light">Check out our setup guide & API documentation here.</a></p>
+                        <div class="d-xl-flex justify-content-xl-center" style="margin-top: 15px;">
+                            <form action="{{ request.url_for('CommunityUpdateKeyPage', community=request.path_params['community']) }}" method="POST">
+                                <button class="btn btn-warning btn-sm" type="submit"><i class="icon-fire"></i>&nbsp;Regenerate API Key</button>
+                            </form>
+                            <form action="{{ request.url_for('CommunityDisablePage', community=request.path_params['community']) }}" method="POST">
+                                <button class="btn btn-danger btn-sm" type="submit"><i class="icon-exclamation"></i>&nbsp;Disable Page <span style="font-size: 0.7em;">(this action can NOT be undone.)</span></button>
+                            </form>
+                        </div>
                     </div>
                 </div>
+            {% endif %}
+        {% else %}
+            <div class="alert alert-danger" role="alert">
+                This community has been disabled, the owner may contact us on our Discord to re-enable it.
             </div>
         {% endif %}
         <!-- Start: Search Field With Icon -->

@@ -27,7 +27,8 @@ from starlette.staticfiles import StaticFiles
 from webargs_starlette import WebargsHTTPException
 
 from .home import HomePage
-from .community import CommunityPage, CommunityDisablePage
+from .community import CommunityPage, CommunityDisablePage, \
+    CommunityUpdateKeyPage
 from .scoreboard import ScoreboardPage
 
 from .api import MatchAPI, CreateMatchAPI, DemoUploadAPI
@@ -56,6 +57,11 @@ ROUTES = [
     Mount("/assets", StaticFiles(directory=Config.assets_dir), name="assets"),
     Mount("/c/{community}", routes=[
         Route("/disable", CommunityDisablePage, name="CommunityDisablePage"),
+        Route(
+            "/update-key",
+            CommunityUpdateKeyPage,
+            name="CommunityUpdateKeyPage"
+        ),
         Route("/", CommunityPage, name="CommunityPage"),
         Route("/{page:int}", CommunityPage, name="CommunityPagePagination"),
         Route("/s/{match_id}", ScoreboardPage, name="ScoreboardPage")

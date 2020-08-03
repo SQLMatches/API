@@ -55,6 +55,8 @@ class CommunityPage(HTTPEndpoint):
                 }
             )
 
+
+class CommunityUpdateKeyPage(HTTPEndpoint):
     async def post(self, request):
         if "steam_id" not in request.session:
             return RedirectResponse("/", status_code=303)

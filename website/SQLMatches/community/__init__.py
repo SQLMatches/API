@@ -231,7 +231,12 @@ async def api_key_to_community(api_key: str) -> Community:
 
     query = select([community.c.name]).select_from(
         community
-    ).where(community.c.api_key == api_key)
+    ).where(
+        and_(
+            community.c.api_key == api_key,
+            community.c.disabled == 0
+        )
+    )
 
     row = await Sessions.database.fetch_val(query=query)
 
@@ -256,7 +261,10 @@ async def get_community_from_owner(steam_id: str) -> Community:
     ).select_from(
         community
     ).where(
-        community.c.owner_id == steam_id
+        and_(
+            community.c.owner_id == steam_id,
+            community.c.disabled == 0
+        )
     )
 
     name = await Sessions.database.fetch_val(query=query)
@@ -273,7 +281,10 @@ async def owner_exists(steam_id: str) -> bool:
     """
 
     query = community.count().where(
-        community.c.owner_id == steam_id
+        and_(
+            community.c.owner_id == steam_id,
+            community.c.disabled == 0
+        )
     )
 
     return await Sessions.database.fetch_val(query=query) > 0

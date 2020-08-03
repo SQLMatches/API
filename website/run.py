@@ -14,7 +14,7 @@ app = SQLMatches(
     ),
     B2Settings(
         key_id="...",
-        application_key="...",
+        application_key="..",
         bucket_id="...",
         pathway="demos/",
         cdn_url="..."
