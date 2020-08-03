@@ -90,19 +90,13 @@ class SQLMatches(Starlette):
         if "on_shutdown" in kwargs:
             shutdown_tasks = shutdown_tasks + kwargs["on_shutdown"]
 
-        middlewares = []
-        if "middleware" in kwargs:
-            middlewares = kwargs["middleware"]
-
-        middlewares.append(
-            Middleware(SessionMiddleware, secret_key=secret_key)
-        )
-        middlewares.append(
-            Middleware(CSRFProtectMiddleware, csrf_secret=csrf_secret)
-        )
-        middlewares.append(
+        middlewares = [
+            Middleware(SessionMiddleware, secret_key=secret_key),
+            Middleware(CSRFProtectMiddleware, csrf_secret=csrf_secret),
             Middleware(APIMiddleware)
-        )
+        ]
+        if "middleware" in kwargs:
+            middlewares = middlewares + kwargs["middleware"]
 
         if "routes" in kwargs:
             routes = kwargs["routes"] + ROUTES
