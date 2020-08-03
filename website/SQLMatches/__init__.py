@@ -40,7 +40,7 @@ from .routes import ROUTES, ERROR_HANDLERS
 from .http_middleware import APIMiddleware
 
 
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 
 
 MAP_IMAGES = {

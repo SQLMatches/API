@@ -16,7 +16,7 @@
                 {{ form.csrf_token }}
 
                 <label for="name-input">Community Name</label>
-                <p style="font-size: 0.7em;">No special characters!</p>
+                <p style="font-size: 0.7em;" class="text-danger">Only alphanumeric characters allowed!</p>
                 {{ form.name(placeholder='NexusLeague',
                     autofocus='true',
                     spellcheck='false',

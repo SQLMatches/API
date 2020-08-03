@@ -23,7 +23,7 @@ DEALINGS IN THE SOFTWARE.
 
 from starlette_wtf import StarletteForm
 from wtforms import TextField
-from wtforms.validators import DataRequired, Length
+from wtforms.validators import DataRequired, Length, Regexp
 
 
 class CreatePage(StarletteForm):
@@ -31,6 +31,7 @@ class CreatePage(StarletteForm):
         "Community Name",
         validators=[
             DataRequired("Community name is required!"),
-            Length(6, 32, "Name must be between 6 & 32!")
+            Length(6, 32, "Name must be between 6 & 32!"),
+            Regexp("^\\w+$", message="Only alphanumeric characters allowed!")
         ]
     )
