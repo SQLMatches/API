@@ -21,7 +21,7 @@
                             <form action="{{ request.url_for('CommunityUpdateKeyPage', community=request.path_params['community']) }}" method="POST">
                                 <button class="btn btn-warning btn-sm" type="submit"><i class="icon-fire"></i>&nbsp;Regenerate API Key</button>
                             </form>
-                            <form action="{{ request.url_for('CommunityDisablePage', community=request.path_params['community']) }}" method="POST">
+                            <form action="{{ request.url_for('CommunityDisablePage', community=request.path_params['community']) }}" method="POST" onsubmit="return confirm('Are you sure you want to disable {{ request.path_params['community'] }}?');">
                                 <button class="btn btn-danger btn-sm" type="submit"><i class="icon-exclamation"></i>&nbsp;Disable Page <span style="font-size: 0.7em;">(this action can NOT be undone.)</span></button>
                             </form>
                         </div>
