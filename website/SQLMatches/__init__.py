@@ -24,7 +24,6 @@ DEALINGS IN THE SOFTWARE.
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
-from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
 from starlette_wtf import CSRFProtectMiddleware
 
 from secrets import token_urlsafe
@@ -41,7 +40,7 @@ from .routes import ROUTES, ERROR_HANDLERS
 from .http_middleware import APIMiddleware
 
 
-__version__ = "0.0.4"
+__version__ = "0.0.5"
 
 
 MAP_IMAGES = {
@@ -96,8 +95,7 @@ class SQLMatches(Starlette):
         middlewares = [
             Middleware(SessionMiddleware, secret_key=secret_key),
             Middleware(CSRFProtectMiddleware, csrf_secret=csrf_secret),
-            Middleware(APIMiddleware),
-            Middleware(HTTPSRedirectMiddleware)
+            Middleware(APIMiddleware)
         ]
         if "middleware" in kwargs:
             middlewares = middlewares + kwargs["middleware"]
