@@ -8,7 +8,15 @@ SQLMatches is a completely free & open source CS:GO match statistics & demo reco
 
 [Consider donating to help support hosting this project!](https://www.patreon.com/wardweeb)
 
-## Setup
+## Index
+- [Website](#Website)
+    - [Self-hosted](#self-hosted)
+    - [Hosted version](#hosted-version)
+- [Plugins](#plugins)
+    - [Setup](#setup)
+- [Legacy version](#legacy-version)
+
+## Website
 ### Self-hosted
 - Install SQLMatches with ``pip3 install SQLMatches``.
 - Create a file like [run.py](/website/run.py).
@@ -28,13 +36,18 @@ SQLMatches is a completely free & open source CS:GO match statistics & demo reco
 - Set ``sm_sqlmatches_key`` CVAR as your API key located on your community page, under 'Owner Panel'.
 - Sit back and relax!
 
-### Plugin Requirements
-- [SourceMod](https://www.sourcemod.net/downloads.php?branch=stable) Version >= 1.10.
-- [REST in Pawn](https://forums.alliedmods.net/showthread.php?t=298024).
+## Plugins
+### Setup
+    - Install [SourceMod](https://www.sourcemod.net/downloads.php?branch=stable) Version >= 1.10.
+    - Install [REST in Pawn](https://forums.alliedmods.net/showthread.php?t=298024).
+    - Install the SQLMatches plugin.
+        - [1.10](https://github.com/WardPearce/SQLMatches/suites/1026891685/artifacts/13546078)
+        - [1.11](https://github.com/WardPearce/SQLMatches/suites/1026891685/artifacts/13546078)
 
 ## Supported database engines
 - MySQL (Fully tested)
 - Postgresql (Not tested)
 - SQLite (Not tested)
 
+## Legacy version
 [Looking for the super ugly & out of date PHP version? Check it out here](https://github.com/WardPearce/SQLMatches/tree/Legacy-PHP)
