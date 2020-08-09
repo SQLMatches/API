@@ -32,7 +32,7 @@ SQLMatches is a completely free & open source CS:GO match statistics & demo reco
 - Login with steam.
     - Please note you can only own one community right now, so when you login if you get redirected this is why. But you can disable your community at anytime & create a new one.
 - Enter your community's name & click create.
-- Install the plugin (see [Plugin Requirements](#plugin-requirements)).
+- [Install the plugin](#plugins).
 - Set ``sm_sqlmatches_key`` CVAR as your API key located on your community page, under 'Owner Panel'.
 - Sit back and relax!
 
