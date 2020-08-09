@@ -176,7 +176,7 @@ All status 200 responses are inside of data.
 
 **Payload**
 
-None
+Raw file bytes.
 
 **Response 200**
 
@@ -196,7 +196,7 @@ null
 
 **Payload**
 
-Raw file bytes.
+null
 
 **Response 200**
 
