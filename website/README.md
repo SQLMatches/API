@@ -1,5 +1,5 @@
 ## REST API
----
+
 ##### Get Scoreboard
 **ROUTE**
 
