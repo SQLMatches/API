@@ -22,8 +22,8 @@ jobs:
           SOURCEMOD_PATH=$GITHUB_WORKSPACE/plugins
           echo ::set-env name=PLUGIN_VERSION::${{ matrix.SM_VERSION }}.$VERSION-$SHORT
           echo ::set-env name=SOURCEMOD_PATH::$SOURCEMOD_PATH
-          echo ::set-env name=SCRIPTS_PATH::$SOURCEMOD_PATH/scripting/
-          echo ::set-env name=PLUGINS_PATH::$SOURCEMOD_PATH/scripting/compiled/
+          echo ::set-env name=SCRIPTS_PATH::$SOURCEMOD_PATH/
+          echo ::set-env name=PLUGINS_PATH::$SOURCEMOD_PATH/compiled/
 
       - name: Setup SourcePawn Compiler ${{matrix.SM_VERSION}}
         uses: rumblefrog/setup-sp@v1.0.0
