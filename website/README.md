@@ -11,7 +11,7 @@ Base API structure is the following
 All status 200 responses are inside of data.
 
 ## Index
-- [Get Scoreboard][#get-scoreboard]
+- [Get Scoreboard](#get-scoreboard)
 - [Create Match](#create-match)
 - [Update Match](#update-match)
 - [Upload Demo](#upload-demo)
