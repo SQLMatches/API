@@ -15,7 +15,7 @@ SQLMatches is a completely free & open source CS:GO match statistics & demo reco
     - I recommend running Nginx as a reverse proxy.
     - Also setting up a SSL with [Certbot](https://certbot.eff.org/).
 - Run [run.py](/website/run.py) using PM2 or screen.
-- Now install the plugin & setting the ``sm_sqlmatches_url`` CVAR to your site with '/api/' appended to it.
+- Now install the plugin (see [Plugin Requirements](#plugin-requirements)) & setting the ``sm_sqlmatches_url`` CVAR to your site with '/api/' appended to it.
 - Then follow the 'Hosted version' guide ignoring the 1st point.
 
 ### Hosted version
@@ -23,10 +23,13 @@ SQLMatches is a completely free & open source CS:GO match statistics & demo reco
 - Login with steam.
     - Please note you can only own one community right now, so when you login if you get redirected this is why. But you can disable your community at anytime & create a new one.
 - Enter your community's name & click create.
-- Install the plugin.
+- Install the plugin (see [Plugin Requirements](#plugin-requirements)).
 - Set ``sm_sqlmatches_key`` CVAR as your API key located on your community page, under 'Owner Panel'.
 - Sit back and relax!
 
+### Plugin Requirements
+- [SourceMod](https://www.sourcemod.net/downloads.php?branch=stable) Version >= 1.10.
+- [REST in Pawn](https://forums.alliedmods.net/showthread.php?t=298024).
 
 ## Supported database engines
 - MySQL (Fully tested)
