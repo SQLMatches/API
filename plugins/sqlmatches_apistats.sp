@@ -6,7 +6,7 @@ public Plugin myinfo =
 	author = "The Doggy",
 	description = "Allows developers to use the SQLMatches API in their own plugins",
 	version = "1.0.0",
-	url = ""
+	url = "https://sqlmatches.com/"
 };
 
 PrivateForward g_hMatchCreatedFwd;

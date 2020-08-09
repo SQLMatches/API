@@ -53,7 +53,7 @@ public Plugin myinfo =
 	author = "The Doggy",
 	description = "Match stats and demo recording system for CS:GO",
 	version = "1.0.0",
-	url = ""
+	url = "https://sqlmatches.com/"
 };
 
 public void OnAllPluginsLoaded()
