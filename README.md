@@ -14,7 +14,7 @@ SQLMatches is a completely free & open source CS:GO match statistics & demo reco
     - [Hosted version](#hosted-version)
     - [API DOCS](/website/README.md)
 - [Sourcemod setup](#sourcemod-setup)
-- [Supported database engines](supported-database-engines)
+- [Supported database engines](#supported-database-engines)
 - [Legacy version](#legacy-version)
 
 ## Website
