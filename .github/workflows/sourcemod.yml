@@ -1,4 +1,4 @@
-name: Compile with SourceMod
+name: Plugins
 
 on:
   push:
