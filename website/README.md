@@ -1,6 +1,6 @@
 ## REST API
 
-#### Get Scoreboard
+### Get Scoreboard
 **ROUTE**
 
 ``GET - https://sqlmatches.com/api/match/{match_id}?api_key={api_key}``
