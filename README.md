@@ -12,7 +12,7 @@ SQLMatches is a completely free & open source CS:GO match statistics & demo reco
 - [Website](#Website)
     - [Self-hosted](#self-hosted)
     - [Hosted version](#hosted-version)
-- [Plugins](#plugins)
+- [Sourcemod setup](#sourcemod-setup)
 - [Legacy version](#legacy-version)
 
 ## Website
@@ -31,11 +31,11 @@ SQLMatches is a completely free & open source CS:GO match statistics & demo reco
 - Login with steam.
     - Please note you can only own one community right now, so when you login if you get redirected this is why. But you can disable your community at anytime & create a new one.
 - Enter your community's name & click create.
-- [Install the plugin](#plugins).
+- [Install the plugin](#sourcemod-setup).
 - Set ``sm_sqlmatches_key`` CVAR as your API key located on your community page, under 'Owner Panel'.
 - Sit back and relax!
 
-## Plugins
+## Sourcemod setup
 - Install [SourceMod](https://www.sourcemod.net/downloads.php?branch=stable) Version >= 1.10.
 - Install [REST in Pawn](https://forums.alliedmods.net/showthread.php?t=298024).
 - Install the SQLMatches plugin.
