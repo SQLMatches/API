@@ -23,7 +23,6 @@ SQLMatches is a completely free & open source CS:GO match statistics & demo reco
     - I recommend running Nginx as a reverse proxy.
     - Also setting up a SSL with [Certbot](https://certbot.eff.org/).
 - Run [run.py](/website/run.py) using PM2 or screen.
-- Now install the plugin (see [Plugin Requirements](#plugin-requirements)) & setting the ``sm_sqlmatches_url`` CVAR to your site with '/api/' appended to it.
 - Then follow the 'Hosted version' guide ignoring the 1st point.
 
 ### Hosted version
