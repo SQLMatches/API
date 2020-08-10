@@ -18,7 +18,7 @@ All status 200 responses are inside of data.
 - [End Match](#end-match)
 
 ### Get Scoreboard
-``GET - https://sqlmatches.com/api/match/{match_id}?api_key={api_key}``
+``GET - https://sqlmatches.com/api/match/{match_id}/?api_key={api_key}``
 
 **URL Parameters**
 
@@ -83,7 +83,7 @@ All status 200 responses are inside of data.
 ---
 
 ### Create Match
-``POST - https://sqlmatches.com/api/match/create?api_key={api_key}``
+``POST - https://sqlmatches.com/api/match/create/?api_key={api_key}``
 
 **URL Parameters**
 
@@ -115,7 +115,7 @@ All status 200 responses are inside of data.
 ---
 
 ### Update Match
-``POST - https://sqlmatches.com/api/match/{match_id}?api_key={api_key}``
+``POST - https://sqlmatches.com/api/match/{match_id}/?api_key={api_key}``
 
 **URL Parameters**
 
@@ -165,7 +165,7 @@ All status 200 responses are inside of data.
 ---
 
 ### Upload Demo
-``POST - https://sqlmatches.com/api/match/{match_id}?api_key={api_key}``
+``POST - https://sqlmatches.com/api/match/{match_id}/?api_key={api_key}``
 
 **URL Parameters**
 
@@ -185,7 +185,7 @@ null
 ---
 
 ### End Match
-``DELETE - https://sqlmatches.com/api/match/{match_id}?api_key={api_key}``
+``DELETE - https://sqlmatches.com/api/match/{match_id}/?api_key={api_key}``
 
 **URL Parameters**
 

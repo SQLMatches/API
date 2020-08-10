@@ -70,9 +70,9 @@ ROUTES = [
     ]),
     Mount("/api", routes=[
         Mount("/match", routes=[
-            Route("/create", CreateMatchAPI),
+            Route("/create/", CreateMatchAPI),
             Mount("/{match_id}", routes=[
-                Route("/upload", DemoUploadAPI),
+                Route("/upload/", DemoUploadAPI),
                 Route("/", MatchAPI)
             ])
         ])
