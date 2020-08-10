@@ -4,7 +4,6 @@
 #include <sdktools>
 #include <cstrike>
 #include <ripext>
-#include <sqlmatches>
 
 #pragma semicolon 1
 #pragma newdecls required
