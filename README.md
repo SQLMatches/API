@@ -13,6 +13,7 @@ SQLMatches is a completely free & open source CS:GO match statistics & demo reco
     - [Self-hosted](#self-hosted)
     - [Hosted version](#hosted-version)
     - [API DOCS](/website/README.md)
+    - [Adding more map images](#adding-more-map-images)
 - [Sourcemod setup](#sourcemod-setup)
 - [Supported database engines](#supported-database-engines)
 - [Legacy version](#legacy-version)
@@ -35,6 +36,12 @@ SQLMatches is a completely free & open source CS:GO match statistics & demo reco
 - [Install the plugin](#sourcemod-setup).
 - Set ``sm_sqlmatches_key`` CVAR as your API key located on your community page, under 'Owner Panel'.
 - Sit back and relax!
+
+### Adding more map images
+- Fork the repo.
+- Add the new images to [here](/website/SQLMatches/frontend/assets/img/maps).
+- Add the full map name & file name [here](/website/SQLMatches/__init__.py#L46).
+- Open a PR.
 
 ## Sourcemod setup
 - Install [SourceMod](https://www.sourcemod.net/downloads.php?branch=stable) Version >= 1.10.
