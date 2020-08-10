@@ -51,7 +51,9 @@ community = Table(
         "disabled",
         Boolean,
         default=False
-    )
+    ),
+    mysql_engine="InnoDB",
+    mysql_charset="utf8mb4"
 )
 
 # Scoreboard total table
@@ -125,6 +127,8 @@ scoreboard_total = Table(
         Integer,
         default=0
     ),
+    mysql_engine="InnoDB",
+    mysql_charset="utf8mb4"
 )
 
 
@@ -212,7 +216,9 @@ scoreboard = Table(
         "steam_id",
         "match_id",
         sqlite_on_conflict="REPLACE"
-    )
+    ),
+    mysql_engine="InnoDB",
+    mysql_charset="utf8mb4"
 )
 
 
