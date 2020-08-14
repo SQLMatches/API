@@ -51,7 +51,7 @@ public Plugin myinfo =
 	name = "SQLMatches",
 	author = "The Doggy",
 	description = "Match stats and demo recording system for CS:GO",
-	version = "1.0.0",
+	version = "1.0.2",
 	url = "https://sqlmatches.com/"
 };
 
@@ -86,7 +86,7 @@ public void OnPluginStart()
 	// Register ConVars
 	g_cvApiKey = CreateConVar("sm_sqlmatches_key", "<API KEY>", "API key for sqlmatches API", FCVAR_PROTECTED);
 	g_cvApiKey.AddChangeHook(OnAPIChanged);
-	g_cvApiUrl = CreateConVar("sm_sqlmatches_url", "https://sqlmatches.com/api/", "URL of sqlmatches base API route", FCVAR_PROTECTED);
+	g_cvApiUrl = CreateConVar("sm_sqlmatches_url", "https://sqlmatches.com/api", "URL of sqlmatches base API route", FCVAR_PROTECTED);
 	g_cvApiUrl.AddChangeHook(OnAPIChanged);
 
 	g_cvApiKey.GetString(g_sApiKey, sizeof(g_sApiKey));
@@ -96,6 +96,8 @@ public void OnPluginStart()
 
 	// Create HTTP Client
 	g_Client = new HTTPClient(g_sApiUrl);
+	g_Client.SetHeader("Content-Type:", "application/json");
+	g_Client.FollowLocation = true;
 
 	// Register commands
 	RegConsoleCmd("sm_creatematch", Command_CreateMatch, "Creates a match");
@@ -107,14 +109,20 @@ public void OnAPIChanged(ConVar convar, const char[] oldValue, const char[] newV
 	g_cvApiUrl.GetString(g_sApiUrl, sizeof(g_sApiUrl));
 	g_cvApiKey.GetString(g_sApiKey, sizeof(g_sApiKey));
 
-	// Add backslash to url if needed
+	// Remove trailing backslash from '/api/'
 	int len = strlen(g_sApiUrl);
-	if(len > 0 && g_sApiUrl[len - 1] != '/')
-		StrCat(g_sApiUrl, sizeof(g_sApiUrl), "/");
+	if(len > 0 && g_sApiUrl[len - 1] == '/')
+		g_sApiUrl[len - 1] = '\0';
+
+	// Log error about /api/
+	if(len > 0 && StrContains(g_sApiUrl[len - 4], "/api") == -1)
+		LogMessage("The API route normally ends with '/api'");
 
 	// Recreate HTTP client with new url
 	delete g_Client;
 	g_Client = new HTTPClient(g_sApiUrl);
+	g_Client.SetHeader("Content-Type:", "application/json");
+	g_Client.FollowLocation = true;
 }
 
 public void OnConfigsExecuted()
@@ -122,9 +130,20 @@ public void OnConfigsExecuted()
 	g_cvApiKey.GetString(g_sApiKey, sizeof(g_sApiKey));
 	g_cvApiUrl.GetString(g_sApiUrl, sizeof(g_sApiUrl));
 
+	// Remove trailing backslash from '/api/'
+	int len = strlen(g_sApiUrl);
+	if(len > 0 && g_sApiUrl[len - 1] == '/')
+		g_sApiUrl[len - 1] = '\0';
+
+	// Log error about /api/
+	if(len > 0 && StrContains(g_sApiUrl[len - 4], "/api") == -1)
+		LogMessage("The API route normally ends with '/api'");
+
 	// Recreate HTTP Client with new url
 	delete g_Client;
 	g_Client = new HTTPClient(g_sApiUrl);
+	g_Client.SetHeader("Content-Type:", "application/json");
+	g_Client.FollowLocation = true;
 }
 
 public void OnClientPutInServer(int Client)
@@ -178,12 +197,12 @@ void CreateMatch()
 
 	// Format request
 	char sUrl[1024];
-	Format(sUrl, sizeof(sUrl), "%smatch/create?%s", g_sApiUrl, g_sApiKey);
+	Format(sUrl, sizeof(sUrl), "match/create/?api_key=%s", g_sApiKey);
 
 	// Setup JSON data
-	char sTeamNameCT[128];
-	char sTeamNameT[128];
-	char sMap[128];
+	char sTeamNameCT[64];
+	char sTeamNameT[64];
+	char sMap[24];
 	JSONObject json = new JSONObject();
 
 	// Set names if pugsetup or get5 are available
@@ -235,12 +254,9 @@ void HTTP_OnCreateMatch(HTTPResponse response, any value, const char[] error)
 	if(!responseData.IsNull("error"))
 	{
 		// Error string
-		char errorInfo[1024];
-
-		// Format errors into a single readable string
-		FormatAPIError(responseData, errorInfo, sizeof(errorInfo));
-
-		LogError("HTTP_OnCreateMatch Failed! Error: %s", errorInfo);
+		//	char errorInfo[1024];
+		//	responseData.GetString("error", errorInfo, sizeof(errorInfo));
+		LogError("HTTP_OnCreateMatch Failed! Error: %s", responseData.Get("error"));
 		return;
 	}
 
@@ -273,7 +289,7 @@ void EndMatch()
 
 	// Format request
 	char sUrl[1024];
-	Format(sUrl, sizeof(sUrl), "%smatch/%s?%s", g_sApiUrl, g_sMatchId, g_sApiKey);
+	Format(sUrl, sizeof(sUrl), "match/%s?api_key=%s", g_sMatchId, g_sApiKey);
 
 	// Send request
 	g_Client.Delete(sUrl, HTTP_OnEndMatch);
@@ -295,10 +311,7 @@ void HTTP_OnEndMatch(HTTPResponse response, any value, const char[] error)
 	{
 		// Error string
 		char errorInfo[1024];
-
-		// Format errors into a single readable string
-		FormatAPIError(responseData, errorInfo, sizeof(errorInfo));
-
+		responseData.GetString("error", errorInfo, sizeof(errorInfo));
 		LogError("HTTP_OnEndMatch Failed! Error: %s", errorInfo);
 		return;
 	}
@@ -306,7 +319,8 @@ void HTTP_OnEndMatch(HTTPResponse response, any value, const char[] error)
 	// End match
 	PrintToServer("Match ended successfully.");
 	PrintToChatAll("Match has ended, stats will no longer be recorded.");
-	UploadDemo(g_sMatchId, sizeof(g_sMatchId));
+	if(FindConVar("tv_enable").IntValue == 1)
+		UploadDemo(g_sMatchId, sizeof(g_sMatchId));
 	g_sMatchId = "";
 
 	// Delete json handle
@@ -357,7 +371,7 @@ void UpdateMatch(int team_1_score = -1, int team_2_score = -1, const MatchUpdate
 
 	// Format request
 	char sUrl[1024];
-	Format(sUrl, sizeof(sUrl), "%smatch/%s?%s", g_sApiUrl, g_sMatchId, g_sApiKey);
+	Format(sUrl, sizeof(sUrl), "match/%s?api_key=%s", g_sMatchId, g_sApiKey);
 
 	// Send request
 	g_Client.Post(sUrl, json, HTTP_OnUpdateMatch);
@@ -380,11 +394,8 @@ void HTTP_OnUpdateMatch(HTTPResponse response, any value, const char[] error)
 	{
 		// Error string
 		char errorInfo[1024];
-
-		// Format errors into a single readable string
-		FormatAPIError(responseData, errorInfo, sizeof(errorInfo));
-
-		LogError("HTTP_OnUpdateMatch Failed! Error: %s", errorInfo);
+		responseData.GetString("error", errorInfo, sizeof(errorInfo));
+		LogError("HTTP_OnCreateMatch Failed! Error: %s", errorInfo);
 		return;
 	}
 
@@ -417,7 +428,7 @@ void UploadDemo(char[] demoName, int size)
 
 	// Format request
 	char sUrl[1024];
-	Format(sUrl, sizeof(sUrl), "%smatch/%s/upload?%s", g_sApiUrl, g_sMatchId, g_sApiKey);
+	Format(sUrl, sizeof(sUrl), "match/%s/upload?api_key=%s", g_sMatchId, g_sApiKey);
 
 	// Send request
 	g_Client.UploadFile(sUrl, demoName, HTTP_OnUploadDemo);
@@ -503,7 +514,9 @@ public Action Event_PlayerDisconnect(Event event, const char[] name, bool dontBr
 
 public Action Event_MatchEnd(Event event, const char[] name, bool dontBroadcast)
 {
-	EndMatch();
+	UpdateMatch(.players = g_PlayerStats, .size = sizeof(g_PlayerStats), .end = true);
+	if(FindConVar("tv_enable").IntValue == 1)
+		UploadDemo(g_sMatchId, sizeof(g_sMatchId));
 }
 
 stock void RestartGame(int delay)
@@ -514,30 +527,6 @@ stock void RestartGame(int delay)
 stock bool InWarmup()
 {
   return GameRules_GetProp("m_bWarmupPeriod") != 0;
-}
-
-stock void FormatAPIError(JSONObject responseData, char[] buffer, int size)
-{
-	JSONObject errorData = view_as<JSONObject>(responseData.Get("error")); // Object that contains the errors
-	char key[32]; // The key that the error message references
-	char value[128]; // The error message
-
-	// Iterate over json object/array to get all the errors that occurred
-	JSONObjectKeys keys = errorData.Keys();
-	while(keys.ReadKey(key, sizeof(key)))
-	{
-		JSONArray currentError = view_as<JSONArray>(errorData.Get(key));
-		for(int i = 0; i < currentError.Length; i++)
-		{
-			currentError.GetString(i, value, sizeof(value));
-			Format(buffer, size, "%s %s: %s", buffer, key, value);
-		}
-		delete currentError;
-	}
-
-	delete keys;
-	delete errorData;
-	delete responseData;
 }
 
 stock bool InMatch()

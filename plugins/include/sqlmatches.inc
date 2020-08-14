@@ -11,7 +11,7 @@ typedef OnMatchUpdatedFunc = function void (bool bSuccessful, HTTPStatus status,
 typedef OnDemoUploadedFunc = function void (bool bSuccessful, HTTPStatus status, const char[] error);
 
 /**
- * Creates a match on the current map and returns the matchId in the target function
+ * Creates a match with the JSON data passed in createData and returns the matchId in the target function
  *
  * @param apiKey 		String containing API Key
  * @param apiUrl 		String containing API Url
