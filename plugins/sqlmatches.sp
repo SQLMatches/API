@@ -278,7 +278,6 @@ void HTTP_OnCreateMatch(HTTPResponse response, any value, const char[] error)
 	ServerCommand("tv_record \"%s\"", g_sMatchId);
 
 	// Delete json handle
-	delete responseData;
 	delete data;
 }
 
@@ -333,9 +332,6 @@ void HTTP_OnEndMatch(HTTPResponse response, any value, const char[] error)
 	if(FindConVar("tv_enable").IntValue == 1)
 		UploadDemo(g_sMatchId, sizeof(g_sMatchId));
 	g_sMatchId = "";
-
-	// Delete json handle
-	delete responseData;
 }
 
 void UpdateMatch(int team_1_score = -1, int team_2_score = -1, const MatchUpdatePlayer[] players, int size = -1, bool dontUpdate = false, int team_1_side = -1, int team_2_side = -1, bool end = false)
@@ -412,9 +408,6 @@ void HTTP_OnUpdateMatch(HTTPResponse response, any value, const char[] error)
 	}
 
 	PrintToServer("Match updated successfully.");
-
-	// Delete json handle
-	delete responseData;
 }
 
 void UploadDemo(char[] demoName, int size)

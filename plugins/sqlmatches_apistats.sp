@@ -135,8 +135,7 @@ void HTTP_OnCreateMatch(HTTPResponse response, DataPack pack, const char[] error
 	char matchID[64];
 	data.GetString("match_id", matchID, sizeof(matchID));
 
-	// Delete json handles
-	delete responseData;
+	// Delete json handle
 	delete data;
 
 	// Call forward
@@ -251,9 +250,6 @@ void HTTP_OnEndMatch(HTTPResponse response, DataPack pack, const char[] error)
 		return;
 	}
 
-	// Delete json handle
-	delete responseData;
-
 	// Call forward
 	Call_StartForward(g_hMatchEndedFwd);
 	Call_PushCell(true);
@@ -366,9 +362,6 @@ void HTTP_OnUpdateMatch(HTTPResponse response, DataPack pack, const char[] error
 		delete pack;
 		return;
 	}
-
-	// Delete json handle
-	delete responseData;
 
 	// Call forward
 	Call_StartForward(g_hMatchUpdatedFwd);
@@ -493,5 +486,4 @@ stock FormatAPIError(JSONObject responseData, char[] buffer, int size)
 
 	delete keys;
 	delete errorData;
-	delete responseData;
 }
