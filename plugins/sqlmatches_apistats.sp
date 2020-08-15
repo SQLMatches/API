@@ -1,6 +1,6 @@
 #include <sqlmatches>
 
-public Plugin myinfo = 
+public Plugin myinfo =
 {
 	name = "SQLMatches API Stats",
 	author = "The Doggy",
@@ -81,6 +81,7 @@ public any Native_CreateMatch(Handle plugin, int numParams)
 	HTTPClient client = new HTTPClient(apiUrl);
 	client.Post(sUrl, json, HTTP_OnCreateMatch, pack);
 
+	delete client;
 	delete json;
 	delete pack;
 }
@@ -204,6 +205,7 @@ public any Native_EndMatch(Handle plugin, int numParams)
 	// Send request
 	HTTPClient client = new HTTPClient(apiUrl);
 	client.Delete(sUrl, HTTP_OnEndMatch, pack);
+	delete client;
 	delete pack;
 }
 
@@ -318,6 +320,7 @@ public any Native_UpdateMatch(Handle plugin, int numParams)
 	// Send request
 	HTTPClient client = new HTTPClient(apiUrl);
 	client.Post(sUrl, json, HTTP_OnUpdateMatch, pack);
+	delete client;
 	delete pack;
 	delete json;
 }
@@ -440,6 +443,7 @@ public any Native_UploadDemo(Handle plugin, int numParams)
 	// Send request
 	HTTPClient client = new HTTPClient(apiUrl);
 	client.UploadFile(sUrl, demoName, HTTP_OnUploadDemo, pack);
+	delete client;
 	delete pack;
 }
 

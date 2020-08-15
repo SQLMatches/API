@@ -46,7 +46,7 @@ enum struct MatchUpdatePlayer
 
 MatchUpdatePlayer g_PlayerStats[MAXPLAYERS + 1];
 
-public Plugin myinfo = 
+public Plugin myinfo =
 {
 	name = "SQLMatches",
 	author = "The Doggy",
@@ -370,6 +370,7 @@ void UpdateMatch(int team_1_score = -1, int team_2_score = -1, const MatchUpdate
 	{
 		JSONArray playerData = GetPlayersJson(players, size);
 		json.Set("players", playerData);
+		delete playerData;
 	}
 
 	// Set optional data
@@ -523,7 +524,7 @@ public Action Event_PlayerDisconnect(Event event, const char[] name, bool dontBr
 
 	// Reset client vars
 	ResetVars(Client);
-	
+
 	return Plugin_Continue;
 }
 
@@ -582,8 +583,8 @@ stock JSONArray GetPlayersJson(const MatchUpdatePlayer[] players, int size)
 
 	for(int i = 0; i < size; i++)
 	{
-		JSONObject player = new JSONObject();
 		if(!IsValidClient(players[i].Index)) continue;
+		JSONObject player = new JSONObject();
 
 		player.SetString("name", players[i].Username);
 		player.SetString("steam_id", players[i].SteamID);
@@ -601,6 +602,7 @@ stock JSONArray GetPlayersJson(const MatchUpdatePlayer[] players, int size)
 		player.SetBool("disconnected", IsClientInGame(players[i].Index));
 
 		json.Push(player);
+		delete player;
 	}
 
 	return json;
@@ -608,9 +610,9 @@ stock JSONArray GetPlayersJson(const MatchUpdatePlayer[] players, int size)
 
 stock bool IsValidClient(int client)
 {
-	if (client >= 1 && 
-	client <= MaxClients && 
-	IsClientConnected(client) && 
+	if (client >= 1 &&
+	client <= MaxClients &&
+	IsClientConnected(client) &&
 	IsClientInGame(client) &&
 	!IsFakeClient(client) &&
 	(GetClientTeam(client) == CS_TEAM_CT || GetClientTeam(client) == CS_TEAM_T))
