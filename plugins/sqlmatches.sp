@@ -183,6 +183,8 @@ public Action Command_EndMatch(int client, int args)
 
 void CreateMatch()
 {
+	if(InMatch()) return;
+
 	if(strlen(g_sApiUrl) == 0)
 	{
 		LogError("Failed to create match. Error: ConVar sm_sqlmatches_url cannot be empty.");
@@ -275,6 +277,8 @@ void HTTP_OnCreateMatch(HTTPResponse response, any value, const char[] error)
 
 void EndMatch()
 {
+	if(!InMatch()) return;
+
 	if(strlen(g_sApiUrl) == 0)
 	{
 		LogError("Failed to end match. Error: ConVar sm_sqlmatches_url cannot be empty.");
@@ -395,7 +399,7 @@ void HTTP_OnUpdateMatch(HTTPResponse response, any value, const char[] error)
 		// Error string
 		char errorInfo[1024];
 		responseData.GetString("error", errorInfo, sizeof(errorInfo));
-		LogError("HTTP_OnCreateMatch Failed! Error: %s", errorInfo);
+		LogError("HTTP_OnUpdateMatch Failed! Error: %s", errorInfo);
 		return;
 	}
 
@@ -479,6 +483,8 @@ public void Event_PlayerHurt(Event event, const char[] name, bool dontBroadcast)
 /* This has changed  */
 public void Event_HalfTime(Event event, const char[] name, bool dontBroadcast)
 {
+	if(!InMatch()) return;
+
     if (!g_bAlreadySwapped)
     {
     	LogMessage("Event_HalfTime(): Starting team swap...");
@@ -493,6 +499,8 @@ public void Event_HalfTime(Event event, const char[] name, bool dontBroadcast)
 
 public Action Event_PlayerDisconnect(Event event, const char[] name, bool dontBroadcast)
 {
+	if(!InMatch()) return Plugin_Continue;
+
 	// If the client isn't valid or isn't currently in a match return
 	int Client = GetClientOfUserId(event.GetInt("userid"));
 	if(!IsValidClient(Client)) return Plugin_Handled;
@@ -514,9 +522,12 @@ public Action Event_PlayerDisconnect(Event event, const char[] name, bool dontBr
 
 public Action Event_MatchEnd(Event event, const char[] name, bool dontBroadcast)
 {
+	if(!InMatch()) return;
+
 	UpdateMatch(.players = g_PlayerStats, .size = sizeof(g_PlayerStats), .end = true);
 	if(FindConVar("tv_enable").IntValue == 1)
 		UploadDemo(g_sMatchId, sizeof(g_sMatchId));
+	g_sMatchId = "";
 }
 
 stock void RestartGame(int delay)
