@@ -76,6 +76,7 @@ public void OnLibraryRemoved(const char[] name)
 public void OnPluginStart()
 {
 	//Hook Events
+	HookEvent("round_start", Event_RoundStart);
 	HookEvent("round_end", Event_RoundEnd);
 	HookEvent("weapon_fire", Event_WeaponFired);
 	HookEvent("player_hurt", Event_PlayerHurt);
@@ -102,6 +103,13 @@ public void OnPluginStart()
 	// Register commands
 	RegConsoleCmd("sm_creatematch", Command_CreateMatch, "Creates a match");
 	RegConsoleCmd("sm_endmatch", Command_EndMatch, "Ends a match");
+}
+
+public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
+{
+	if(InMatch()) return;
+
+	CreateMatch();
 }
 
 public void OnAPIChanged(ConVar convar, const char[] oldValue, const char[] newValue)
