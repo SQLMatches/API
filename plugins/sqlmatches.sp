@@ -107,7 +107,7 @@ public void OnPluginStart()
 
 public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 {
-	if(InMatch()) return;
+	if(InWarmup()) return;
 
 	CreateMatch();
 }
@@ -274,9 +274,8 @@ void HTTP_OnCreateMatch(HTTPResponse response, any value, const char[] error)
 	JSONObject data = view_as<JSONObject>(responseData.Get("data"));
 	data.GetString("match_id", g_sMatchId, sizeof(g_sMatchId));
 	PrintToServer("Match %s created successfully.", g_sMatchId);
-	PrintToChatAll("Match has been created, restarting game...");
+	PrintToChatAll("Match has been created");
 	ServerCommand("tv_record \"%s\"", g_sMatchId);
-	RestartGame(5);
 
 	// Delete json handle
 	delete responseData;
