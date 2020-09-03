@@ -75,7 +75,7 @@ public any Native_CreateMatch(Handle plugin, int numParams)
 
 	// Format request
 	char sUrl[1024];
-	Format(sUrl, sizeof(sUrl), "%smatch/create?%s", apiUrl, apiKey);
+	Format(sUrl, sizeof(sUrl), "match/create/?api_key=%s", apiKey);
 
 	// Send request
 	HTTPClient client = new HTTPClient(apiUrl);
@@ -199,7 +199,7 @@ public any Native_EndMatch(Handle plugin, int numParams)
 
 	// Format request
 	char sUrl[1024];
-	Format(sUrl, sizeof(sUrl), "%smatch/%s?%s", apiUrl, matchID, apiKey);
+	Format(sUrl, sizeof(sUrl), "match/%s?api_key=%s", matchID, apiKey);
 
 	// Send request
 	HTTPClient client = new HTTPClient(apiUrl);
@@ -311,7 +311,7 @@ public any Native_UpdateMatch(Handle plugin, int numParams)
 
 	// Format request
 	char sUrl[1024];
-	Format(sUrl, sizeof(sUrl), "%smatch/%s?%s", apiUrl, matchID, apiKey);
+	Format(sUrl, sizeof(sUrl), "match/%s?api_key=%s", matchID, apiKey);
 
 	// Send request
 	HTTPClient client = new HTTPClient(apiUrl);
@@ -431,7 +431,7 @@ public any Native_UploadDemo(Handle plugin, int numParams)
 
 	// Format request
 	char sUrl[1024];
-	Format(sUrl, sizeof(sUrl), "%smatch/%s/upload?%s", apiUrl, matchID, apiKey);
+	Format(sUrl, sizeof(sUrl), "match/%s/upload?api_key=%s", matchID, apiKey);
 
 	// Send request
 	HTTPClient client = new HTTPClient(apiUrl);
