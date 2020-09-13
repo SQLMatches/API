@@ -486,16 +486,16 @@ public void Event_HalfTime(Event event, const char[] name, bool dontBroadcast)
 {
 	if(!InMatch()) return;
 
-    if (!g_bAlreadySwapped)
-    {
-    	LogMessage("Event_HalfTime(): Starting team swap...");
+	if (!g_bAlreadySwapped)
+	{
+		LogMessage("Event_HalfTime(): Starting team swap...");
 
-    	UpdateMatch(.team_1_side = 1, .team_2_side = 0, .players = g_PlayerStats, .dontUpdate = true);
+		UpdateMatch(.team_1_side = 1, .team_2_side = 0, .players = g_PlayerStats, .dontUpdate = true);
 
-        g_bAlreadySwapped = true;
-    }
-    else
-    	LogError("Event_HalfTime(): Teams have already been swapped!");
+		g_bAlreadySwapped = true;
+	}
+	else
+		LogError("Event_HalfTime(): Teams have already been swapped!");
 }
 
 public Action Event_PlayerDisconnect(Event event, const char[] name, bool dontBroadcast)
