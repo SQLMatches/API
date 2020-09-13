@@ -46,7 +46,7 @@ enum struct MatchUpdatePlayer
 
 MatchUpdatePlayer g_PlayerStats[MAXPLAYERS + 1];
 
-public Plugin myinfo = 
+public Plugin myinfo =
 {
 	name = "SQLMatches",
 	author = "The Doggy",
@@ -278,7 +278,6 @@ void HTTP_OnCreateMatch(HTTPResponse response, any value, const char[] error)
 	ServerCommand("tv_record \"%s\"", g_sMatchId);
 
 	// Delete json handle
-	delete responseData;
 	delete data;
 }
 
@@ -333,9 +332,6 @@ void HTTP_OnEndMatch(HTTPResponse response, any value, const char[] error)
 	if(FindConVar("tv_enable").IntValue == 1)
 		UploadDemo(g_sMatchId, sizeof(g_sMatchId));
 	g_sMatchId = "";
-
-	// Delete json handle
-	delete responseData;
 }
 
 void UpdateMatch(int team_1_score = -1, int team_2_score = -1, const MatchUpdatePlayer[] players, int size = -1, bool dontUpdate = false, int team_1_side = -1, int team_2_side = -1, bool end = false)
@@ -370,6 +366,7 @@ void UpdateMatch(int team_1_score = -1, int team_2_score = -1, const MatchUpdate
 	{
 		JSONArray playerData = GetPlayersJson(players, size);
 		json.Set("players", playerData);
+		delete playerData;
 	}
 
 	// Set optional data
@@ -411,9 +408,6 @@ void HTTP_OnUpdateMatch(HTTPResponse response, any value, const char[] error)
 	}
 
 	PrintToServer("Match updated successfully.");
-
-	// Delete json handle
-	delete responseData;
 }
 
 void UploadDemo(char[] demoName, int size)
@@ -492,16 +486,16 @@ public void Event_HalfTime(Event event, const char[] name, bool dontBroadcast)
 {
 	if(!InMatch()) return;
 
-    if (!g_bAlreadySwapped)
-    {
-    	LogMessage("Event_HalfTime(): Starting team swap...");
+	if (!g_bAlreadySwapped)
+	{
+		LogMessage("Event_HalfTime(): Starting team swap...");
 
-    	UpdateMatch(.team_1_side = 1, .team_2_side = 0, .players = g_PlayerStats, .dontUpdate = true);
+		UpdateMatch(.team_1_side = 1, .team_2_side = 0, .players = g_PlayerStats, .dontUpdate = true);
 
-        g_bAlreadySwapped = true;
-    }
-    else
-    	LogError("Event_HalfTime(): Teams have already been swapped!");
+		g_bAlreadySwapped = true;
+	}
+	else
+		LogError("Event_HalfTime(): Teams have already been swapped!");
 }
 
 public Action Event_PlayerDisconnect(Event event, const char[] name, bool dontBroadcast)
@@ -523,7 +517,7 @@ public Action Event_PlayerDisconnect(Event event, const char[] name, bool dontBr
 
 	// Reset client vars
 	ResetVars(Client);
-	
+
 	return Plugin_Continue;
 }
 
@@ -582,8 +576,8 @@ stock JSONArray GetPlayersJson(const MatchUpdatePlayer[] players, int size)
 
 	for(int i = 0; i < size; i++)
 	{
-		JSONObject player = new JSONObject();
 		if(!IsValidClient(players[i].Index)) continue;
+		JSONObject player = new JSONObject();
 
 		player.SetString("name", players[i].Username);
 		player.SetString("steam_id", players[i].SteamID);
@@ -601,6 +595,7 @@ stock JSONArray GetPlayersJson(const MatchUpdatePlayer[] players, int size)
 		player.SetBool("disconnected", IsClientInGame(players[i].Index));
 
 		json.Push(player);
+		delete player;
 	}
 
 	return json;
@@ -608,9 +603,9 @@ stock JSONArray GetPlayersJson(const MatchUpdatePlayer[] players, int size)
 
 stock bool IsValidClient(int client)
 {
-	if (client >= 1 && 
-	client <= MaxClients && 
-	IsClientConnected(client) && 
+	if (client >= 1 &&
+	client <= MaxClients &&
+	IsClientConnected(client) &&
 	IsClientInGame(client) &&
 	!IsFakeClient(client) &&
 	(GetClientTeam(client) == CS_TEAM_CT || GetClientTeam(client) == CS_TEAM_T))

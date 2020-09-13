@@ -1,6 +1,6 @@
 #include <sqlmatches>
 
-public Plugin myinfo = 
+public Plugin myinfo =
 {
 	name = "SQLMatches API Stats",
 	author = "The Doggy",
@@ -75,12 +75,13 @@ public any Native_CreateMatch(Handle plugin, int numParams)
 
 	// Format request
 	char sUrl[1024];
-	Format(sUrl, sizeof(sUrl), "%smatch/create?%s", apiUrl, apiKey);
+	Format(sUrl, sizeof(sUrl), "match/create/?api_key=%s", apiKey);
 
 	// Send request
 	HTTPClient client = new HTTPClient(apiUrl);
 	client.Post(sUrl, json, HTTP_OnCreateMatch, pack);
 
+	delete client;
 	delete json;
 	delete pack;
 }
@@ -134,8 +135,7 @@ void HTTP_OnCreateMatch(HTTPResponse response, DataPack pack, const char[] error
 	char matchID[64];
 	data.GetString("match_id", matchID, sizeof(matchID));
 
-	// Delete json handles
-	delete responseData;
+	// Delete json handle
 	delete data;
 
 	// Call forward
@@ -199,11 +199,12 @@ public any Native_EndMatch(Handle plugin, int numParams)
 
 	// Format request
 	char sUrl[1024];
-	Format(sUrl, sizeof(sUrl), "%smatch/%s?%s", apiUrl, matchID, apiKey);
+	Format(sUrl, sizeof(sUrl), "match/%s?api_key=%s", matchID, apiKey);
 
 	// Send request
 	HTTPClient client = new HTTPClient(apiUrl);
 	client.Delete(sUrl, HTTP_OnEndMatch, pack);
+	delete client;
 	delete pack;
 }
 
@@ -248,9 +249,6 @@ void HTTP_OnEndMatch(HTTPResponse response, DataPack pack, const char[] error)
 		delete pack;
 		return;
 	}
-
-	// Delete json handle
-	delete responseData;
 
 	// Call forward
 	Call_StartForward(g_hMatchEndedFwd);
@@ -313,11 +311,12 @@ public any Native_UpdateMatch(Handle plugin, int numParams)
 
 	// Format request
 	char sUrl[1024];
-	Format(sUrl, sizeof(sUrl), "%smatch/%s?%s", apiUrl, matchID, apiKey);
+	Format(sUrl, sizeof(sUrl), "match/%s?api_key=%s", matchID, apiKey);
 
 	// Send request
 	HTTPClient client = new HTTPClient(apiUrl);
 	client.Post(sUrl, json, HTTP_OnUpdateMatch, pack);
+	delete client;
 	delete pack;
 	delete json;
 }
@@ -363,9 +362,6 @@ void HTTP_OnUpdateMatch(HTTPResponse response, DataPack pack, const char[] error
 		delete pack;
 		return;
 	}
-
-	// Delete json handle
-	delete responseData;
 
 	// Call forward
 	Call_StartForward(g_hMatchUpdatedFwd);
@@ -435,11 +431,12 @@ public any Native_UploadDemo(Handle plugin, int numParams)
 
 	// Format request
 	char sUrl[1024];
-	Format(sUrl, sizeof(sUrl), "%smatch/%s/upload?%s", apiUrl, matchID, apiKey);
+	Format(sUrl, sizeof(sUrl), "match/%s/upload?api_key=%s", matchID, apiKey);
 
 	// Send request
 	HTTPClient client = new HTTPClient(apiUrl);
 	client.UploadFile(sUrl, demoName, HTTP_OnUploadDemo, pack);
+	delete client;
 	delete pack;
 }
 
@@ -489,5 +486,4 @@ stock FormatAPIError(JSONObject responseData, char[] buffer, int size)
 
 	delete keys;
 	delete errorData;
-	delete responseData;
 }
