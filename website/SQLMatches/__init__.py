@@ -31,7 +31,7 @@ from secrets import token_urlsafe
 from databases import Database
 from aiohttp import ClientSession
 
-import aiob2
+import backblaze
 
 from .tables import create_tables
 from .resources import Sessions, Config
@@ -130,12 +130,12 @@ class SQLMatches(Starlette):
             database_settings.engine + database_url
         )
 
-        self.aiob2 = aiob2.client(
+        self.b2 = backblaze.Awaiting(
             b2_settings.key_id,
             b2_settings.application_key
         )
 
-        Sessions.demo_bucket = self.aiob2.bucket(
+        Sessions.bucket = self.b2.bucket(
             b2_settings.bucket_id
         )
 
@@ -163,7 +163,7 @@ class SQLMatches(Starlette):
         """
 
         await Sessions.database.connect()
-        await self.aiob2.connect()
+        await self.b2.authorize()
         Sessions.aiohttp = ClientSession()
 
     async def _shutdown(self) -> None:
@@ -172,5 +172,5 @@ class SQLMatches(Starlette):
         """
 
         await Sessions.database.disconnect()
-        await self.aiob2.close()
+        await self.b2.close()
         await Sessions.aiohttp.close()

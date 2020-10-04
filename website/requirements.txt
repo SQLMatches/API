@@ -13,5 +13,5 @@ wtforms
 starlette-wtf
 webargs
 webargs-starlette
-aiob2
+backblaze
 marshmallow

@@ -23,6 +23,8 @@ DEALINGS IN THE SOFTWARE.
 
 from starlette.endpoints import HTTPEndpoint
 
+from os import path
+from backblaze.settings import PartSettings
 from marshmallow import Schema
 from webargs import fields
 from webargs_starlette import use_args
@@ -116,19 +118,17 @@ class DemoUploadAPI(HTTPEndpoint):
             if demo_status == 0:
                 await match.set_demo_status(1)
 
-                demo_data = b""
-                async for chunk in request.stream():
-                    demo_data += chunk
-
-                if len(demo_data) > 80000000:
-                    return error_response("FileToLarge")
-
-                await Sessions.demo_bucket.upload.data(
-                    data=demo_data,
-                    file_name=Config.demo_pathway + "{}.dem".format(
-                        match.match_id
+                _, file = await Sessions.bucket.create_part(PartSettings(
+                    path.join(
+                        Config.demo_pathway,
+                        "{}.dem".format(match.match_id)
                     )
-                )
+                ))
+
+                parts = file.parts()
+
+                async for chunk in request.stream():
+                    await parts.data(chunk)
 
                 await match.set_demo_status(2)
 

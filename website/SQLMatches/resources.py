@@ -22,7 +22,8 @@ DEALINGS IN THE SOFTWARE.
 
 
 import os
-import aiob2
+
+from backblaze.bucket.awaiting import AwaitingBucket
 from aiohttp import ClientSession
 from databases import Database
 
@@ -30,7 +31,7 @@ from databases import Database
 class Sessions:
     database: Database
     aiohttp: ClientSession
-    demo_bucket: aiob2.client.bucket
+    bucket: AwaitingBucket
 
 
 class Config:
