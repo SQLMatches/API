@@ -48,3 +48,5 @@ class Config:
     db_engine: str
     cdn_url: str
     demo_pathway: str
+    upload_delay: float
+    max_upload_size: int

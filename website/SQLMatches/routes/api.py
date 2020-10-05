@@ -22,14 +22,13 @@ DEALINGS IN THE SOFTWARE.
 
 
 from starlette.endpoints import HTTPEndpoint
+from starlette.background import BackgroundTask
 
-from os import path
-from backblaze.settings import PartSettings
 from marshmallow import Schema
 from webargs import fields
 from webargs_starlette import use_args
 
-from ..resources import Sessions, Config
+from ..background import upload_match_demo
 
 from ..api import error_response, response
 from ..api.model_convertor import scoreboard_to_dict
@@ -116,22 +115,12 @@ class DemoUploadAPI(HTTPEndpoint):
             return error_response("InvalidMatchID")
         else:
             if demo_status == 0:
-                await match.set_demo_status(1)
-
-                _, file = await Sessions.bucket.create_part(PartSettings(
-                    path.join(
-                        Config.demo_pathway,
-                        "{}.dem".format(match.match_id)
+                return response(
+                    background=BackgroundTask(
+                        upload_match_demo,
+                        request=request,
+                        match=match
                     )
-                ))
-
-                parts = file.parts()
-
-                async for chunk in request.stream():
-                    await parts.data(chunk)
-
-                await match.set_demo_status(2)
-
-                return response()
+                )
             else:
                 return error_response("DemoAlreadyUploaded")

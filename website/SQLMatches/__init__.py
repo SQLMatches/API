@@ -65,6 +65,8 @@ class SQLMatches(Starlette):
                  secret_key: str = token_urlsafe(),
                  csrf_secret: str = token_urlsafe(),
                  map_images: dict = MAP_IMAGES,
+                 upload_delay: float = 0.3,
+                 max_upload_size: int = 80000000,
                  **kwargs) -> None:
         """
         SQLMatches server.
@@ -79,6 +81,10 @@ class SQLMatches(Starlette):
             Optionally pass your own url safe secret key.
         map_images: dict
             Key as actual map name, value as image name.
+        upload_delay: float
+            by default 0.3
+        max_upload_size: int
+            by default 80000000
         kwargs
             Additional parameters to pass to the Starlette instance.
         """
@@ -117,6 +123,8 @@ class SQLMatches(Starlette):
         Config.map_images = map_images
         Config.demo_pathway = b2_settings.pathway
         Config.cdn_url = b2_settings.cdn_url
+        Config.upload_delay = upload_delay
+        Config.max_upload_size = max_upload_size
 
         database_url = "://{}:{}@{}:{}/{}?charset=utf8mb4".format(
             database_settings.username,

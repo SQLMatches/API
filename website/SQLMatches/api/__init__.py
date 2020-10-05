@@ -40,7 +40,7 @@ def error_response(error: str, **kwargs) -> JSONResponse:
     return JSONResponse({"data": None, "error": error}, **kwargs)
 
 
-def response(data: dict = None) -> JSONResponse:
+def response(data: dict = None, **kwargs) -> JSONResponse:
     """
     Handles a successful api response.
 
@@ -50,4 +50,4 @@ def response(data: dict = None) -> JSONResponse:
         Data to respond.
     """
 
-    return JSONResponse({"data": data, "error": False})
+    return JSONResponse({"data": data, "error": False}, **kwargs)
