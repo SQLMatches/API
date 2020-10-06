@@ -65,7 +65,7 @@ class SQLMatches(Starlette):
                  secret_key: str = token_urlsafe(),
                  csrf_secret: str = token_urlsafe(),
                  map_images: dict = MAP_IMAGES,
-                 upload_delay: float = 0.3,
+                 upload_delay: float = 0.1,
                  max_upload_size: int = 80000000,
                  **kwargs) -> None:
         """
@@ -82,7 +82,7 @@ class SQLMatches(Starlette):
         map_images: dict
             Key as actual map name, value as image name.
         upload_delay: float
-            by default 0.3
+            by default 0.1
         max_upload_size: int
             by default 80000000
         kwargs
