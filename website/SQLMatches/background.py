@@ -46,7 +46,8 @@ async def upload_match_demo(request: Request, match: Match) -> None:
         path.join(
             Config.demo_pathway,
             "{}.dem".format(match.match_id)
-        )
+        ),
+        content_type="application/octet-stream"
     ))
 
     parts = file.parts()
