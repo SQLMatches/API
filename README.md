@@ -5,7 +5,7 @@
 [![Actions Status](https://github.com/WardPearce/SQLMatches/workflows/Website/badge.svg)](https://github.com/WardPearce/SQLMatches/actions)
 [![Actions Status](https://github.com/WardPearce/SQLMatches/workflows/Plugins/badge.svg)](https://github.com/WardPearce/SQLMatches/actions)
 
-## SQLMatches 0.0.9
+## SQLMatches 0.0.10
 SQLMatches is a completely free & open source CS:GO match statistics & demo recording tool. If you need any help feel free to ask on our [discord](https://discord.gg/guYFTjt), please don't open a issue unless if its code related.
 
 [Consider donating to help support hosting this project!](https://www.patreon.com/wardweeb)
@@ -37,6 +37,8 @@ SQLMatches is a completely free & open source CS:GO match statistics & demo reco
 - Enter your community's name & click create.
 - [Install the plugin](#sourcemod-setup).
 - Set ``sm_sqlmatches_key`` CVAR as your API key located on your community page, under 'Owner Panel'.
+- Enable GOTV ``tv_enable 1``.
+- Disable auto record ``tv_autorecord``.
 - Sit back and relax!
 
 ### Adding more map images
