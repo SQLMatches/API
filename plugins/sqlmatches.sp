@@ -432,7 +432,7 @@ void UploadDemo(char[] demoName, int size)
 
 	// Format request
 	char sUrl[1024];
-	Format(sUrl, sizeof(sUrl), "match/%s/upload?api_key=%s", g_sMatchId, g_sApiKey);
+	Format(sUrl, sizeof(sUrl), "match/%s/upload/?api_key=%s", g_sMatchId, g_sApiKey);
 
 	// Send request
 	g_Client.UploadFile(sUrl, demoName, HTTP_OnUploadDemo);
@@ -489,7 +489,7 @@ public void Event_HalfTime(Event event, const char[] name, bool dontBroadcast)
 	{
 		LogMessage("Event_HalfTime(): Starting team swap...");
 
-		UpdateMatch(.team_1_side = 1, .team_2_side = 0, .players = g_PlayerStats, .dontUpdate = true);
+		UpdateMatch(.team_1_side = 1, .team_2_side = 0, .players = g_PlayerStats, .dontUpdate = false);
 
 		g_bAlreadySwapped = true;
 	}

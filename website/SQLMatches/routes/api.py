@@ -106,7 +106,7 @@ class CreateMatchAPI(HTTPEndpoint):
 
 
 class DemoUploadAPI(HTTPEndpoint):
-    async def post(self, request):
+    async def put(self, request):
         match = request.state.community.match(request.path_params["match_id"])
 
         try:
