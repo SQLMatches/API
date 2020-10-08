@@ -165,7 +165,7 @@ All status 200 responses are inside of data.
 ---
 
 ### Upload Demo
-``POST - https://sqlmatches.com/api/match/{match_id}/?api_key={api_key}``
+``PUT - https://sqlmatches.com/api/match/{match_id}/?api_key={api_key}``
 
 **URL Parameters**
 
