@@ -47,7 +47,7 @@ MatchUpdatePlayer g_PlayerStats[MAXPLAYERS + 1];
 public Plugin myinfo =
 {
 	name = "SQLMatches",
-	author = "The Doggy, WardPearce",
+	author = "The Doggy, ErikMinekus, WardPearce",
 	description = "Match stats and demo recording system for CS:GO",
 	version = "1.0.3",
 	url = "https://sqlmatches.com/"
