@@ -21,17 +21,21 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
+import asyncio
+
 from starlette.endpoints import HTTPEndpoint
-from starlette.background import BackgroundTask
+
+from os import path
+from backblaze.settings import PartSettings
 
 from marshmallow import Schema
 from webargs import fields
 from webargs_starlette import use_args
 
-from ..background import upload_match_demo
-
 from ..api import error_response, response
 from ..api.model_convertor import scoreboard_to_dict
+
+from ..resources import Sessions, Config
 
 from ..community.exceptions import InvalidMatchID
 
@@ -115,12 +119,42 @@ class DemoUploadAPI(HTTPEndpoint):
             return error_response("InvalidMatchID")
         else:
             if demo_status == 0:
-                return response(
-                    background=BackgroundTask(
-                        upload_match_demo,
-                        request=request,
-                        match=match
-                    )
-                )
+                await match.set_demo_status(1)
+
+                _, file = await Sessions.bucket.create_part(PartSettings(
+                    path.join(
+                        Config.demo_pathway,
+                        "{}.dem".format(match.match_id)
+                    ),
+                    content_type="application/octet-stream"
+                ))
+
+                parts = file.parts()
+
+                chunked = b""
+                total_size = 0
+                async for chunk in request.stream():
+                    chunked += chunk
+
+                    if len(chunked) >= 5000000:
+                        await parts.data(chunked)
+
+                        total_size += len(chunked)
+                        chunked = b""
+
+                    await asyncio.sleep(Config.upload_delay)
+
+                if chunked:
+                    await parts.data(chunked)
+                    total_size += len(chunked)
+
+                if total_size > Config.max_upload_size or total_size == 0:
+                    await file.cancel()
+                else:
+                    await parts.finish()
+
+                await match.set_demo_status(2)
+
+                return response()
             else:
                 return error_response("DemoAlreadyUploaded")

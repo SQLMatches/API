@@ -97,6 +97,8 @@ public void OnPluginStart()
 	g_Client = new HTTPClient(g_sApiUrl);
 	g_Client.SetHeader("Content-Type:", "application/json");
 	g_Client.FollowLocation = true;
+	g_Client.ConnectTimeout = 300;
+	g_Client.Timeout = 300;
 
 	// Register commands
 	RegConsoleCmd("sm_creatematch", Command_CreateMatch, "Creates a match");
@@ -129,6 +131,8 @@ public void OnAPIChanged(ConVar convar, const char[] oldValue, const char[] newV
 	g_Client = new HTTPClient(g_sApiUrl);
 	g_Client.SetHeader("Content-Type:", "application/json");
 	g_Client.FollowLocation = true;
+	g_Client.ConnectTimeout = 300;
+	g_Client.Timeout = 300;
 }
 
 public void OnConfigsExecuted()
@@ -150,6 +154,8 @@ public void OnConfigsExecuted()
 	g_Client = new HTTPClient(g_sApiUrl);
 	g_Client.SetHeader("Content-Type:", "application/json");
 	g_Client.FollowLocation = true;
+	g_Client.ConnectTimeout = 300;
+	g_Client.Timeout = 300;
 }
 
 public void OnClientPutInServer(int Client)
@@ -411,34 +417,40 @@ void HTTP_OnUpdateMatch(HTTPResponse response, any value, const char[] error)
 
 void UploadDemo(const char[] demoName)
 {
-    if(strlen(g_sApiUrl) == 0)
-    {
-        LogError("Failed to upload demo. Error: ConVar sm_sqlmatches_url cannot be empty.");
-        return;
-    }
+	if(strlen(g_sApiUrl) == 0)
+	{
+		LogError("Failed to upload demo. Error: ConVar sm_sqlmatches_url cannot be empty.");
+		return;
+	}
 
-    if(strlen(g_sApiKey) == 0)
-    {
-        LogError("Failed to upload demo. Error: ConVar sm_sqlmatches_key cannot be empty.");
-        return;
-    }
+	if(strlen(g_sApiKey) == 0)
+	{
+		LogError("Failed to upload demo. Error: ConVar sm_sqlmatches_key cannot be empty.");
+		return;
+	}
 
-    char formattedDemo[128];
-    Format(formattedDemo, sizeof(formattedDemo), "%s.dem", demoName);
-    if(!FileExists(formattedDemo))
-    {
-        LogError("Failed to upload demo. Error: File \"%s\" does not exist.", formattedDemo);
-        return;
-    }
+	char formattedDemo[128];
+	Format(formattedDemo, sizeof(formattedDemo), "%s.dem", demoName);
+	if(!FileExists(formattedDemo))
+	{
+		LogError("Failed to upload demo. Error: File \"%s\" does not exist.", formattedDemo);
+		return;
+	}
 
-    // Format request
-    char sUrl[1024];
-    Format(sUrl, sizeof(sUrl), "match/%s/upload/?api_key=%s", g_sMatchId, g_sApiKey);
+	if(FileSize(formattedDemo) < 1000024)
+	{
+		LogError("Demo file must be larger then 5 mb.");
+		return;
+	}
 
-    // Send request
-    g_Client.UploadFile(sUrl, formattedDemo, HTTP_OnUploadDemo);
+	// Format request
+	char sUrl[1024];
+	Format(sUrl, sizeof(sUrl), "match/%s/upload/?api_key=%s", g_sMatchId, g_sApiKey);
 
-    PrintToServer("%s Uploading demo...", PREFIX);
+	// Send request
+	g_Client.UploadFile(sUrl, formattedDemo, HTTP_OnUploadDemo);
+
+	PrintToServer("%s Uploading demo...", PREFIX);
 }
 
 void HTTP_OnUploadDemo(HTTPStatus status, DataPack pack, const char[] error)

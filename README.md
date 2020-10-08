@@ -40,6 +40,8 @@ SQLMatches is a completely free & open source CS:GO match statistics & demo reco
 - Enable GOTV ``tv_enable 1``.
 - Disable auto record ``tv_autorecord 0``.
 - Disable hibernation ``sv_hibernate_when_empty 0``
+- Feel free increase the demo tick rate, but the demo can not be larger then 80 mb.
+- The demo won't upload if its smaller then 5 mb.
 - Sit back and relax!
 
 ### Adding more map images
