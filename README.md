@@ -5,7 +5,7 @@
 [![Actions Status](https://github.com/WardPearce/SQLMatches/workflows/Website/badge.svg)](https://github.com/WardPearce/SQLMatches/actions)
 [![Actions Status](https://github.com/WardPearce/SQLMatches/workflows/Plugins/badge.svg)](https://github.com/WardPearce/SQLMatches/actions)
 
-## SQLMatches 0.0.12
+## SQLMatches 0.0.13
 SQLMatches is a completely free & open source CS:GO match statistics & demo recording tool. If you need any help feel free to ask on our [discord](https://discord.gg/guYFTjt), please don't open a issue unless if its code related.
 
 [Consider donating to help support hosting this project!](https://www.patreon.com/wardweeb)
@@ -18,6 +18,7 @@ SQLMatches is a completely free & open source CS:GO match statistics & demo reco
     - [Adding more map images](#adding-more-map-images)
 - [Sourcemod setup](#sourcemod-setup)
 - [Supported database engines](#supported-database-engines)
+- [Preview](#Preview)
 - [Legacy version](#legacy-version)
 
 ## Website
@@ -40,6 +41,7 @@ SQLMatches is a completely free & open source CS:GO match statistics & demo reco
 - Enable GOTV ``tv_enable 1``.
 - Disable auto record ``tv_autorecord 0``.
 - Disable hibernation ``sv_hibernate_when_empty 0``
+- Increase ``mp_endmatch_votenextmap``, if the demo isn't uploaded by the time the vote screen ends it won't be uploaded.
 - Feel free increase the demo tick rate, but the demo can not be larger then 80 mb.
 - The demo won't upload if its smaller then 5 mb.
 - Sit back and relax!
@@ -60,6 +62,10 @@ SQLMatches is a completely free & open source CS:GO match statistics & demo reco
 - MySQL (Fully tested)
 - Postgresql (Not tested)
 - SQLite (Not tested)
+
+## Preview
+![Community page](https://i.imgur.com/3LRh2OK.png)
+![Scoreboard page](https://i.imgur.com/8BQHUMS.png)
 
 ## Legacy version
 [Looking for the super ugly & out of date PHP version? Check it out here](https://github.com/WardPearce/SQLMatches/tree/Legacy-PHP)
