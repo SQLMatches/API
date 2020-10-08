@@ -1,7 +1,16 @@
+// Decoding flags
+enum
+{
+	JSON_REJECT_DUPLICATES  = 0x1,		/**< Error if any JSON object contains duplicate keys */
+	JSON_DISABLE_EOF_CHECK  = 0x2,		/**< Allow extra data after a valid JSON array or object */
+	JSON_DECODE_ANY         = 0x4,		/**< Decode any value */
+	JSON_DECODE_INT_AS_REAL = 0x8,		/**< Interpret all numbers as floats */
+	JSON_ALLOW_NUL          = 0x10		/**< Allow \u0000 escape inside string values */
+};
+
 // Encoding flags
 enum
 {
-	JSON_MAX_INDENT   = 0x1F,		/**< Maximum indentation */
 	JSON_COMPACT      = 0x20,		/**< Compact representation */
 	JSON_ENSURE_ASCII = 0x40,		/**< Escape all Unicode characters outside the ASCII range */
 	JSON_SORT_KEYS    = 0x80,		/**< Sort object keys */
@@ -10,7 +19,10 @@ enum
 	JSON_EMBED        = 0x10000		/**< Omit opening and closing braces of the top-level object */
 };
 
-// Pretty-print the result and indent with n spaces
+// Maximum indentation
+static const int JSON_MAX_INDENT = 0x1F;
+
+// Pretty-print the result, indenting with n spaces
 stock int JSON_INDENT(int n)
 {
 	return n & JSON_MAX_INDENT;
@@ -25,14 +37,14 @@ stock int JSON_REAL_PRECISION(int n)
 // Generic type for encoding JSON.
 methodmap JSON < Handle
 {
-	// Writes the JSON string representation of the object to a file.
+	// Writes the JSON string representation to a file.
 	//
 	// @param file       File to write to.
 	// @param flags      Encoding flags.
 	// @return           True on success, false on failure.
 	public native bool ToFile(const char[] file, int flags = 0);
 
-	// Retrieves the JSON string representation of the object.
+	// Retrieves the JSON string representation.
 	//
 	// @param buffer     String buffer to write to.
 	// @param maxlength  Maximum length of the string buffer.
@@ -52,16 +64,18 @@ methodmap JSONObject < JSON
 	// Loads a JSON object from a file.
 	//
 	// @param file       File to read from.
+	// @param flags      Decoding flags.
 	// @return           Object handle, or null on failure.
 	// @error            Invalid JSON.
-	public static native JSONObject FromFile(const char[] file);
+	public static native JSONObject FromFile(const char[] file, int flags = 0);
 
 	// Loads a JSON object from a string.
 	//
 	// @param buffer     String buffer to load into the JSON object.
+	// @param flags      Decoding flags.
 	// @return           Object handle, or null on failure.
 	// @error            Invalid JSON.
-	public static native JSONObject FromString(const char[] buffer);
+	public static native JSONObject FromString(const char[] buffer, int flags = 0);
 
 	// Retrieves an array or object value from the object.
 	//
@@ -116,7 +130,7 @@ methodmap JSONObject < JSON
 	// @error            Invalid key.
 	public native bool IsNull(const char[] key);
 
-	// Returns whether or not a key in the object exists
+	// Returns whether or not a key exists in the object.
 	//
 	// @param key        Key string.
 	// @return           True if the key exists, false otherwise.
@@ -214,16 +228,18 @@ methodmap JSONArray < JSON
 	// Loads a JSON array from a file.
 	//
 	// @param file       File to read from.
+	// @param flags      Decoding flags.
 	// @return           Array handle, or null on failure.
 	// @error            Invalid JSON.
-	public static native JSONArray FromFile(const char[] file);
+	public static native JSONArray FromFile(const char[] file, int flags = 0);
 
 	// Loads a JSON array from a string.
 	//
 	// @param buffer     String buffer to load into the JSON array.
+	// @param flags      Decoding flags.
 	// @return           Array handle, or null on failure.
 	// @error            Invalid JSON.
-	public static native JSONArray FromString(const char[] buffer);
+	public static native JSONArray FromString(const char[] buffer, int flags = 0);
 
 	// Retrieves an array or object value from the array.
 	//

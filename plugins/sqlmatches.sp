@@ -1,5 +1,3 @@
-//TODO: rewrite all of this to not be bad lol
-
 #include <sourcemod>
 #include <sdktools>
 #include <cstrike>
@@ -8,7 +6,7 @@
 #pragma semicolon 1
 #pragma newdecls required
 
-#define PREFIX		"[SM]"
+#define PREFIX		"[SQLMatches.com]"
 #define TEAM_CT 	0
 #define TEAM_T 		1
 
@@ -253,7 +251,12 @@ void HTTP_OnCreateMatch(HTTPResponse response, any value, const char[] error)
 {
 	if(strlen(error) > 0)
 	{
-		LogError("HTTP_OnCreateMatch Failed! Error: %s", error);
+		LogError("HTTP_OnCreateMatch - Error string - Failed! Error: %s", error);
+		return;
+	}
+
+	if (response.Data == null) {
+		// Invalid JSON response
 		return;
 	}
 
@@ -261,20 +264,19 @@ void HTTP_OnCreateMatch(HTTPResponse response, any value, const char[] error)
 	JSONObject responseData = view_as<JSONObject>(response.Data);
 
 	// Log errors if any occurred
-	if(!responseData.IsNull("error"))
+	if(response.Status != HTTPStatus_OK)
 	{
-		// Error string
-		//	char errorInfo[1024];
-		//	responseData.GetString("error", errorInfo, sizeof(errorInfo));
-		LogError("HTTP_OnCreateMatch Failed! Error: %s", responseData.Get("error"));
+		char errorInfo[1024];
+		responseData.GetString("error", errorInfo, sizeof(errorInfo));
+		LogError("HTTP_OnCreateMatch - Invalid status code - Failed! Error: %s", errorInfo);
 		return;
 	}
 
 	// Match waas created successfully, store match id and restart game
 	JSONObject data = view_as<JSONObject>(responseData.Get("data"));
 	data.GetString("match_id", g_sMatchId, sizeof(g_sMatchId));
-	PrintToServer("Match %s created successfully.", g_sMatchId);
-	PrintToChatAll("Match has been created");
+	PrintToServer("%s Match %s created successfully.", PREFIX, g_sMatchId);
+	PrintToChatAll("%s Match has been created", PREFIX);
 	ServerCommand("tv_record \"%s\"", g_sMatchId);
 
 	// Delete json handle
@@ -309,7 +311,7 @@ void HTTP_OnEndMatch(HTTPResponse response, any value, const char[] error)
 {
 	if(strlen(error) > 0)
 	{
-		LogError("HTTP_OnEndMatch Failed! Error: %s", error);
+		LogError("HTTP_OnEndMatch - Error string - Failed! Error: %s", error);
 		return;
 	}
 
@@ -317,18 +319,18 @@ void HTTP_OnEndMatch(HTTPResponse response, any value, const char[] error)
 	JSONObject responseData = view_as<JSONObject>(response.Data);
 
 	// Log errors if any occurred
-	if(!responseData.IsNull("error"))
+	if(response.Status != HTTPStatus_OK)
 	{
 		// Error string
 		char errorInfo[1024];
 		responseData.GetString("error", errorInfo, sizeof(errorInfo));
-		LogError("HTTP_OnEndMatch Failed! Error: %s", errorInfo);
+		LogError("HTTP_OnEndMatch - Invalid status code - Failed! Error: %s", errorInfo);
 		return;
 	}
 
 	// End match
-	PrintToServer("Match ended successfully.");
-	PrintToChatAll("Match has ended, stats will no longer be recorded.");
+	PrintToServer("%s Match ended successfully.", PREFIX);
+	PrintToChatAll("%s Match has ended, stats will no longer be recorded.", PREFIX);
 	if(FindConVar("tv_enable").IntValue == 1)
 		UploadDemo(g_sMatchId, sizeof(g_sMatchId));
 	g_sMatchId = "";
@@ -364,9 +366,7 @@ void UpdateMatch(int team_1_score = -1, int team_2_score = -1, const MatchUpdate
 	// Format and set players data
 	if(!dontUpdate)
 	{
-		JSONArray playerData = GetPlayersJson(players, size);
-		json.Set("players", playerData);
-		delete playerData;
+		json.Set("players", GetPlayersJson(players, size));
 	}
 
 	// Set optional data
@@ -390,7 +390,7 @@ void HTTP_OnUpdateMatch(HTTPResponse response, any value, const char[] error)
 {
 	if(strlen(error) > 0)
 	{
-		LogError("HTTP_OnUpdateMatch Failed! Error: %s", error);
+		LogError("HTTP_OnUpdateMatch - Error string - Failed! Error: %s", error);
 		return;
 	}
 
@@ -398,16 +398,16 @@ void HTTP_OnUpdateMatch(HTTPResponse response, any value, const char[] error)
 	JSONObject responseData = view_as<JSONObject>(response.Data);
 
 	// Log errors if any occurred
-	if(!responseData.IsNull("error"))
+	if(response.Status != HTTPStatus_OK)
 	{
 		// Error string
 		char errorInfo[1024];
 		responseData.GetString("error", errorInfo, sizeof(errorInfo));
-		LogError("HTTP_OnUpdateMatch Failed! Error: %s", errorInfo);
+		LogError("HTTP_OnUpdateMatch - Invalid status code - Failed! Error: %s", errorInfo);
 		return;
 	}
 
-	PrintToServer("Match updated successfully.");
+	PrintToServer("%s Match updated successfully.", PREFIX);
 }
 
 void UploadDemo(char[] demoName, int size)
@@ -438,7 +438,7 @@ void UploadDemo(char[] demoName, int size)
 	// Send request
 	g_Client.UploadFile(sUrl, demoName, HTTP_OnUploadDemo);
 
-	PrintToServer("Uploading demo...");
+	PrintToServer("%s Uploading demo...", PREFIX);
 }
 
 void HTTP_OnUploadDemo(HTTPStatus status, DataPack pack, const char[] error)
@@ -449,7 +449,7 @@ void HTTP_OnUploadDemo(HTTPStatus status, DataPack pack, const char[] error)
 		return;
 	}
 
-	PrintToServer("Demo uploaded successfully.");
+	PrintToServer("%s Demo uploaded successfully.", PREFIX);
 }
 
 public void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
