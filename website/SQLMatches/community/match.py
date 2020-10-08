@@ -99,9 +99,11 @@ class Match:
             raise InvalidMatchID()
 
     async def exists(self) -> bool:
-        """
-        Returns a bool depending if the match
-        exists or not.
+        """Checks if the match exists.
+
+        Returns
+        -------
+        bool
         """
 
         query = scoreboard_total.count().where(
@@ -126,28 +128,31 @@ class Match:
             Raised when match ID is invalid.
         """
 
-        if await self.exists():
-            team_sides = {}
-            if team_1_side:
-                team_sides["team_1_side"] = team_1_side
+        team_sides = {}
 
-            if team_2_side:
-                team_sides["team_2_side"] = team_2_side
+        if team_1_side is not None:
+            team_sides["team_1_side"] = team_1_side
 
-            query = scoreboard_total.update().values(
-                team_1_score=team_1_score,
-                team_2_score=team_2_score,
-                status=0 if end else 1,
-                **team_sides
-            ).where(
-                and_(
-                    scoreboard_total.c.match_id == self.match_id,
-                    scoreboard_total.c.name == self.community_name
-                )
+        if team_2_side is not None:
+            team_sides["team_2_side"] = team_2_side
+
+        query = scoreboard_total.update().values(
+            team_1_score=team_1_score,
+            team_2_score=team_2_score,
+            status=0 if end else 1,
+            **team_sides
+        ).where(
+            and_(
+                scoreboard_total.c.match_id == self.match_id,
+                scoreboard_total.c.name == self.community_name
             )
+        )
 
+        try:
             await Sessions.database.execute(query=query)
-
+        except Exception:
+            raise InvalidMatchID()
+        else:
             if players:
                 query = player_insert_on_conflict_update()
 
@@ -160,8 +165,6 @@ class Match:
                     query=query,
                     values=players
                 )
-        else:
-            raise InvalidMatchID()
 
     async def end(self) -> None:
         """
@@ -173,18 +176,18 @@ class Match:
             Raised when match ID is invalid.
         """
 
-        if await self.exists():
-            query = scoreboard_total.update().values(
-                status=0
-            ).where(
-                and_(
-                    scoreboard_total.c.match_id == self.match_id,
-                    scoreboard_total.c.name == self.community_name
-                )
+        query = scoreboard_total.update().values(
+            status=0
+        ).where(
+            and_(
+                scoreboard_total.c.match_id == self.match_id,
+                scoreboard_total.c.name == self.community_name
             )
+        )
 
+        try:
             await Sessions.database.execute(query=query)
-        else:
+        except Exception:
             raise InvalidMatchID()
 
     async def scoreboard(self) -> ScoreboardModel:

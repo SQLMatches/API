@@ -299,7 +299,8 @@ async def owner_exists(steam_id: str) -> bool:
 
 
 async def create_community(steam_id: str, community_name: str,
-                           disabled: bool = False) -> (Community, str):
+                           disabled: bool = False
+                           ) -> typing.Tuple[Community, str]:
     """
     Paramters
     ---------
