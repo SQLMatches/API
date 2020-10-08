@@ -568,7 +568,12 @@ stock void UpdatePlayerStats(MatchUpdatePlayer[] players, int size)
 		int Client = players[i].Index;
 		if(!IsValidClient(Client)) continue;
 
-		players[Client].Team = GetEntProp(ent, Prop_Send, "m_iTeam", _, Client);
+		// dumb teams :(
+		if(GetClientTeam(Client) == CS_TEAM_CT)
+			players[Client].Team = 0;
+		else if(GetClientTeam(Client) == CS_TEAM_T)
+			players[Client].Team = 1;
+
 		players[Client].Alive = view_as<bool>(GetEntProp(ent, Prop_Send, "m_bAlive", _, Client));
 		players[Client].Ping = GetEntProp(ent, Prop_Send, "m_iPing", _, Client);
 		players[Client].Kills = GetEntProp(ent, Prop_Send, "m_iKills", _, Client);
