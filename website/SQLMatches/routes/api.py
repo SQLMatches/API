@@ -144,7 +144,7 @@ class DemoUploadAPI(HTTPEndpoint):
 
                     await asyncio.sleep(Config.upload_delay)
 
-                if chunked:
+                if chunked and parts.part_number != 0:
                     await parts.data(chunked)
                     total_size += len(chunked)
 

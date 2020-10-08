@@ -437,7 +437,7 @@ void UploadDemo(const char[] demoName)
 		return;
 	}
 
-	if(FileSize(formattedDemo) < 1000024)
+	if(FileSize(formattedDemo) < 5000024)
 	{
 		LogError("Demo file must be larger then 5 mb.");
 		return;
