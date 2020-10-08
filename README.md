@@ -39,6 +39,7 @@ SQLMatches is a completely free & open source CS:GO match statistics & demo reco
 - Set ``sm_sqlmatches_key`` CVAR as your API key located on your community page, under 'Owner Panel'.
 - Enable GOTV ``tv_enable 1``.
 - Disable auto record ``tv_autorecord 0``.
+- Disable hibernation ``sv_hibernate_when_empty 0``
 - Sit back and relax!
 
 ### Adding more map images
