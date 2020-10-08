@@ -278,9 +278,6 @@ void HTTP_OnCreateMatch(HTTPResponse response, any value, const char[] error)
 	PrintToServer("%s Match %s created successfully.", PREFIX, g_sMatchId);
 	PrintToChatAll("%s Match has been created", PREFIX);
 	ServerCommand("tv_record \"%s\"", g_sMatchId);
-
-	// Delete json handle
-	delete data;
 }
 
 void EndMatch()
@@ -381,7 +378,7 @@ void UpdateMatch(int team_1_score = -1, int team_2_score = -1, const MatchUpdate
 
 	// Format request
 	char sUrl[1024];
-	Format(sUrl, sizeof(sUrl), "match/%s?api_key=%s", g_sMatchId, g_sApiKey);
+	Format(sUrl, sizeof(sUrl), "match/%s/?api_key=%s", g_sMatchId, g_sApiKey);
 
 	// Send request
 	g_Client.Post(sUrl, json, HTTP_OnUpdateMatch);
