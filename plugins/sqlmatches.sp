@@ -47,9 +47,9 @@ MatchUpdatePlayer g_PlayerStats[MAXPLAYERS + 1];
 public Plugin myinfo =
 {
 	name = "SQLMatches",
-	author = "The Doggy",
+	author = "The Doggy, WardPearce",
 	description = "Match stats and demo recording system for CS:GO",
-	version = "1.0.2",
+	version = "1.0.3",
 	url = "https://sqlmatches.com/"
 };
 
@@ -366,7 +366,9 @@ void UpdateMatch(int team_1_score = -1, int team_2_score = -1, const MatchUpdate
 	// Format and set players data
 	if(!dontUpdate)
 	{
-		json.Set("players", GetPlayersJson(players, size));
+		JSONArray playersArray = GetPlayersJson(players, size);
+		json.Set("players", playersArray);
+		delete playersArray;
 	}
 
 	// Set optional data
