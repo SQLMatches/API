@@ -54,7 +54,7 @@ SQLMatches is a completely free & open source CS:GO match statistics & demo reco
 - Install [SourceMod](https://www.sourcemod.net/downloads.php?branch=stable) Version >= 1.10.
 - Install [REST in Pawn](https://github.com/ErikMinekus/sm-ripext/releases).
 - Install the SQLMatches plugin.
-    - [Download](https://github.com/WardPearce/SQLMatches/suites/1307542557/artifacts/20605657)
+    - [Download](https://github.com/WardPearce/SQLMatches/suites/1308132528/artifacts/20621010)
 
 ## Supported database engines
 - MySQL (Fully tested)
