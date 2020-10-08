@@ -329,7 +329,7 @@ void HTTP_OnEndMatch(HTTPResponse response, any value, const char[] error)
 	PrintToServer("%s Match ended successfully.", PREFIX);
 	PrintToChatAll("%s Match has ended, stats will no longer be recorded.", PREFIX);
 	if(FindConVar("tv_enable").IntValue == 1)
-		UploadDemo(g_sMatchId, sizeof(g_sMatchId));
+		UploadDemo(g_sMatchId);
 	g_sMatchId = "";
 }
 
@@ -409,35 +409,36 @@ void HTTP_OnUpdateMatch(HTTPResponse response, any value, const char[] error)
 	PrintToServer("%s Match updated successfully.", PREFIX);
 }
 
-void UploadDemo(char[] demoName, int size)
+void UploadDemo(const char[] demoName)
 {
-	if(strlen(g_sApiUrl) == 0)
-	{
-		LogError("Failed to upload demo. Error: ConVar sm_sqlmatches_url cannot be empty.");
-		return;
-	}
+    if(strlen(g_sApiUrl) == 0)
+    {
+        LogError("Failed to upload demo. Error: ConVar sm_sqlmatches_url cannot be empty.");
+        return;
+    }
 
-	if(strlen(g_sApiKey) == 0)
-	{
-		LogError("Failed to upload demo. Error: ConVar sm_sqlmatches_key cannot be empty.");
-		return;
-	}
+    if(strlen(g_sApiKey) == 0)
+    {
+        LogError("Failed to upload demo. Error: ConVar sm_sqlmatches_key cannot be empty.");
+        return;
+    }
 
-	StrCat(demoName, size, ".dem");
-	if(!FileExists(demoName))
-	{
-		LogError("Failed to upload demo. Error: File \"%s\" does not exist.", demoName);
-		return;
-	}
+    char formattedDemo[128];
+    Format(formattedDemo, sizeof(formattedDemo), "%s.dem", demoName);
+    if(!FileExists(formattedDemo))
+    {
+        LogError("Failed to upload demo. Error: File \"%s\" does not exist.", formattedDemo);
+        return;
+    }
 
-	// Format request
-	char sUrl[1024];
-	Format(sUrl, sizeof(sUrl), "match/%s/upload/?api_key=%s", g_sMatchId, g_sApiKey);
+    // Format request
+    char sUrl[1024];
+    Format(sUrl, sizeof(sUrl), "match/%s/upload/?api_key=%s", g_sMatchId, g_sApiKey);
 
-	// Send request
-	g_Client.UploadFile(sUrl, demoName, HTTP_OnUploadDemo);
+    // Send request
+    g_Client.UploadFile(sUrl, formattedDemo, HTTP_OnUploadDemo);
 
-	PrintToServer("%s Uploading demo...", PREFIX);
+    PrintToServer("%s Uploading demo...", PREFIX);
 }
 
 void HTTP_OnUploadDemo(HTTPStatus status, DataPack pack, const char[] error)
@@ -526,7 +527,7 @@ public Action Event_MatchEnd(Event event, const char[] name, bool dontBroadcast)
 
 	UpdateMatch(.players = g_PlayerStats, .size = sizeof(g_PlayerStats), .end = true);
 	if(FindConVar("tv_enable").IntValue == 1)
-		UploadDemo(g_sMatchId, sizeof(g_sMatchId));
+		UploadDemo(g_sMatchId);
 	g_sMatchId = "";
 }
 
