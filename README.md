@@ -24,10 +24,10 @@ SQLMatches is a completely free & open source CS:GO match statistics & demo reco
 - Install SQLMatches with ``pip3 install SQLMatches``.
 - Create a file like [run.py](/website/run.py).
 - Set up [uvicorn](https://www.uvicorn.org/deployment/) with Starlette.
-    - I recommend running Nginx as a reverse proxy.
-    - Also setting up a SSL with [Certbot](https://certbot.eff.org/).
+    - I recommend running [Nginx as a reverse proxy](http://www.uvicorn.org/deployment/#running-behind-nginx).
+    - Also setting up SSL with [Certbot](https://certbot.eff.org/).
 - Run [run.py](/website/run.py) using PM2 or screen.
-- Then follow the '[Hosted version](#hosted-version)' guide ignoring the 1st point.
+- Then follow the '[Hosted version](#hosted-version)' guide, ignoring the 1st point.
 
 ### Hosted version
 - Visit [SQLMatches.com](https://sqlmatches.com)
