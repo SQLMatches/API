@@ -35,23 +35,21 @@ class DatabaseSettings:
                 database: str,
                 engine: str = "mysql"
                 ) -> None:
-        """
-        A class for creating a URL for the Database.
+        """Database settings.
 
-        Attributes
+        Parameters
         ----------
-        username: str
-            Database username.
-        password: str
-            Password for user.
-        server: str
-            Address for database server.
-        port: int
-            Database server port.
-        database: str
-            Name of database.
-        engine: str
-            Database's engine (Defaults 'mysql').
+        username : str
+        password : str
+        server : str
+        port : int
+        database : str
+        engine : str, optional
+            by default "mysql"
+
+        Raises
+        ------
+        UnSupportedEngine
         """
 
         self.username = username
@@ -76,10 +74,9 @@ class DatabaseSettings:
 class B2Settings:
     def __init__(self, key_id: str, application_key: str,
                  bucket_id: str, pathway: str, cdn_url: str) -> None:
-        """
-        Stores b2 settings.
+        """B2 Settings
 
-        Attributes
+        Parameters
         ----------
         key_id: str
             B2 key ID.

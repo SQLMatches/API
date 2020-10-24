@@ -26,10 +26,6 @@ from starlette.staticfiles import StaticFiles
 
 from webargs_starlette import WebargsHTTPException
 
-from .home import HomePage
-from .community import CommunityPage, CommunityDisablePage, \
-    CommunityUpdateKeyPage
-from .scoreboard import ScoreboardPage
 from .download import DownloadPage
 
 from .api import MatchAPI, CreateMatchAPI, DemoUploadAPI
@@ -49,25 +45,13 @@ ERROR_HANDLERS = {
 
 
 ROUTES = [
-    Route("/", HomePage, name="HomePage"),
     Mount("/login", routes=[
         Route("/steam", SteamLogin, name="SteamLogin"),
         Route("/validate", SteamValidate),
         Route("/logout", SteamLogout, name="SteamLogout")
     ]),
     Route("/download/{match_id}", DownloadPage, name="DownloadPage"),
-    Mount("/assets", StaticFiles(directory=Config.assets_dir), name="assets"),
-    Mount("/c/{community}", routes=[
-        Route("/disable", CommunityDisablePage, name="CommunityDisablePage"),
-        Route(
-            "/update-key",
-            CommunityUpdateKeyPage,
-            name="CommunityUpdateKeyPage"
-        ),
-        Route("/", CommunityPage, name="CommunityPage"),
-        Route("/{page:int}", CommunityPage, name="CommunityPagePagination"),
-        Route("/s/{match_id}", ScoreboardPage, name="ScoreboardPage")
-    ]),
+    Mount("/maps", StaticFiles(directory=Config.maps_dir), name="maps"),
     Mount("/api", routes=[
         Mount("/match", routes=[
             Route("/create/", CreateMatchAPI),

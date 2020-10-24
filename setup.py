@@ -9,23 +9,22 @@ def get_requirements():
         return f.read().splitlines()
 
 
-def get_version(package):
-    with open(os.path.join(package, "__init__.py")) as f:
+def get_variable(variable):
+    with open(os.path.join("SQLMatches", "__init__.py")) as f:
         return re.search(
-            "__version__ = ['\"]([^'\"]+)['\"]", f.read()
+            "{} = ['\"]([^'\"]+)['\"]".format(variable), f.read()
         ).group(1)
 
 
 setup(
     name="SQLMatches",
-    version=get_version("SQLMatches"),
-    url="https://github.com/WardPearce/SQLMatches",
-    description="SQLMatches is a free & open source software built around" +
-        "giving players & communities easy access to match records & demos.",
-    author="WardPearce",
-    author_email="wardpearce@protonmail.com",
+    version=get_variable("__version__"),
+    url=get_variable("__url__"),
+    description=get_variable("__description__"),
+    author=get_variable("__author__"),
+    author_email=get_variable("__author_email__"),
     install_requires=get_requirements(),
-    license="GPL v3",
+    license=get_variable("__license__"),
     packages=[
         "SQLMatches",
         "SQLMatches.api",

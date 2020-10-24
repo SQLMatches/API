@@ -23,12 +23,21 @@ DEALINGS IN THE SOFTWARE.
 
 from sqlalchemy.dialects.mysql import insert as mysql_insert
 from sqlalchemy.dialects.postgresql import insert as postgresql_insert
+from sqlalchemy import insert
 
 from .tables import scoreboard
 from .resources import Config
 
 
-def player_insert_on_conflict_update():
+def player_insert_on_conflict_update() -> insert:
+    """Used for updating a player on a scoreboard on conflict.
+
+    Returns
+    -------
+    insert
+        SQLAlchemy insert object.
+    """
+
     if Config.db_engine == "mysql":
         query_insert = mysql_insert(scoreboard)
         return query_insert.on_duplicate_key_update(

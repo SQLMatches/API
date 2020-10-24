@@ -40,7 +40,15 @@ from .routes import ROUTES, ERROR_HANDLERS
 from .http_middleware import APIMiddleware
 
 
-__version__ = "0.0.13"
+__version__ = "0.1.0"
+__url__ = "https://github.com/WardPearce/SQLMatches"
+__description__ = """
+SQLMatches is a free & open source software built around
+giving players & communities easy access to match records & demos.
+"""
+__author__ = "WardPearce"
+__author_email__ = "wardpearce@protonmail.com"
+__license__ = "GPL v3"
 
 
 MAP_IMAGES = {
@@ -68,9 +76,10 @@ class SQLMatches(Starlette):
                  upload_delay: float = 0.1,
                  max_upload_size: int = 80000000,
                  **kwargs) -> None:
-        """
-        SQLMatches server.
+        """SQLMatches API.
 
+        Parameters
+        ----------
         database_settings: DatabaseSettings
             Holds settings for database.
         friendly_url: str
@@ -86,7 +95,6 @@ class SQLMatches(Starlette):
         max_upload_size: int
             by default 80000000
         kwargs
-            Additional parameters to pass to the Starlette instance.
         """
 
         startup_tasks = [self._startup]
@@ -166,8 +174,7 @@ class SQLMatches(Starlette):
         )
 
     async def _startup(self) -> None:
-        """
-        Starts up needed sessions.
+        """Starts up needed sessions.
         """
 
         await Sessions.database.connect()
@@ -175,8 +182,7 @@ class SQLMatches(Starlette):
         Sessions.aiohttp = ClientSession()
 
     async def _shutdown(self) -> None:
-        """
-        Closes any underlying sessions.
+        """Closes any underlying sessions.
         """
 
         await Sessions.database.disconnect()

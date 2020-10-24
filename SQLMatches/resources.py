@@ -35,12 +35,10 @@ class Sessions:
 
 
 class Config:
-    frontend_dir = os.path.join(
+    maps_dir = os.path.join(
         os.path.dirname(os.path.realpath(__file__)),
-        "frontend"
+        "maps"
     )
-    assets_dir = os.path.join(frontend_dir, "assets")
-    templates_dir = os.path.join(frontend_dir, "templates")
     steam_openid_url = "https://steamcommunity.com/openid/login"
 
     url: str

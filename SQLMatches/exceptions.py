@@ -22,8 +22,7 @@ DEALINGS IN THE SOFTWARE.
 
 
 class UnSupportedEngine(Exception):
-    """
-    Raised when the database engine isn't supported.
+    """Raised when the database engine isn't supported.
     """
 
     pass
