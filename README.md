@@ -1,69 +1,205 @@
-[![GitHub issues](https://img.shields.io/github/issues/WardPearce/SQLMatches)](https://github.com/WardPearce/SQLMatches/issues)
-[![GitHub license](https://img.shields.io/github/license/WardPearce/SQLMatches)](https://github.com/WardPearce/SQLMatches/blob/master/LICENSE)
-[![Actions Status](https://github.com/WardPearce/SQLMatches/workflows/Website/badge.svg)](https://github.com/WardPearce/SQLMatches/actions)
-[![Actions Status](https://github.com/WardPearce/SQLMatches/workflows/Plugins/badge.svg)](https://github.com/WardPearce/SQLMatches/actions)
+## REST API
 
-## SQLMatches 0.0.13
-SQLMatches is a completely free & open source CS:GO match statistics & demo recording tool. If you need any help feel free to ask on our [discord](https://discord.gg/guYFTjt), please don't open a issue unless if its code related.
-
-[Consider donating to help support hosting this project!](https://www.patreon.com/wardweeb)
+## NOTE
+Base API structure is the following
+```json
+{
+    "data": {data here},
+    "error": {error here}
+}
+```
+All status 200 responses are inside of data.
 
 ## Index
-- [Website](#Website)
-    - [Self-hosted](#self-hosted)
-    - [Hosted version](#hosted-version)
-    - [API DOCS](/website/README.md)
-    - [Adding more map images](#adding-more-map-images)
-- [Sourcemod setup](#sourcemod-setup)
-- [Supported database engines](#supported-database-engines)
-- [Preview](#Preview)
-- [Legacy version](#legacy-version)
+- [Get Scoreboard](#get-scoreboard)
+- [Create Match](#create-match)
+- [Update Match](#update-match)
+- [Upload Demo](#upload-demo)
+- [End Match](#end-match)
 
-## Website
-### Self-hosted
-- Install SQLMatches with ``pip3 install SQLMatches``.
-- Create a file like [run.py](/website/run.py).
-- Set up [uvicorn](https://www.uvicorn.org/deployment/) with Starlette.
-    - I recommend running [Nginx as a reverse proxy](http://www.uvicorn.org/deployment/#running-behind-nginx).
-    - Also setting up SSL with [Certbot](https://certbot.eff.org/).
-- Run [run.py](/website/run.py) using PM2 or screen.
-- Then follow the '[Hosted version](#hosted-version)' guide, ignoring the 1st point.
+### Get Scoreboard
+``GET - https://sqlmatches.com/api/match/{match_id}/?api_key={api_key}``
 
-### Hosted version
-- Visit [SQLMatches.com](https://sqlmatches.com)
-- Login with steam.
-    - Please note you can only own one community right now, so when you login if you get redirected this is why. But you can disable your community at anytime & create a new one.
-- Enter your community's name & click create.
-- [Install the plugin](#sourcemod-setup).
-- Set ``sm_sqlmatches_key`` CVAR as your API key located on your community page, under 'Owner Panel'.
-- Enable GOTV ``tv_enable 1``.
-- Disable auto record ``tv_autorecord 0``.
-- Disable hibernation ``sv_hibernate_when_empty 0``
-- Increase ``mp_endmatch_votenextmap``, if the demo isn't uploaded by the time the vote screen ends it won't be uploaded.
-- Feel free increase the demo tick rate, but the demo can not be larger then 80 mb.
-- The demo won't upload if its smaller then 5 mb.
-- Sit back and relax!
+**URL Parameters**
 
-### Adding more map images
-- Fork the repo.
-- Add the new images to [here](/website/SQLMatches/frontend/assets/img/maps).
-- Add the full map name & file name [here](/website/SQLMatches/__init__.py#L46).
-- Open a PR.
+- match_id: str
+    UUID of the Match.
+- api_key: str
+    24 byte API key.
 
-## Sourcemod setup
-- Install [SourceMod](https://www.sourcemod.net/downloads.php?branch=stable) Version >= 1.10.
-- Install [REST in Pawn](https://github.com/ErikMinekus/sm-ripext/releases).
-- Install the SQLMatches plugin.
-    - [Download](https://github.com/WardPearce/SQLMatches/suites/1308132528/artifacts/20621010)
+**Response 200**
 
-## Supported database engines
-- MySQL (Fully tested)
-- Postgresql (Not tested)
-- SQLite (Not tested)
+```json
+# Status codes
+# 0 - Finished
+# 1 - Live
 
-## Preview
-![Community page](https://i.imgur.com/3LRh2OK.png)
-![Scoreboard page](https://i.imgur.com/8BQHUMS.png)
+# Demo status codes
+# 0 - No demo
+# 1 - Processing
+# 2 - Ready for Download
 
-## Legacy version
-[Looking for the super ugly & out of date PHP version? Check it out here](https://github.com/WardPearce/SQLMatches/tree/Legacy-PHP)
+# Team sides codes
+# 0 - CT
+# 1 - T
+
+{
+    "match_id": "uuid4",
+    "timestamp": "%m/%d/%Y-%H:%M:%S",
+    "status": 0,
+    "demo_status": 0,
+    "map": "de_mirage",
+    "team_1_name": "Ward",
+    "team_2_name": "Doggy",
+    "team_1_score": 7,
+    "team_2_score": 0,
+    "team_1_side": 0,
+    "team_2_side": 1,
+    "team_1": [
+        {
+            "name": "Ward",
+            "steam_id": "76561198077228213",
+            "team": 0,
+            "alive": false,
+            "ping": 0,
+            "kills": 0,
+            "headshots": 0,
+            "assists": 0,
+            "deaths": 0,
+            "kdr": 0.0,
+            "hs_percentage": 0,
+            "hit_percentage": 0,
+            "shots_fired": 0,
+            "shots_hit": 0,
+            "mvps": 0,
+            "score": 0,
+            "disconnected": false
+        }
+    ],
+    "team_2": []
+}
+```
+
+---
+
+### Create Match
+``POST - https://sqlmatches.com/api/match/create/?api_key={api_key}``
+
+**URL Parameters**
+
+- api_key: str
+    24 byte API key.
+
+**Payload**
+
+```json
+{
+    "team_1_name": "Ward",
+    "team_2_name": "Doggy",
+    "team_1_side": 0,
+    "team_2_side": 1,
+    "team_1_score": 7,
+    "team_2_score": 0,
+    "map_name": "de_mirage"
+}
+```
+
+**Response 200**
+
+```json
+{
+    "match_id": "uuid4"
+}
+```
+
+---
+
+### Update Match
+``POST - https://sqlmatches.com/api/match/{match_id}/?api_key={api_key}``
+
+**URL Parameters**
+
+- match_id: str
+    UUID of the Match.
+- api_key: str
+    24 byte API key.
+
+**Payload**
+
+```json
+{
+    "team_1_score": 7,
+    "team_2_score": 0,
+    "players": [
+        {
+            "name": "Ward",
+            "steam_id": "76561198077228213",
+            "team": 0,
+            "alive": false,
+            "ping": 0,
+            "kills": 0,
+            "headshots": 0,
+            "assists": 0,
+            "deaths": 0,
+            "shots_fired": 0,
+            "shots_hit": 0,
+            "mvps": 0,
+            "score": 0,
+            "disconnected": false
+        }
+    ],
+    "team_1_side": 0 # Optional,
+    "team_2_side": 1 # Optional,
+    "end": false # Optional
+}
+```
+
+**Response 200**
+
+```json
+{
+    "match_id": "uuid4"
+}
+```
+
+---
+
+### Upload Demo
+``PUT - https://sqlmatches.com/api/match/{match_id}/?api_key={api_key}``
+
+**URL Parameters**
+
+- match_id: str
+    UUID of the Match.
+- api_key: str
+    24 byte API key.
+
+**Payload**
+
+Raw file bytes.
+
+**Response 200**
+
+null
+
+---
+
+### End Match
+``DELETE - https://sqlmatches.com/api/match/{match_id}/?api_key={api_key}``
+
+**URL Parameters**
+
+- match_id: str
+    UUID of the Match.
+- api_key: str
+    24 byte API key.
+
+**Payload**
+
+null
+
+**Response 200**
+
+null
+
+---
