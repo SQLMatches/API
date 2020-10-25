@@ -79,7 +79,7 @@ class Match:
         ------
         InvalidMatchID
             Raised when match ID is invalid.
-        
+
         Returns
         -------
         int

@@ -44,6 +44,7 @@ class MatchModel:
         self.team_1_side = data["team_1_side"]
         self.team_2_side = data["team_2_side"]
 
+
 class ScoreboardPlayerModel:
     def __init__(self, data) -> None:
         self.name = data["name"]
