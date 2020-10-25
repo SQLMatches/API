@@ -29,7 +29,6 @@ setup(
         "SQLMatches",
         "SQLMatches.api",
         "SQLMatches.community",
-        "SQLMatches.forms",
         "SQLMatches.routes"
     ],
     python_requires=">=3.6",

@@ -66,3 +66,5 @@ class InvalidAPIKey(Exception):
 class DemoAlreadyUploaded(Exception):
     """Raised when a demo has already been uploaded.
     """
+
+    pass

@@ -21,7 +21,7 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-import typing
+from typing import AsyncGenerator
 
 from sqlalchemy.sql import select, and_, or_
 
@@ -32,16 +32,20 @@ from uuid import uuid4
 from ..resources import Sessions
 from ..tables import community, scoreboard_total
 
-from .exceptions import CommunityTaken, AlreadyCommunity, InvalidCommunity, \
-    NoOwnership, InvalidAPIKey
+from .exceptions import (
+    CommunityTaken,
+    AlreadyCommunity,
+    InvalidCommunity,
+    NoOwnership,
+    InvalidAPIKey
+)
 from .models import CommunityModel, MatchModel
 from .match import Match
 
 
 class Community:
     def __init__(self, community_name: str) -> str:
-        """
-        Handles community interactions.
+        """Handles community interactions.
 
         Paramters
         ---------
@@ -55,8 +59,7 @@ class Community:
                            team_1_side: int, team_2_side: int,
                            team_1_score: int, team_2_score: int,
                            map_name: str) -> Match:
-        """
-        Creates a match.
+        """Creates a match.
 
         Returns
         -------
@@ -86,8 +89,7 @@ class Community:
         return self.match(match_id)
 
     def match(self, match_id) -> Match:
-        """
-        Handles interactions with a match
+        """Handles interactions with a match
 
         Paramters
         ---------
@@ -98,8 +100,7 @@ class Community:
         return Match(match_id, self.community_name)
 
     async def regenerate(self) -> None:
-        """
-        Regenerates API key.
+        """Regenerates API key.
         """
 
         query = community.update().values(
@@ -109,8 +110,7 @@ class Community:
         await Sessions.database.execute(query=query)
 
     async def exists(self) -> bool:
-        """
-        Checks if community exists with name.
+        """Checks if community exists with name.
         """
 
         query = community.count().where(
@@ -121,9 +121,8 @@ class Community:
 
     async def matches(self, search: str = None,
                       page: int = 1, limit: int = 5
-                      ) -> typing.AsyncGenerator[typing.Any, None]:
-        """
-        Lists matches.
+                      ) -> AsyncGenerator[MatchModel, Match]:
+        """Lists matches.
 
         Paramters
         ---------
@@ -184,8 +183,7 @@ class Community:
             yield MatchModel(row), self.match(row["match_id"])
 
     async def get(self) -> CommunityModel:
-        """
-        Gets base community details.
+        """Gets base community details.
 
         Returns
         -------
@@ -216,6 +214,9 @@ class Community:
             raise InvalidCommunity()
 
     async def disable(self) -> None:
+        """Disables a community.
+        """
+
         query = community.update().where(
             community.c.name == self.community_name
         ).values(disabled=True)
@@ -224,8 +225,7 @@ class Community:
 
 
 async def api_key_to_community(api_key: str) -> Community:
-    """
-    Converts API key to community name.
+    """Converts API key to community name.
 
     Raises
     ------
@@ -255,8 +255,7 @@ async def api_key_to_community(api_key: str) -> Community:
 
 
 async def get_community_from_owner(steam_id: str) -> Community:
-    """
-    Gets community name from owners steamID.
+    """Gets community name from owners steamID.
 
     Raises
     ------
@@ -284,8 +283,7 @@ async def get_community_from_owner(steam_id: str) -> Community:
 
 
 async def owner_exists(steam_id: str) -> bool:
-    """
-    Checks if given steam_id owns a community
+    """Checks if given steam_id owns a community
     """
 
     query = community.count().where(
@@ -300,8 +298,9 @@ async def owner_exists(steam_id: str) -> bool:
 
 async def create_community(steam_id: str, community_name: str,
                            disabled: bool = False
-                           ) -> typing.Tuple[Community, str]:
-    """
+                           ) -> Community:
+    """Creates a community.
+
     Paramters
     ---------
     owner_id: str
@@ -315,8 +314,6 @@ async def create_community(steam_id: str, community_name: str,
     -------
     Community
         Used for interacting with a community
-    str
-        Edit name of community
 
     Raises
     ------

@@ -21,7 +21,7 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-from .api import error_response
+from ..api import error_response
 
 
 async def server_error(request, exc):

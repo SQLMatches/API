@@ -35,8 +35,7 @@ from .exceptions import InvalidMatchID
 
 class Match:
     def __init__(self, match_id: str, community_name: str) -> None:
-        """
-        Handles interactions with a match
+        """Handles interactions with a match
 
         Paramters
         ---------
@@ -49,9 +48,8 @@ class Match:
         self.match_id = match_id
         self.community_name = community_name
 
-    async def set_demo_status(self, status):
-        """
-        Sets demo status to given value.
+    async def set_demo_status(self, status) -> None:
+        """Sets demo status to given value.
 
         Raises
         ------
@@ -73,7 +71,7 @@ class Match:
         except Exception:
             raise InvalidMatchID()
 
-    async def demo_status(self):
+    async def demo_status(self) -> int:
         """
         Gets demo status.
 
@@ -81,6 +79,11 @@ class Match:
         ------
         InvalidMatchID
             Raised when match ID is invalid.
+        
+        Returns
+        -------
+        int
+            Status of demo.
         """
 
         query = select([scoreboard_total.c.demo_status]).select_from(
@@ -119,8 +122,7 @@ class Match:
                      players: list = None,
                      team_1_side: int = None, team_2_side: int = None,
                      end: bool = False) -> None:
-        """
-        Updates match details.
+        """Updates match details.
 
         Raises
         ------
@@ -167,8 +169,7 @@ class Match:
                 )
 
     async def end(self) -> None:
-        """
-        Sets match status to 0
+        """Sets match status to 0
 
         Raises
         ------
@@ -191,8 +192,7 @@ class Match:
             raise InvalidMatchID()
 
     async def scoreboard(self) -> ScoreboardModel:
-        """
-        Gets scoreboard data.
+        """Gets scoreboard data.
 
         Returns
         ------

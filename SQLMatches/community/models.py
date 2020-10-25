@@ -20,7 +20,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
-import typing
+from typing import Generator
 
 
 class CommunityModel:
@@ -43,7 +43,6 @@ class MatchModel:
         self.team_2_score = data["team_2_score"]
         self.team_1_side = data["team_1_side"]
         self.team_2_side = data["team_2_side"]
-
 
 class ScoreboardPlayerModel:
     def __init__(self, data) -> None:
@@ -71,13 +70,15 @@ class ScoreboardPlayerModel:
         self.disconnected = data["disconnected"]
 
 
-class ScoreboardPlayerYield:
-    def __init__(self, data) -> typing.AsyncGenerator[typing.Any, None]:
-        self.data = data
+class ScoreboardModel(MatchModel):
+    def __init__(self, data) -> None:
+        MatchModel.__init__(self, data["match"])
 
-    def __yield__(self):
-        """
-        Yields player data.
+        self.__team_1 = data["team_1"]
+        self.__team_2 = data["team_2"]
+
+    def team_1(self) -> Generator[ScoreboardPlayerModel, None, None]:
+        """Lists players in team 1.
 
         Yields
         ------
@@ -85,13 +86,17 @@ class ScoreboardPlayerYield:
             Holds player data.
         """
 
-        for player in self.data:
+        for player in self.__team_1:
             yield ScoreboardPlayerModel(player)
 
+    def team_2(self) -> Generator[ScoreboardPlayerModel, None, None]:
+        """Lists players in team 2.
 
-class ScoreboardModel(MatchModel):
-    def __init__(self, data) -> None:
-        MatchModel.__init__(self, data["match"])
+        Yields
+        ------
+        ScoreboardPlayerModel
+            Holds player data.
+        """
 
-        self.team_1 = ScoreboardPlayerYield(data["team_1"]).__yield__
-        self.team_2 = ScoreboardPlayerYield(data["team_2"]).__yield__
+        for player in self.__team_2:
+            yield ScoreboardPlayerModel(player)
