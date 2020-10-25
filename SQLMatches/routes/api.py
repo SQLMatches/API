@@ -32,7 +32,7 @@ from marshmallow import Schema
 from webargs import fields
 from webargs_starlette import use_args
 
-from ..api import error_response, response
+from ..api import response
 from ..api.model_convertor import scoreboard_to_dict
 
 from ..resources import Sessions, Config
