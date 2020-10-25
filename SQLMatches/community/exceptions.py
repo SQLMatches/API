@@ -22,48 +22,47 @@ DEALINGS IN THE SOFTWARE.
 
 
 class CommunityTaken(Exception):
-    """
-    Raised when community name is taken.
+    """Raised when community name is taken.
     """
 
     pass
 
 
 class AlreadyCommunity(Exception):
-    """
-    Raised when user already owns a community.
+    """Raised when user already owns a community.
     """
 
     pass
 
 
 class InvalidCommunity(Exception):
-    """
-    Raised when community ID doesn't exist.
+    """Raised when community ID doesn't exist.
     """
 
     pass
 
 
 class NoOwnership(Exception):
-    """
-    Raised when steam id doesn't own any communties.
+    """Raised when steam id doesn't own any communties.
     """
 
     pass
 
 
 class InvalidMatchID(Exception):
-    """
-    Raised when match ID is invalid.
+    """Raised when match ID is invalid.
     """
 
     pass
 
 
 class InvalidAPIKey(Exception):
-    """
-    Raised when API key is invalid.
+    """Raised when API key is invalid.
     """
 
     pass
+
+
+class DemoAlreadyUploaded(Exception):
+    """Raised when a demo has already been uploaded.
+    """

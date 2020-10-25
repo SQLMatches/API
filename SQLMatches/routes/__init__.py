@@ -23,24 +23,22 @@ DEALINGS IN THE SOFTWARE.
 
 from starlette.routing import Route, Mount
 from starlette.staticfiles import StaticFiles
+from starlette.exceptions import HTTPException
 
 from webargs_starlette import WebargsHTTPException
 
+# Routes
 from .download import DownloadPage
-
 from .api import MatchAPI, CreateMatchAPI, DemoUploadAPI
-
-from .errors import server_error, not_found, api_error
-
 from .steam import SteamLogin, SteamValidate, SteamLogout
+from .errors import server_error, api_error
 
 from ..resources import Config
 
 
 ERROR_HANDLERS = {
     WebargsHTTPException: api_error,
-    404: not_found,
-    500: server_error
+    HTTPException: server_error
 }
 
 

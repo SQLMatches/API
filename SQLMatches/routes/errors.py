@@ -24,12 +24,11 @@ DEALINGS IN THE SOFTWARE.
 from .api import error_response
 
 
-async def not_found(request, exc):
-    pass
-
-
 async def server_error(request, exc):
-    pass
+    return error_response(
+        error=exc.detail,
+        status_code=exc.status_code
+    )
 
 
 async def api_error(request, exc):

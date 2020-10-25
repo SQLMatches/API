@@ -37,7 +37,7 @@ from ..api.model_convertor import scoreboard_to_dict
 
 from ..resources import Sessions, Config
 
-from ..community.exceptions import InvalidMatchID
+from ..community.exceptions import InvalidMatchID, DemoAlreadyUploaded
 
 
 class PlayersSchema(Schema):
@@ -64,7 +64,7 @@ class MatchAPI(HTTPEndpoint):
                 request.path_params["match_id"]
             ).scoreboard()
         except InvalidMatchID:
-            return error_response("InvalidMatchID")
+            raise
         else:
             return response(scoreboard_to_dict(scoreboard))
 
@@ -80,7 +80,7 @@ class MatchAPI(HTTPEndpoint):
                 request.path_params["match_id"]
             ).update(**kwargs)
         except InvalidMatchID:
-            return error_response("InvalidMatchID")
+            raise
         else:
             return response()
 
@@ -90,7 +90,7 @@ class MatchAPI(HTTPEndpoint):
                 request.path_params["match_id"]
             ).end()
         except InvalidMatchID:
-            return error_response("InvalidMatchID")
+            raise
         else:
             return response()
 
@@ -116,7 +116,7 @@ class DemoUploadAPI(HTTPEndpoint):
         try:
             demo_status = await match.demo_status()
         except InvalidMatchID:
-            return error_response("InvalidMatchID")
+            raise
         else:
             if demo_status == 0:
                 await match.set_demo_status(1)
@@ -157,4 +157,4 @@ class DemoUploadAPI(HTTPEndpoint):
 
                 return response()
             else:
-                return error_response("DemoAlreadyUploaded")
+                raise DemoAlreadyUploaded()
