@@ -54,11 +54,10 @@ class BasicAuthBackend(AuthenticationBackend):
         username, _, password = decoded.partition(":")
 
         try:
-            community = await api_key_to_community(
+            request.state.community = await api_key_to_community(
                 password
             )
         except InvalidAPIKey:
             raise AuthenticationError(AUTH_ERROR)
         else:
-            request.state.community = community
             return AuthCredentials(["authenticated"]), SimpleUser(username)
