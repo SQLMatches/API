@@ -230,7 +230,10 @@ class Community:
                 community_table.c.name == api_key_table.c.community
             )
         ).where(
-            community_table.c.name == self.community_name
+            and_(
+                community_table.c.name == self.community_name,
+                api_key_table.c.master == True  # noqa: E712
+            )
         )
 
         row = await Sessions.database.fetch_one(query=query)
@@ -264,19 +267,24 @@ async def api_key_to_community(api_key: str) -> Community:
         Community name
     """
 
-    query = select([community_table.c.name]).select_from(
-        community_table
+    query = select([
+        community_table.c.name, api_key_table.c.master
+    ]).select_from(
+        community_table.join(
+            api_key_table,
+            api_key_table.c.community == community_table.c.name
+        )
     ).where(
         and_(
-            community_table.c.api_key == api_key,
+            api_key_table.c.api_key == api_key,
             community_table.c.disabled == 0
         )
     )
 
-    community_name = await Sessions.database.fetch_val(query=query)
+    row = await Sessions.database.fetch_one(query=query)
 
-    if community_name:
-        return Community(community_name)
+    if row:
+        return Community(row["name"]), row["master"]
     else:
         raise InvalidAPIKey()
 

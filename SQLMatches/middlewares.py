@@ -57,11 +57,15 @@ class BasicAuthBackend(AuthenticationBackend):
         username, _, password = decoded.partition(":")
 
         try:
-            request.state.community = await api_key_to_community(
+            request.state.community, master = await api_key_to_community(
                 password
             )
         except InvalidAPIKey:
             raise AuthenticationError(AUTH_ERROR)
         else:
-            return AuthCredentials(["authenticated", "master"]), \
-                SimpleUser(username)
+            scopes = ["authenticated"]
+
+            if master:
+                scopes.append("master")
+
+            return AuthCredentials(scopes), SimpleUser(username)
