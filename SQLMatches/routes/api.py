@@ -110,7 +110,8 @@ class MatchAPI(HTTPEndpoint):
 
 
 class MatchesAPI(HTTPEndpoint):
-    @use_args({"search": fields.Str(), "page": fields.Int()})
+    @use_args({"search": fields.Str(), "page": fields.Int(),
+               "desc": fields.Bool()})
     @requires("authenticated")
     @limiter.limit("30/minute")
     async def post(self, request: Request, kwargs) -> response:

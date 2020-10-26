@@ -134,7 +134,7 @@ class Community:
         return await Sessions.database.fetch_val(query=query) > 0
 
     async def matches(self, search: str = None,
-                      page: int = 1, limit: int = 5
+                      page: int = 1, limit: int = 5, desc: bool = True
                       ) -> AsyncGenerator[MatchModel, Match]:
         """Lists matches.
 
@@ -143,6 +143,8 @@ class Community:
         search: str
         page: int
         limit: int
+        desc: bool, optional
+            by default True
 
         Yields
         ------
@@ -199,7 +201,8 @@ class Community:
             )
 
         query = query.order_by(
-            scoreboard_total_table.c.timestamp.desc()
+            scoreboard_total_table.c.timestamp.desc() if desc
+            else scoreboard_total_table.c.timestamp.asc()
         ).limit(limit).offset((page - 1) * limit if page > 1 else 0)
 
         async for row in Sessions.database.iterate(query=query):
