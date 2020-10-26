@@ -34,7 +34,8 @@ from ..tables import (
     community_table,
     scoreboard_total_table,
     scoreboard_table,
-    user_table
+    user_table,
+    api_key_table
 )
 
 from .exceptions import (
@@ -104,13 +105,21 @@ class Community:
 
         return Match(match_id, self.community_name)
 
-    async def regenerate(self) -> None:
+    async def regenerate(self, old_key: str) -> None:
         """Regenerates API key.
+
+        Parameters
+        ----------
+        old_key : str
+            Old key to update.
         """
 
-        query = community_table.update().values(
+        query = api_key_table.update().values(
             api_key=token_urlsafe(24)
-        ).where(community_table.c.name == self.community_name)
+        ).where(and_(
+            api_key_table.c.name == self.community_name,
+            api_key_table.c.api_key == old_key
+        ))
 
         await Sessions.database.execute(query=query)
 
@@ -211,11 +220,15 @@ class Community:
         """
 
         query = select([
-            community_table.c.api_key,
-            community_table.c.owner_id,
-            community_table.c.disabled
+            api_key_table.c.api_key,
+            api_key_table.c.owner_id,
+            community_table.c.disabled,
+            community_table.c.name
         ]).select_from(
-            community_table
+            community_table.join(
+                api_key_table,
+                community_table.c.name == api_key_table.c.community
+            )
         ).where(
             community_table.c.name == self.community_name
         )
@@ -260,10 +273,10 @@ async def api_key_to_community(api_key: str) -> Community:
         )
     )
 
-    row = await Sessions.database.fetch_val(query=query)
+    community_name = await Sessions.database.fetch_val(query=query)
 
-    if row:
-        return Community(row)
+    if community_name:
+        return Community(community_name)
     else:
         raise InvalidAPIKey()
 
@@ -288,10 +301,10 @@ async def get_community_from_owner(steam_id: str) -> Community:
         )
     )
 
-    name = await Sessions.database.fetch_val(query=query)
+    community_name = await Sessions.database.fetch_val(query=query)
 
-    if name:
-        return Community(name)
+    if community_name:
+        return Community(community_name)
     else:
         raise NoOwnership()
 
@@ -311,8 +324,7 @@ async def owner_exists(steam_id: str) -> bool:
 
 
 async def create_community(steam_id: str, community_name: str,
-                           disabled: bool = False
-                           ) -> Community:
+                           disabled: bool = False) -> Community:
     """Creates a community.
 
     Paramters

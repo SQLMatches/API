@@ -44,7 +44,8 @@ user_table = Table(
     metadata,
     Column(
         "steam_id",
-        String(length=64)
+        String(length=64),
+        primary_key=True
     ),
     Column(
         "timestamp",

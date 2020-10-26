@@ -26,14 +26,36 @@ from ..community.models import CommunityModel, MatchModel, ScoreboardModel
 
 
 def community_to_dict(model: CommunityModel) -> dict:
+    """Used to convert the CommunityModel to a dict.
+
+    Parameters
+    ----------
+    model : CommunityModel
+
+    Returns
+    -------
+    dict
+    """
+
     return {
-        "api_key": model.api_key,
+        "master_api_key": model.api_key,
         "owner_id": model.owner_id,
         "disabled": model.disabled
     }
 
 
 def match_to_dict(model: MatchModel) -> dict:
+    """Used to convert the MatchModel to a dict.
+
+    Parameters
+    ----------
+    model : MatchModel
+
+    Returns
+    -------
+    dict
+    """
+
     return {
         "match_id": model.match_id,
         "timestamp": model.timestamp.strftime("%m/%d/%Y-%H:%M:%S"),
@@ -50,6 +72,17 @@ def match_to_dict(model: MatchModel) -> dict:
 
 
 def scoreboard_to_dict(model: ScoreboardModel) -> dict:
+    """Used to convert the ScoreboardModel to a dict.
+
+    Parameters
+    ----------
+    model : ScoreboardModel
+
+    Returns
+    -------
+    dict
+    """
+
     scoreboard_data = {
         **match_to_dict(model),
         "team_1": [],

@@ -25,9 +25,10 @@ from typing import Generator
 
 class CommunityModel:
     def __init__(self, data) -> None:
-        self.api_key = data["api_key"]
+        self.master_api_key = data["api_key"]
         self.owner_id = data["owner_id"]
         self.disabled = data["disabled"]
+        self.name = data["name"]
 
 
 class MatchModel:

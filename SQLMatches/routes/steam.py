@@ -59,14 +59,12 @@ class SteamValidate(HTTPEndpoint):
         params = request.query_params
         redirect = "/"
 
-        if params.get("openid.ns") and params.get("openid.mode") and \
-            params.get("openid.claimed_id") and \
-            params.get("openid.assoc_handle") \
-            and params.get("openid.signed") and params.get("openid.sig") \
-            and params.get("openid.op_endpoint") \
-            and params.get("openid.identity") \
-            and params.get("openid.return_to") \
-                and params.get("openid.response_nonce"):
+        if "openid.ns" in params and "openid.mode" in params and\
+            "openid.claimed_id" in params and "openid.assoc_handle" in params\
+            and "openid.signed" in params and "openid.sig" in params\
+            and "openid.op_endpoint" in params and "openid.identity" in params\
+            and "openid.return_to" in params\
+                and "openid.response_nonce" in params:
 
             validation = {
                 "openid.assoc_handle": params["openid.assoc_handle"],
@@ -83,7 +81,7 @@ class SteamValidate(HTTPEndpoint):
                 if item_arg in params and params[item_arg] not in validation:
                     validation[item_arg] = params[item_arg]
 
-                await sleep(0.0001)
+                await sleep(0.000001)
 
             validation["openid.mode"] = "check_authentication"
 

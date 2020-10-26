@@ -167,8 +167,7 @@ class SQLMatches(Starlette):
             )
         )
 
-        Starlette.__init__(
-            self,
+        super().__init__(
             routes=routes,
             exception_handlers=exception_handlers,
             middleware=middlewares,

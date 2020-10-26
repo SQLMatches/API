@@ -156,15 +156,13 @@ class Match:
             raise InvalidMatchID()
         else:
             if players:
-                query = player_insert_on_conflict_update()
-
                 for player in players:
                     player["match_id"] = self.match_id
 
-                    await sleep(0.0001)
+                    await sleep(0.000001)
 
                 await Sessions.database.execute_many(
-                    query=query,
+                    query=player_insert_on_conflict_update(),
                     values=players
                 )
 
