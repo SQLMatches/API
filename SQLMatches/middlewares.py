@@ -20,27 +20,45 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
+import base64
+import binascii
 
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.authentication import (
+    AuthenticationBackend,
+    AuthenticationError,
+    SimpleUser,
+    AuthCredentials
+)
 
-from .api import error_response
 from .community import api_key_to_community
 from .community.exceptions import InvalidAPIKey
 
 
-class APIMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request, call_next):
-        if "/api/" in request.url.path:
-            if "api_key" not in request.query_params:
-                return error_response("APIKeyRequired")
+AUTH_ERROR = "Invalid basic auth credentials"
 
-            try:
-                community = await api_key_to_community(
-                    request.query_params["api_key"]
-                )
-            except InvalidAPIKey:
-                return error_response("InvalidAPIKey")
-            else:
-                request.state.community = community
 
-        return await call_next(request)
+class BasicAuthBackend(AuthenticationBackend):
+    async def authenticate(self, request):
+        if "Authorization" not in request.headers:
+            return
+
+        auth = request.headers["Authorization"]
+        try:
+            scheme, credentials = auth.split()
+            if scheme.lower() != "basic":
+                return
+            decoded = base64.b64decode(credentials).decode("ascii")
+        except (ValueError, UnicodeDecodeError, binascii.Error):
+            raise AuthenticationError(AUTH_ERROR)
+
+        username, _, password = decoded.partition(":")
+
+        try:
+            community = await api_key_to_community(
+                password
+            )
+        except InvalidAPIKey:
+            raise AuthenticationError(AUTH_ERROR)
+        else:
+            request.state.community = community
+            return AuthCredentials(["authenticated"]), SimpleUser(username)

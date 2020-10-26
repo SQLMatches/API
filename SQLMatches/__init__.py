@@ -24,6 +24,7 @@ DEALINGS IN THE SOFTWARE.
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
+from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette_wtf import CSRFProtectMiddleware
 
 from secrets import token_urlsafe
@@ -37,7 +38,7 @@ from .tables import create_tables
 from .resources import Sessions, Config
 from .settings import DatabaseSettings, B2Settings
 from .routes import ROUTES, ERROR_HANDLERS
-from .http_middleware import APIMiddleware
+from .middlewares import BasicAuthBackend
 
 
 __version__ = "0.1.0"
@@ -109,7 +110,7 @@ class SQLMatches(Starlette):
         middlewares = [
             Middleware(SessionMiddleware, secret_key=secret_key),
             Middleware(CSRFProtectMiddleware, csrf_secret=csrf_secret),
-            Middleware(APIMiddleware)
+            Middleware(AuthenticationMiddleware, backend=BasicAuthBackend())
         ]
         if "middleware" in kwargs:
             middlewares = middlewares + kwargs["middleware"]
