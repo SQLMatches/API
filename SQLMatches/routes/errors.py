@@ -31,6 +31,13 @@ async def server_error(request, exc):
     )
 
 
+async def auth_error(request, exc):
+    return error_response(
+        error=str(exc),
+        status_code=401
+    )
+
+
 async def api_error(request, exc):
     return error_response(
         error=exc.messages,

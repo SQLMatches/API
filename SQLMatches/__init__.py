@@ -37,8 +37,10 @@ import backblaze
 from .tables import create_tables
 from .resources import Sessions, Config
 from .settings import DatabaseSettings, B2Settings
-from .routes import ROUTES, ERROR_HANDLERS
 from .middlewares import BasicAuthBackend
+
+from .routes import ROUTES, ERROR_HANDLERS
+from .routes.errors import auth_error
 
 
 __version__ = "0.1.0"
@@ -110,7 +112,8 @@ class SQLMatches(Starlette):
         middlewares = [
             Middleware(SessionMiddleware, secret_key=secret_key),
             Middleware(CSRFProtectMiddleware, csrf_secret=csrf_secret),
-            Middleware(AuthenticationMiddleware, backend=BasicAuthBackend())
+            Middleware(AuthenticationMiddleware, backend=BasicAuthBackend(),
+                       on_error=auth_error)
         ]
         if "middleware" in kwargs:
             middlewares = middlewares + kwargs["middleware"]
