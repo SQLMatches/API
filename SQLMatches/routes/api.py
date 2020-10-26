@@ -84,7 +84,7 @@ class MatchAPI(HTTPEndpoint):
                "team_1_side": fields.Int(),
                "team_2_side": fields.Int(),
                "end": fields.Bool()})
-    @requires(["authenticated", "master"])
+    @requires("master")
     @limiter.limit("30/minute")
     async def post(self, request: Request, kwargs) -> response:
         try:
@@ -96,7 +96,7 @@ class MatchAPI(HTTPEndpoint):
         else:
             return response()
 
-    @requires(["authenticated", "master"])
+    @requires("master")
     @limiter.limit("30/minute")
     async def delete(self, request: Request) -> response:
         try:
@@ -128,7 +128,7 @@ class CreateMatchAPI(HTTPEndpoint):
                "team_1_score": fields.Int(required=True),
                "team_2_score": fields.Int(required=True),
                "map_name": fields.Str(min=1, max=24, required=True)})
-    @requires(["authenticated", "master"])
+    @requires("master")
     @limiter.limit("30/minute")
     async def post(self, request: Request, kwargs) -> response:
         match = await request.state.community.create_match(**kwargs)
@@ -137,7 +137,7 @@ class CreateMatchAPI(HTTPEndpoint):
 
 
 class DemoUploadAPI(HTTPEndpoint):
-    @requires(["authenticated", "master"])
+    @requires("master")
     @limiter.limit("30/minute")
     async def put(self, request: Request) -> response:
         match = request.state.community.match(request.path_params["match_id"])
