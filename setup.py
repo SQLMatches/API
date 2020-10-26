@@ -29,7 +29,8 @@ setup(
         "SQLMatches",
         "SQLMatches.api",
         "SQLMatches.community",
-        "SQLMatches.routes"
+        "SQLMatches.routes",
+        "SQLMatches.tests"
     ],
     python_requires=">=3.6",
     include_package_data=True,

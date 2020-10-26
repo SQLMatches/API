@@ -25,20 +25,23 @@ from starlette.routing import Route, Mount
 from starlette.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException
 
+from slowapi.errors import RateLimitExceeded
+
 from webargs_starlette import WebargsHTTPException
 
 # Routes
 from .download import DownloadPage
 from .api import MatchAPI, CreateMatchAPI, DemoUploadAPI, MatchesAPI
 from .steam import SteamLogin, SteamValidate, SteamLogout
-from .errors import server_error, api_error
+from .errors import server_error, api_error, rate_limted_error
 
 from ..resources import Config
 
 
 ERROR_HANDLERS = {
     WebargsHTTPException: api_error,
-    HTTPException: server_error
+    RateLimitExceeded: rate_limted_error,
+    HTTPException: server_error,
 }
 
 

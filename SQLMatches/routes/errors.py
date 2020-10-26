@@ -24,23 +24,30 @@ DEALINGS IN THE SOFTWARE.
 from ..api import error_response
 
 
-async def server_error(request, exc):
+def server_error(request, exc):
     return error_response(
         error=exc.detail,
         status_code=exc.status_code
     )
 
 
-async def auth_error(request, exc):
+def auth_error(request, exc):
     return error_response(
         error=str(exc),
         status_code=401
     )
 
 
-async def api_error(request, exc):
+def api_error(request, exc):
     return error_response(
         error=exc.messages,
         status_code=exc.status_code,
         headers=exc.headers
+    )
+
+
+def rate_limted_error(request, exc):
+    return error_response(
+        error="Rate limit exceeded: {}".format(exc.detail),
+        status_code=429
     )
