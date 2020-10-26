@@ -51,7 +51,8 @@ class BasicAuthBackend(AuthenticationBackend):
 
         Returns
         -------
-        Any
+        AuthCredentials
+        SimpleUser
 
         Raises
         ------
