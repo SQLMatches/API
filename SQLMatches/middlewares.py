@@ -60,4 +60,5 @@ class BasicAuthBackend(AuthenticationBackend):
         except InvalidAPIKey:
             raise AuthenticationError(AUTH_ERROR)
         else:
-            return AuthCredentials(["authenticated"]), SimpleUser(username)
+            return AuthCredentials(["authenticated", "master"]), \
+                SimpleUser(username)
