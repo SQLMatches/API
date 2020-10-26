@@ -23,7 +23,7 @@ DEALINGS IN THE SOFTWARE.
 import base64
 import binascii
 
-from typing import Any
+from typing import Tuple
 
 from starlette.authentication import (
     AuthenticationBackend,
@@ -41,7 +41,8 @@ AUTH_ERROR = "Invalid basic auth credentials"
 
 
 class BasicAuthBackend(AuthenticationBackend):
-    async def authenticate(self, request: Request) -> Any:
+    async def authenticate(self, request: Request
+                           ) -> Tuple[AuthCredentials, SimpleUser]:
         """Used to authenticate basic auth.
 
         Parameters
