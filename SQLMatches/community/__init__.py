@@ -30,7 +30,12 @@ from datetime import datetime
 from uuid import uuid4
 
 from ..resources import Sessions
-from ..tables import community, scoreboard_total, scoreboard
+from ..tables import (
+    community_table,
+    scoreboard_total_table,
+    scoreboard_table,
+    user_table
+)
 
 from .exceptions import (
     CommunityTaken,
@@ -69,7 +74,7 @@ class Community:
 
         match_id = str(uuid4())
 
-        query = scoreboard_total.insert().values(
+        query = scoreboard_total_table.insert().values(
             match_id=match_id,
             team_1_name=team_1_name,
             team_2_name=team_2_name,
@@ -103,9 +108,9 @@ class Community:
         """Regenerates API key.
         """
 
-        query = community.update().values(
+        query = community_table.update().values(
             api_key=token_urlsafe(24)
-        ).where(community.c.name == self.community_name)
+        ).where(community_table.c.name == self.community_name)
 
         await Sessions.database.execute(query=query)
 
@@ -113,8 +118,8 @@ class Community:
         """Checks if community exists with name.
         """
 
-        query = community.count().where(
-            community.c.name == self.community_name
+        query = community_table.count().where(
+            community_table.c.name == self.community_name
         )
 
         return await Sessions.database.fetch_val(query=query) > 0
@@ -139,49 +144,53 @@ class Community:
         """
 
         query = select([
-            scoreboard_total.c.match_id,
-            scoreboard_total.c.timestamp,
-            scoreboard_total.c.status,
-            scoreboard_total.c.demo_status,
-            scoreboard_total.c.map,
-            scoreboard_total.c.team_1_name,
-            scoreboard_total.c.team_2_name,
-            scoreboard_total.c.team_1_score,
-            scoreboard_total.c.team_2_score,
-            scoreboard_total.c.team_1_side,
-            scoreboard_total.c.team_2_side
+            scoreboard_total_table.c.match_id,
+            scoreboard_total_table.c.timestamp,
+            scoreboard_total_table.c.status,
+            scoreboard_total_table.c.demo_status,
+            scoreboard_total_table.c.map,
+            scoreboard_total_table.c.team_1_name,
+            scoreboard_total_table.c.team_2_name,
+            scoreboard_total_table.c.team_1_score,
+            scoreboard_total_table.c.team_2_score,
+            scoreboard_total_table.c.team_1_side,
+            scoreboard_total_table.c.team_2_side
         ])
 
         if search:
             like_search = "%{}%".format(search)
 
             query = query.select_from(
-                scoreboard_total.join(
-                    scoreboard,
-                    scoreboard.c.match_id == scoreboard_total.c.match_id
+                scoreboard_total_table.join(
+                    scoreboard_table,
+                    scoreboard_table.c.match_id ==
+                    scoreboard_total_table.c.match_id
+                ).join(
+                    user_table,
+                    user_table.c.steam_id == scoreboard_table.c.steam_id
                 )
             ).where(
                 and_(
-                    scoreboard_total.c.name == self.community_name,
+                    scoreboard_total_table.c.name == self.community_name,
                     or_(
-                        scoreboard_total.c.match_id == search,
-                        scoreboard_total.c.map.like(like_search),
-                        scoreboard_total.c.team_1_name.like(like_search),
-                        scoreboard_total.c.team_2_name.like(like_search),
-                        scoreboard.c.name.like(like_search),
-                        scoreboard.c.steam_id == search
+                        scoreboard_total_table.c.match_id == search,
+                        scoreboard_total_table.c.map.like(like_search),
+                        scoreboard_total_table.c.team_1_name.like(like_search),
+                        scoreboard_total_table.c.team_2_name.like(like_search),
+                        user_table.c.name.like(like_search),
+                        user_table.c.steam_id == search
                     )
                 )
             ).distinct()
         else:
             query = query.select_from(
-                scoreboard_total
+                scoreboard_total_table
             ).where(
-                scoreboard_total.c.name == self.community_name,
+                scoreboard_total_table.c.name == self.community_name,
             )
 
         query = query.order_by(
-            scoreboard_total.c.timestamp.desc()
+            scoreboard_total_table.c.timestamp.desc()
         ).limit(limit).offset((page - 1) * limit if page > 1 else 0)
 
         async for row in Sessions.database.iterate(query=query):
@@ -202,13 +211,13 @@ class Community:
         """
 
         query = select([
-            community.c.api_key,
-            community.c.owner_id,
-            community.c.disabled
+            community_table.c.api_key,
+            community_table.c.owner_id,
+            community_table.c.disabled
         ]).select_from(
-            community
+            community_table
         ).where(
-            community.c.name == self.community_name
+            community_table.c.name == self.community_name
         )
 
         row = await Sessions.database.fetch_one(query=query)
@@ -222,8 +231,8 @@ class Community:
         """Disables a community.
         """
 
-        query = community.update().where(
-            community.c.name == self.community_name
+        query = community_table.update().where(
+            community_table.c.name == self.community_name
         ).values(disabled=True)
 
         await Sessions.database.execute(query=query)
@@ -242,12 +251,12 @@ async def api_key_to_community(api_key: str) -> Community:
         Community name
     """
 
-    query = select([community.c.name]).select_from(
-        community
+    query = select([community_table.c.name]).select_from(
+        community_table
     ).where(
         and_(
-            community.c.api_key == api_key,
-            community.c.disabled == 0
+            community_table.c.api_key == api_key,
+            community_table.c.disabled == 0
         )
     )
 
@@ -269,13 +278,13 @@ async def get_community_from_owner(steam_id: str) -> Community:
     """
 
     query = select(
-        [community.c.name]
+        [community_table.c.name]
     ).select_from(
-        community
+        community_table
     ).where(
         and_(
-            community.c.owner_id == steam_id,
-            community.c.disabled == 0
+            community_table.c.owner_id == steam_id,
+            community_table.c.disabled == 0
         )
     )
 
@@ -291,10 +300,10 @@ async def owner_exists(steam_id: str) -> bool:
     """Checks if given steam_id owns a community
     """
 
-    query = community.count().where(
+    query = community_table.count().where(
         and_(
-            community.c.owner_id == steam_id,
-            community.c.disabled == 0
+            community_table.c.owner_id == steam_id,
+            community_table.c.disabled == 0
         )
     )
 
@@ -328,19 +337,19 @@ async def create_community(steam_id: str, community_name: str,
         Raised when owner already owns a community.
     """
 
-    if await Community(community_name).exists():
-        raise CommunityTaken()
-
     if await owner_exists(steam_id):
         raise AlreadyCommunity()
 
-    query = community.insert().values(
+    query = community_table.insert().values(
         name=community_name,
         owner_id=steam_id,
         disabled=disabled,
         api_key=token_urlsafe(24)
     )
 
-    await Sessions.database.execute(query=query)
+    try:
+        await Sessions.database.execute(query=query)
+    except Exception:
+        raise CommunityTaken()
 
     return Community(community_name)

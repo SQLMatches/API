@@ -22,6 +22,7 @@ DEALINGS IN THE SOFTWARE.
 
 
 from starlette.endpoints import HTTPEndpoint
+from starlette.requests import Request
 from starlette.responses import RedirectResponse
 
 from urllib.parse import urlencode
@@ -32,7 +33,7 @@ from ..resources import Config, Sessions
 
 
 class SteamLogin(HTTPEndpoint):
-    async def get(self, request):
+    async def get(self, request: Request) -> RedirectResponse:
         paramters = {
             "openid.ns": "http://specs.openid.net/auth/2.0",
             "openid.identity":
@@ -54,7 +55,7 @@ class SteamLogin(HTTPEndpoint):
 
 
 class SteamValidate(HTTPEndpoint):
-    async def get(self, request):
+    async def get(self, request: Request) -> RedirectResponse:
         params = request.query_params
         redirect = "/"
 
@@ -109,7 +110,7 @@ class SteamValidate(HTTPEndpoint):
 
 
 class SteamLogout(HTTPEndpoint):
-    async def get(self, request):
+    async def get(self, request: Request) -> RedirectResponse:
         request.session.pop("steam_id", None)
 
         return RedirectResponse("/")

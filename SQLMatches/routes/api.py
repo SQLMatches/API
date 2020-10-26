@@ -25,6 +25,7 @@ import asyncio
 
 from starlette.endpoints import HTTPEndpoint
 from starlette.authentication import requires
+from starlette.requests import Request
 
 from slowapi import Limiter
 from slowapi.util import get_remote_address
@@ -67,7 +68,7 @@ class PlayersSchema(Schema):
 class MatchAPI(HTTPEndpoint):
     @requires("authenticated")
     @limiter.limit("30/minute")
-    async def get(self, request):
+    async def get(self, request: Request) -> response:
         try:
             scoreboard = await request.state.community.match(
                 request.path_params["match_id"]
@@ -85,7 +86,7 @@ class MatchAPI(HTTPEndpoint):
                "end": fields.Bool()})
     @requires(["authenticated", "master"])
     @limiter.limit("30/minute")
-    async def post(self, request, kwargs):
+    async def post(self, request: Request, kwargs) -> response:
         try:
             await request.state.community.match(
                 request.path_params["match_id"]
@@ -97,7 +98,7 @@ class MatchAPI(HTTPEndpoint):
 
     @requires(["authenticated", "master"])
     @limiter.limit("30/minute")
-    async def delete(self, request):
+    async def delete(self, request: Request) -> response:
         try:
             await request.state.community.match(
                 request.path_params["match_id"]
@@ -112,7 +113,7 @@ class MatchesAPI(HTTPEndpoint):
     @use_args({"search": fields.Str(), "page": fields.Int()})
     @requires("authenticated")
     @limiter.limit("30/minute")
-    async def post(self, request, kwargs):
+    async def post(self, request: Request, kwargs) -> response:
         return response([
             match_to_dict(match) async for match, _ in
             request.state.community.matches(**kwargs)
@@ -129,7 +130,7 @@ class CreateMatchAPI(HTTPEndpoint):
                "map_name": fields.Str(min=1, max=24, required=True)})
     @requires(["authenticated", "master"])
     @limiter.limit("30/minute")
-    async def post(self, request, kwargs):
+    async def post(self, request: Request, kwargs) -> response:
         match = await request.state.community.create_match(**kwargs)
 
         return response({"match_id": match.match_id})
@@ -138,7 +139,7 @@ class CreateMatchAPI(HTTPEndpoint):
 class DemoUploadAPI(HTTPEndpoint):
     @requires(["authenticated", "master"])
     @limiter.limit("30/minute")
-    async def put(self, request):
+    async def put(self, request: Request) -> response:
         match = request.state.community.match(request.path_params["match_id"])
 
         try:

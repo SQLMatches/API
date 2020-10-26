@@ -21,24 +21,26 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
+from starlette.requests import Request
+
 from ..api import error_response
 
 
-def server_error(request, exc):
+def server_error(request: Request, exc) -> error_response:
     return error_response(
         error=exc.detail,
         status_code=exc.status_code
     )
 
 
-def auth_error(request, exc):
+def auth_error(request: Request, exc: Exception) -> error_response:
     return error_response(
         error=str(exc),
         status_code=401
     )
 
 
-def api_error(request, exc):
+def payload_error(request: Request, exc) -> error_response:
     return error_response(
         error=exc.messages,
         status_code=exc.status_code,
@@ -46,7 +48,7 @@ def api_error(request, exc):
     )
 
 
-def rate_limted_error(request, exc):
+def rate_limted_error(request: Request, exc) -> error_response:
     return error_response(
         error="Rate limit exceeded: {}".format(exc.detail),
         status_code=429

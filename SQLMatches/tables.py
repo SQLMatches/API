@@ -21,17 +21,46 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-from sqlalchemy import Table, MetaData, String, \
-    Column, TIMESTAMP, ForeignKey, Integer, Boolean, create_engine, \
-    UniqueConstraint
-
+from sqlalchemy import (
+    Table,
+    MetaData,
+    String,
+    Column,
+    TIMESTAMP,
+    ForeignKey,
+    Integer,
+    Boolean,
+    PrimaryKeyConstraint,
+    create_engine
+)
 from datetime import datetime
 
 
 metadata = MetaData()
 
 
-community = Table(
+user_table = Table(
+    "user",
+    metadata,
+    Column(
+        "steam_id",
+        String(length=64)
+    ),
+    Column(
+        "timestamp",
+        TIMESTAMP,
+        default=datetime.now
+    ),
+    Column(
+        "name",
+        String(length=42)
+    ),
+    mysql_engine="InnoDB",
+    mysql_charset="utf8mb4"
+)
+
+
+community_table = Table(
     "community",
     metadata,
     Column(
@@ -41,14 +70,47 @@ community = Table(
     ),
     Column(
         "owner_id",
-        String(length=64)
+        String(length=64),
+        ForeignKey("user.steam_id")
     ),
+    Column(
+        "timestamp",
+        TIMESTAMP,
+        default=datetime.now
+    ),
+    Column(
+        "disabled",
+        Boolean,
+        default=False
+    ),
+    mysql_engine="InnoDB",
+    mysql_charset="utf8mb4"
+)
+
+api_key_table = Table(
+    "api_key",
+    metadata,
     Column(
         "api_key",
         String(length=32)
     ),
     Column(
-        "disabled",
+        "owner_id",
+        String(length=64),
+        ForeignKey("user.steam_id")
+    ),
+    Column(
+        "timestamp",
+        TIMESTAMP,
+        default=datetime.now
+    ),
+    Column(
+        "community",
+        String(length=32),
+        ForeignKey("community.name")
+    ),
+    Column(
+        "master",
         Boolean,
         default=False
     ),
@@ -69,7 +131,7 @@ community = Table(
 # Team Sides
 # 0 - CT
 # 1 - T
-scoreboard_total = Table(
+scoreboard_total_table = Table(
     "scoreboard_total",
     metadata,
     Column(
@@ -80,7 +142,8 @@ scoreboard_total = Table(
     Column(
         "name",
         String(length=32),
-        ForeignKey("community.name")
+        ForeignKey("community.name"),
+        primary_key=True
     ),
     Column(
         "timestamp",
@@ -127,6 +190,10 @@ scoreboard_total = Table(
         Integer,
         default=0
     ),
+    PrimaryKeyConstraint(
+        "match_id",
+        "name"
+    ),
     mysql_engine="InnoDB",
     mysql_charset="utf8mb4"
 )
@@ -135,7 +202,7 @@ scoreboard_total = Table(
 # Team Codes
 # 0 = Team 1
 # 1 = Team 2
-scoreboard = Table(
+scoreboard_table = Table(
     "scoreboard",
     metadata,
     Column(
@@ -147,11 +214,8 @@ scoreboard = Table(
     Column(
         "steam_id",
         String(length=64),
+        ForeignKey("user.steam_id"),
         primary_key=True
-    ),
-    Column(
-        "name",
-        String(length=42)
     ),
     Column(
         "team",
@@ -212,7 +276,7 @@ scoreboard = Table(
         Boolean,
         default=False
     ),
-    UniqueConstraint(
+    PrimaryKeyConstraint(
         "steam_id",
         "match_id",
         sqlite_on_conflict="REPLACE"

@@ -23,23 +23,25 @@ DEALINGS IN THE SOFTWARE.
 
 from sqlalchemy.dialects.mysql import insert as mysql_insert
 from sqlalchemy.dialects.postgresql import insert as postgresql_insert
-from sqlalchemy import insert
+from sqlalchemy import insert as sqlite_insert
 
-from .tables import scoreboard
+from typing import Any
+
+from .tables import scoreboard_table, user_table
 from .resources import Config
 
 
-def player_insert_on_conflict_update() -> insert:
+def player_insert_on_conflict_update() -> Any:
     """Used for updating a player on a scoreboard on conflict.
-
-    Returns
-    -------
-    insert
-        SQLAlchemy insert object.
     """
 
     if Config.db_engine == "mysql":
-        query_insert = mysql_insert(scoreboard)
+        query_insert = mysql_insert(
+            scoreboard_table,
+            user_table.join(
+                scoreboard_table.c.steam_id == user_table.c.steam_id
+            )
+        )
         return query_insert.on_duplicate_key_update(
             name=query_insert.inserted.name,
             team=query_insert.inserted.team,
@@ -56,8 +58,13 @@ def player_insert_on_conflict_update() -> insert:
             disconnected=query_insert.inserted.disconnected
         )
     elif Config.db_engine == "psycopg2":
-        query_insert = postgresql_insert(scoreboard)
-        return postgresql_insert(scoreboard).on_conflict_do_update(
+        query_insert = postgresql_insert(
+            scoreboard_table,
+            user_table.join(
+                scoreboard_table.c.steam_id == user_table.c.steam_id
+            )
+        )
+        return query_insert.on_conflict_do_update(
             set_=dict(
                 name=query_insert.inserted.name,
                 team=query_insert.inserted.team,
@@ -75,4 +82,9 @@ def player_insert_on_conflict_update() -> insert:
             )
         )
     else:
-        return scoreboard.insert
+        return sqlite_insert(
+            scoreboard_table,
+            user_table.join(
+                scoreboard_table.c.steam_id == user_table.c.steam_id
+            )
+        )

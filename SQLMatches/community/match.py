@@ -26,7 +26,7 @@ from sqlalchemy.sql import select, and_
 from asyncio import sleep
 
 from ..on_conflict import player_insert_on_conflict_update
-from ..tables import scoreboard_total, scoreboard
+from ..tables import scoreboard_total_table, scoreboard_table, user_table
 from ..resources import Sessions
 
 from .models import ScoreboardModel
@@ -58,12 +58,12 @@ class Match:
         """
 
         try:
-            query = scoreboard_total.update().values(
+            query = scoreboard_total_table.update().values(
                 demo_status=status
             ).where(
                 and_(
-                    scoreboard_total.c.match_id == self.match_id,
-                    scoreboard_total.c.name == self.community_name
+                    scoreboard_total_table.c.match_id == self.match_id,
+                    scoreboard_total_table.c.name == self.community_name
                 )
             )
 
@@ -86,12 +86,12 @@ class Match:
             Status of demo.
         """
 
-        query = select([scoreboard_total.c.demo_status]).select_from(
-            scoreboard_total
+        query = select([scoreboard_total_table.c.demo_status]).select_from(
+            scoreboard_total_table
         ).where(
             and_(
-                scoreboard_total.c.match_id == self.match_id,
-                scoreboard_total.c.name == self.community_name
+                scoreboard_total_table.c.match_id == self.match_id,
+                scoreboard_total_table.c.name == self.community_name
             )
         )
 
@@ -109,10 +109,10 @@ class Match:
         bool
         """
 
-        query = scoreboard_total.count().where(
+        query = scoreboard_total_table.count().where(
             and_(
-                scoreboard_total.c.match_id == self.match_id,
-                scoreboard_total.c.name == self.community_name
+                scoreboard_total_table.c.match_id == self.match_id,
+                scoreboard_total_table.c.name == self.community_name
             )
         )
 
@@ -138,15 +138,15 @@ class Match:
         if team_2_side is not None:
             team_sides["team_2_side"] = team_2_side
 
-        query = scoreboard_total.update().values(
+        query = scoreboard_total_table.update().values(
             team_1_score=team_1_score,
             team_2_score=team_2_score,
             status=0 if end else 1,
             **team_sides
         ).where(
             and_(
-                scoreboard_total.c.match_id == self.match_id,
-                scoreboard_total.c.name == self.community_name
+                scoreboard_total_table.c.match_id == self.match_id,
+                scoreboard_total_table.c.name == self.community_name
             )
         )
 
@@ -177,12 +177,12 @@ class Match:
             Raised when match ID is invalid.
         """
 
-        query = scoreboard_total.update().values(
+        query = scoreboard_total_table.update().values(
             status=0
         ).where(
             and_(
-                scoreboard_total.c.match_id == self.match_id,
-                scoreboard_total.c.name == self.community_name
+                scoreboard_total_table.c.match_id == self.match_id,
+                scoreboard_total_table.c.name == self.community_name
             )
         )
 
@@ -201,39 +201,43 @@ class Match:
         """
 
         query = select([
-            scoreboard_total.c.timestamp,
-            scoreboard_total.c.status,
-            scoreboard_total.c.map,
-            scoreboard_total.c.demo_status,
-            scoreboard_total.c.team_1_name,
-            scoreboard_total.c.team_2_name,
-            scoreboard_total.c.team_1_score,
-            scoreboard_total.c.team_2_score,
-            scoreboard_total.c.team_1_side,
-            scoreboard_total.c.team_2_side,
-            scoreboard.c.steam_id,
-            scoreboard.c.name,
-            scoreboard.c.team,
-            scoreboard.c.alive,
-            scoreboard.c.ping,
-            scoreboard.c.kills,
-            scoreboard.c.headshots,
-            scoreboard.c.assists,
-            scoreboard.c.deaths,
-            scoreboard.c.shots_fired,
-            scoreboard.c.shots_hit,
-            scoreboard.c.mvps,
-            scoreboard.c.score,
-            scoreboard.c.disconnected
+            scoreboard_total_table.c.timestamp,
+            scoreboard_total_table.c.status,
+            scoreboard_total_table.c.map,
+            scoreboard_total_table.c.demo_status,
+            scoreboard_total_table.c.team_1_name,
+            scoreboard_total_table.c.team_2_name,
+            scoreboard_total_table.c.team_1_score,
+            scoreboard_total_table.c.team_2_score,
+            scoreboard_total_table.c.team_1_side,
+            scoreboard_total_table.c.team_2_side,
+            user_table.c.steam_id,
+            user_table.c.name,
+            scoreboard_table.c.team,
+            scoreboard_table.c.alive,
+            scoreboard_table.c.ping,
+            scoreboard_table.c.kills,
+            scoreboard_table.c.headshots,
+            scoreboard_table.c.assists,
+            scoreboard_table.c.deaths,
+            scoreboard_table.c.shots_fired,
+            scoreboard_table.c.shots_hit,
+            scoreboard_table.c.mvps,
+            scoreboard_table.c.score,
+            scoreboard_table.c.disconnected
         ]).select_from(
-            scoreboard_total.join(
-                scoreboard,
-                scoreboard.c.match_id == scoreboard_total.c.match_id
+            scoreboard_total_table.join(
+                scoreboard_table,
+                scoreboard_table.c.match_id ==
+                scoreboard_total_table.c.match_id
+            ).join(
+                user_table,
+                user_table.c.steam_id == scoreboard_table.c.steam_id
             )
         ).where(
             and_(
-                scoreboard_total.c.match_id == self.match_id,
-                scoreboard_total.c.name == self.community_name
+                scoreboard_total_table.c.match_id == self.match_id,
+                scoreboard_total_table.c.name == self.community_name
             )
         )
 

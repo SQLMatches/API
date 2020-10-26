@@ -22,13 +22,14 @@ DEALINGS IN THE SOFTWARE.
 
 
 from starlette.endpoints import HTTPEndpoint
+from starlette.requests import Request
 from starlette.responses import RedirectResponse
 
 from ..resources import Config
 
 
 class DownloadPage(HTTPEndpoint):
-    async def get(self, request):
+    async def get(self, request: Request) -> RedirectResponse:
         return RedirectResponse(
             "{}{}{}.dem".format(
                 Config.cdn_url,

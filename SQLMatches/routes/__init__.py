@@ -33,15 +33,15 @@ from webargs_starlette import WebargsHTTPException
 from .download import DownloadPage
 from .api import MatchAPI, CreateMatchAPI, DemoUploadAPI, MatchesAPI
 from .steam import SteamLogin, SteamValidate, SteamLogout
-from .errors import server_error, api_error, rate_limted_error
+from .errors import server_error, payload_error, rate_limted_error
 
 from ..resources import Config
 
 
 ERROR_HANDLERS = {
-    WebargsHTTPException: api_error,
+    WebargsHTTPException: payload_error,
     RateLimitExceeded: rate_limted_error,
-    HTTPException: server_error,
+    HTTPException: server_error
 }
 
 
