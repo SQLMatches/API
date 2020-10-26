@@ -42,6 +42,21 @@ AUTH_ERROR = "Invalid basic auth credentials"
 
 class BasicAuthBackend(AuthenticationBackend):
     async def authenticate(self, request: Request) -> Any:
+        """Used to authenticate basic auth.
+
+        Parameters
+        ----------
+        request : Request
+
+        Returns
+        -------
+        Any
+
+        Raises
+        ------
+        AuthenticationError
+        """
+
         if "Authorization" not in request.headers:
             return
 
