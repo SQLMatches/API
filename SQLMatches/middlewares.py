@@ -23,12 +23,15 @@ DEALINGS IN THE SOFTWARE.
 import base64
 import binascii
 
+from typing import Any
+
 from starlette.authentication import (
     AuthenticationBackend,
     AuthenticationError,
     SimpleUser,
     AuthCredentials
 )
+from starlette.requests import Request
 
 from .community import api_key_to_community
 from .community.exceptions import InvalidAPIKey
@@ -38,7 +41,7 @@ AUTH_ERROR = "Invalid basic auth credentials"
 
 
 class BasicAuthBackend(AuthenticationBackend):
-    async def authenticate(self, request):
+    async def authenticate(self, request: Request) -> Any:
         if "Authorization" not in request.headers:
             return
 
