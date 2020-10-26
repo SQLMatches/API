@@ -33,7 +33,7 @@ from webargs import fields
 from webargs_starlette import use_args
 
 from ..api import response
-from ..api.model_convertor import scoreboard_to_dict
+from ..api.model_convertor import scoreboard_to_dict, match_to_dict
 
 from ..resources import Sessions, Config
 
@@ -93,6 +93,15 @@ class MatchAPI(HTTPEndpoint):
             raise
         else:
             return response()
+
+
+class MatchesAPI(HTTPEndpoint):
+    @use_args({"search": fields.Str(), "page": fields.Int()})
+    async def post(self, request, kwargs):
+        return response([
+            match_to_dict(match) async for match, _ in
+            request.state.community.matches(**kwargs)
+        ])
 
 
 class CreateMatchAPI(HTTPEndpoint):

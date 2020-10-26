@@ -30,7 +30,7 @@ from datetime import datetime
 from uuid import uuid4
 
 from ..resources import Sessions
-from ..tables import community, scoreboard_total
+from ..tables import community, scoreboard_total, scoreboard
 
 from .exceptions import (
     CommunityTaken,
@@ -127,11 +127,8 @@ class Community:
         Paramters
         ---------
         search: str
-            Defaults to None, parameters to search.
         page: int
-            What page we on booiiiiii.
         limit: int
-            Max amount of matches to display at once.
 
         Yields
         ------
@@ -153,25 +150,32 @@ class Community:
             scoreboard_total.c.team_2_score,
             scoreboard_total.c.team_1_side,
             scoreboard_total.c.team_2_side
-        ]).select_from(
-            scoreboard_total
-        )
+        ])
 
         if search:
             like_search = "%{}%".format(search)
 
-            query = query.where(
+            query = query.select_from(
+                scoreboard_total.join(
+                    scoreboard,
+                    scoreboard.c.match_id == scoreboard_total.c.match_id
+                )
+            ).where(
                 and_(
                     scoreboard_total.c.name == self.community_name,
                     or_(
                         scoreboard_total.c.map.like(like_search),
                         scoreboard_total.c.team_1_name.like(like_search),
-                        scoreboard_total.c.team_2_name.like(like_search)
+                        scoreboard_total.c.team_2_name.like(like_search),
+                        scoreboard.c.name.like(like_search),
+                        scoreboard.c.steam_id == search
                     )
                 )
-            )
+            ).distinct()
         else:
-            query = query.where(
+            query = query.select_from(
+                scoreboard_total
+            ).where(
                 scoreboard_total.c.name == self.community_name,
             )
 
