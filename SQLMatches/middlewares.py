@@ -78,9 +78,6 @@ class BasicAuthBackend(AuthenticationBackend):
         except InvalidAPIKey:
             raise AuthenticationError(AUTH_ERROR)
         else:
-            scopes = ["authenticated"]
-
-            if master:
-                scopes.append("master")
-
-            return AuthCredentials(scopes), SimpleUser(username)
+            return AuthCredentials([
+                "authenticated", "master" if master else None
+            ]), SimpleUser(username)
