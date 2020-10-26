@@ -232,7 +232,7 @@ class Community:
         ).where(
             and_(
                 community_table.c.name == self.community_name,
-                api_key_table.c.master == True  # noqa: E712
+                api_key_table.c.master == 1
             )
         )
 
@@ -286,7 +286,7 @@ async def api_key_to_community(api_key: str) -> Community:
     row = await Sessions.database.fetch_one(query=query)
 
     if row:
-        return Community(row["name"]), row["master"]
+        return Community(row["name"]), bool(row["master"])
     else:
         raise InvalidAPIKey()
 
