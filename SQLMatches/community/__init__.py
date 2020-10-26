@@ -164,6 +164,7 @@ class Community:
                 and_(
                     scoreboard_total.c.name == self.community_name,
                     or_(
+                        scoreboard_total.c.match_id == search,
                         scoreboard_total.c.map.like(like_search),
                         scoreboard_total.c.team_1_name.like(like_search),
                         scoreboard_total.c.team_2_name.like(like_search),
