@@ -265,6 +265,8 @@ async def api_key_to_community(api_key: str) -> Community:
     -------
     str
         Community name
+    bool
+        If key is a master key.
     """
 
     query = select([
