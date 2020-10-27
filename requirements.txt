@@ -4,13 +4,10 @@ aiomysql
 aiosqlite
 databases
 aiofiles
-jinja2
 itsdangerous
 uvicorn
 sqlalchemy
 aiohttp
-wtforms
-starlette-wtf
 webargs
 webargs-starlette
 backblaze
