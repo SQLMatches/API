@@ -22,7 +22,6 @@ DEALINGS IN THE SOFTWARE.
 
 
 import asyncio
-from sqlalchemy.util.compat import u
 
 from starlette.endpoints import HTTPEndpoint
 from starlette.authentication import requires
