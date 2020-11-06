@@ -78,6 +78,7 @@ class SQLMatches(Starlette):
                  map_images: dict = MAP_IMAGES,
                  upload_delay: float = 0.1,
                  max_upload_size: int = 80000000,
+                 demos: bool = True,
                  **kwargs) -> None:
         """SQLMatches API.
 
@@ -97,6 +98,8 @@ class SQLMatches(Starlette):
             by default 0.1
         max_upload_size: int
             by default 80000000
+        demos : bool
+            By default True
         kwargs
         """
 
@@ -137,6 +140,7 @@ class SQLMatches(Starlette):
         Config.cdn_url = b2_settings.cdn_url
         Config.upload_delay = upload_delay
         Config.max_upload_size = max_upload_size
+        Config.demos = demos
 
         database_url = "://{}:{}@{}:{}/{}?charset=utf8mb4".format(
             database_settings.username,
@@ -155,9 +159,10 @@ class SQLMatches(Starlette):
             b2_settings.application_key
         )
 
-        Sessions.bucket = self.b2.bucket(
-            b2_settings.bucket_id
-        )
+        if demos:
+            Sessions.bucket = self.b2.bucket(
+                b2_settings.bucket_id
+            )
 
         create_tables(
             "{}+{}{}".format(
@@ -181,13 +186,17 @@ class SQLMatches(Starlette):
         """
 
         await Sessions.database.connect()
-        await self.b2.authorize()
         Sessions.aiohttp = ClientSession()
+
+        if Config.demos:
+            await self.b2.authorize()
 
     async def _shutdown(self) -> None:
         """Closes any underlying sessions.
         """
 
         await Sessions.database.disconnect()
-        await self.b2.close()
         await Sessions.aiohttp.close()
+
+        if Config.demos:
+            await self.b2.close()

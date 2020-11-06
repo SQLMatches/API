@@ -141,6 +141,9 @@ class DemoUploadAPI(HTTPEndpoint):
     @requires("master")
     @limiter.limit("30/minute")
     async def put(self, request: Request) -> response:
+        if not Config.demos:
+            return response()
+
         match = request.state.community.match(request.path_params["match_id"])
 
         try:
