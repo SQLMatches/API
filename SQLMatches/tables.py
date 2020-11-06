@@ -39,6 +39,22 @@ from datetime import datetime
 metadata = MetaData()
 
 
+update_table = Table(
+    "update",
+    metadata,
+    Column(
+        "version",
+        String(length=8)
+    ),
+    Column(
+        "message",
+        String(length=64)
+    ),
+    mysql_engine="InnoDB",
+    mysql_charset="utf8mb4"
+)
+
+
 user_table = Table(
     "user",
     metadata,
@@ -65,9 +81,13 @@ community_table = Table(
     "community",
     metadata,
     Column(
-        "name",
+        "community_name",
         String(length=32),
         primary_key=True
+    ),
+    Column(
+        "community_id",
+        String(length=36)
     ),
     Column(
         "owner_id",
@@ -84,9 +104,15 @@ community_table = Table(
         Boolean,
         default=False
     ),
+    Column(
+        "demos",
+        Boolean,
+        default=False
+    ),
     mysql_engine="InnoDB",
     mysql_charset="utf8mb4"
 )
+
 
 api_key_table = Table(
     "api_key",
@@ -106,9 +132,9 @@ api_key_table = Table(
         default=datetime.now
     ),
     Column(
-        "community",
-        String(length=32),
-        ForeignKey("community.name")
+        "community_id",
+        String(length=36),
+        ForeignKey("community.community_id")
     ),
     Column(
         "master",
@@ -118,6 +144,7 @@ api_key_table = Table(
     mysql_engine="InnoDB",
     mysql_charset="utf8mb4"
 )
+
 
 # Scoreboard total table
 # Status codes
@@ -141,10 +168,9 @@ scoreboard_total_table = Table(
         primary_key=True
     ),
     Column(
-        "name",
-        String(length=32),
-        ForeignKey("community.name"),
-        primary_key=True
+        "community_id",
+        String(length=36),
+        ForeignKey("community.community_id")
     ),
     Column(
         "timestamp",
@@ -193,7 +219,7 @@ scoreboard_total_table = Table(
     ),
     PrimaryKeyConstraint(
         "match_id",
-        "name"
+        "community_id"
     ),
     mysql_engine="InnoDB",
     mysql_charset="utf8mb4"
