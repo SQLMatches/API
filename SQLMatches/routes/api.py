@@ -22,6 +22,7 @@ DEALINGS IN THE SOFTWARE.
 
 
 import asyncio
+from sqlalchemy.util.compat import u
 
 from starlette.endpoints import HTTPEndpoint
 from starlette.authentication import requires
@@ -37,10 +38,14 @@ from marshmallow import Schema
 from webargs import fields
 from webargs_starlette import use_args
 
-from ..api import response
+from sqlalchemy import select
+
+from ..api import response, error_response
 from ..api.model_convertor import scoreboard_to_dict, match_to_dict
 
 from ..resources import Sessions, Config
+
+from ..tables import update_table
 
 from ..community.exceptions import InvalidMatchID, DemoAlreadyUploaded
 
@@ -191,3 +196,19 @@ class DemoUploadAPI(HTTPEndpoint):
                 return response()
             else:
                 raise DemoAlreadyUploaded()
+
+
+class VersionAPI(HTTPEndpoint):
+    async def get(self, request: Request) -> response:
+        message = await Sessions.database.fetch_val(
+            select([update_table.c.message]).select_form(
+                update_table
+            ).where(
+                update_table.c.version >= request.path_params["version"]
+            )
+        )
+
+        if message:
+            return response({"message": message})
+        else:
+            return error_response("InvalidVersion")

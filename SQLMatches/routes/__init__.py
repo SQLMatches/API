@@ -31,7 +31,13 @@ from webargs_starlette import WebargsHTTPException
 
 # Routes
 from .download import DownloadPage
-from .api import MatchAPI, CreateMatchAPI, DemoUploadAPI, MatchesAPI
+from .api import (
+    MatchAPI,
+    CreateMatchAPI,
+    DemoUploadAPI,
+    MatchesAPI,
+    VersionAPI
+)
 from .steam import SteamLogin, SteamValidate, SteamLogout
 from .errors import server_error, payload_error, rate_limted_error
 
@@ -53,14 +59,13 @@ ROUTES = [
     ]),
     Route("/download/{match_id}", DownloadPage, name="DownloadPage"),
     Mount("/maps", StaticFiles(directory=Config.maps_dir), name="maps"),
-    Mount("/api", routes=[
-        Route("/matches/", MatchesAPI),
-        Mount("/match", routes=[
-            Route("/create/", CreateMatchAPI),
-            Mount("/{match_id}", routes=[
-                Route("/upload/", DemoUploadAPI),
-                Route("/", MatchAPI)
-            ])
+    Route("/matches/", MatchesAPI),
+    Mount("/match", routes=[
+        Route("/create/", CreateMatchAPI),
+        Mount("/{match_id}", routes=[
+            Route("/upload/", DemoUploadAPI),
+            Route("/", MatchAPI)
         ])
-    ])
+    ]),
+    Route("/version/{version}", VersionAPI)
 ]
