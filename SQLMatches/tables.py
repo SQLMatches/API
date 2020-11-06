@@ -44,7 +44,8 @@ update_table = Table(
     metadata,
     Column(
         "version",
-        String(length=8)
+        String(length=8),
+        primary_key=True
     ),
     Column(
         "message",
@@ -83,11 +84,11 @@ community_table = Table(
     Column(
         "community_name",
         String(length=32),
-        primary_key=True
     ),
     Column(
         "community_id",
-        String(length=36)
+        String(length=36),
+        primary_key=True
     ),
     Column(
         "owner_id",
@@ -170,7 +171,8 @@ scoreboard_total_table = Table(
     Column(
         "community_id",
         String(length=36),
-        ForeignKey("community.community_id")
+        ForeignKey("community.community_id"),
+        primary_key=True
     ),
     Column(
         "timestamp",

@@ -154,12 +154,12 @@ class SQLMatches(Starlette):
             database_settings.engine + database_url
         )
 
-        self.b2 = backblaze.Awaiting(
-            b2_settings.key_id,
-            b2_settings.application_key
-        )
-
         if demos:
+            self.b2 = backblaze.Awaiting(
+                b2_settings.key_id,
+                b2_settings.application_key
+            )
+
             Sessions.bucket = self.b2.bucket(
                 b2_settings.bucket_id
             )
