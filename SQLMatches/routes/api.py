@@ -199,6 +199,8 @@ class DemoUploadAPI(HTTPEndpoint):
 
 
 class VersionAPI(HTTPEndpoint):
+    @requires("authenticated")
+    @limiter.limit("30/minute")
     async def get(self, request: Request) -> response:
         message = await Sessions.database.fetch_val(
             select([update_table.c.message]).select_form(
