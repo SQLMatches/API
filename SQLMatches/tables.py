@@ -84,10 +84,6 @@ community_table = Table(
     Column(
         "community_name",
         String(length=32),
-    ),
-    Column(
-        "community_id",
-        String(length=36),
         primary_key=True
     ),
     Column(
@@ -133,9 +129,9 @@ api_key_table = Table(
         default=datetime.now
     ),
     Column(
-        "community_id",
-        String(length=36),
-        ForeignKey("community.community_id")
+        "community_name",
+        String(length=32),
+        ForeignKey("community.community_name")
     ),
     Column(
         "master",
@@ -170,9 +166,9 @@ scoreboard_total_table = Table(
         primary_key=True
     ),
     Column(
-        "community_id",
-        String(length=36),
-        ForeignKey("community.community_id"),
+        "community_name",
+        String(length=32),
+        ForeignKey("community.community_name"),
         primary_key=True
     ),
     Column(
@@ -222,7 +218,7 @@ scoreboard_total_table = Table(
     ),
     PrimaryKeyConstraint(
         "match_id",
-        "community_id"
+        "community_name"
     ),
     mysql_engine="InnoDB",
     mysql_charset="utf8mb4"
