@@ -64,22 +64,12 @@ class Demo:
         """
 
         async with aiofiles.open(Config.demo_pathway, "wb+") as f:
-            chunked = b""
             total_size = 0
             async for chunk in self.request.stream():
-                chunked += chunk
-
-                if len(chunked) >= 5000000:
-                    await f.write(chunked)
-
-                    total_size += len(chunked)
-                    chunked = b""
+                await f.write(chunk)
+                total_size += len(chunk)
 
                 await asyncio.sleep(Config.upload_delay)
-
-            if chunked:
-                await f.write(chunked)
-                total_size += len(chunked)
 
             if total_size > Config.max_upload_size or total_size == 0:
                 await f.truncate()
