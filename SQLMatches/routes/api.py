@@ -21,17 +21,12 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-import asyncio
-
 from starlette.endpoints import HTTPEndpoint
 from starlette.authentication import requires
 from starlette.requests import Request
 
 from slowapi import Limiter
 from slowapi.util import get_remote_address
-
-from os import path
-from backblaze.settings import PartSettings
 
 from marshmallow import Schema
 from webargs import fields
@@ -41,6 +36,8 @@ from sqlalchemy import select
 
 from ..api import response, error_response
 from ..api.model_convertor import scoreboard_to_dict, match_to_dict
+
+from ..demos import Demo
 
 from ..resources import Sessions, Config
 
@@ -145,10 +142,11 @@ class DemoUploadAPI(HTTPEndpoint):
     @requires("master")
     @limiter.limit("30/minute")
     async def put(self, request: Request) -> response:
-        if not Config.demos:
-            return response()
-
         match = request.state.community.match(request.path_params["match_id"])
+
+        demo = Demo(match, request)
+        if not demo.upload:
+            return response()
 
         try:
             demo_status = await match.demo_status()
@@ -158,39 +156,10 @@ class DemoUploadAPI(HTTPEndpoint):
             if demo_status == 0:
                 await match.set_demo_status(1)
 
-                _, file = await Sessions.bucket.create_part(PartSettings(
-                    path.join(
-                        Config.demo_pathway,
-                        "{}.dem".format(match.match_id)
-                    ),
-                    content_type="application/octet-stream"
-                ))
-
-                parts = file.parts()
-
-                chunked = b""
-                total_size = 0
-                async for chunk in request.stream():
-                    chunked += chunk
-
-                    if len(chunked) >= 5000000:
-                        await parts.data(chunked)
-
-                        total_size += len(chunked)
-                        chunked = b""
-
-                    await asyncio.sleep(Config.upload_delay)
-
-                if chunked and parts.part_number != 0:
-                    await parts.data(chunked)
-                    total_size += len(chunked)
-
-                if total_size > Config.max_upload_size or total_size == 0:
-                    await file.cancel()
+                if await demo.upload():
+                    await match.set_demo_status(2)
                 else:
-                    await parts.finish()
-
-                await match.set_demo_status(2)
+                    await match.set_demo_status(3)
 
                 return response()
             else:

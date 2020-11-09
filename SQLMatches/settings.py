@@ -71,7 +71,7 @@ class DatabaseSettings:
         Config.db_engine = engine
 
 
-class B2Settings:
+class B2UploadSettings:
     def __init__(self, key_id: str, application_key: str,
                  bucket_id: str, pathway: str, cdn_url: str) -> None:
         """B2 Settings
@@ -95,3 +95,16 @@ class B2Settings:
         self.bucket_id = bucket_id
         self.cdn_url = cdn_url if cdn_url[-1:] == "/" else cdn_url + "/"
         self.pathway = pathway if pathway[-1:] == "/" else pathway + "/"
+
+
+class LocalUploadSettings:
+    def __init__(self, pathway: str = None) -> None:
+        """Used to upload demos locally, not recommend!
+
+        Parameters
+        ----------
+        pathway : str
+            Pathway to upload to from package location, by default None
+        """
+
+        self.pathway = pathway

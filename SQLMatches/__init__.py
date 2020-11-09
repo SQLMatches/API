@@ -21,11 +21,11 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
+from typing import Tuple
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.authentication import AuthenticationMiddleware
-from starlette_wtf import CSRFProtectMiddleware
 
 from secrets import token_urlsafe
 
@@ -36,7 +36,7 @@ import backblaze
 
 from .tables import create_tables
 from .resources import Sessions, Config
-from .settings import DatabaseSettings, B2Settings
+from .settings import DatabaseSettings, B2UploadSettings, LocalUploadSettings
 from .middlewares import BasicAuthBackend
 
 from .routes import ROUTES, ERROR_HANDLERS
@@ -71,14 +71,14 @@ MAP_IMAGES = {
 
 class SQLMatches(Starlette):
     def __init__(self, database_settings: DatabaseSettings,
-                 b2_settings: B2Settings,
                  friendly_url: str,
+                 upload_settings: Tuple[
+                     B2UploadSettings, LocalUploadSettings] = None,
                  secret_key: str = token_urlsafe(),
                  csrf_secret: str = token_urlsafe(),
                  map_images: dict = MAP_IMAGES,
                  upload_delay: float = 0.1,
                  max_upload_size: int = 80000000,
-                 demos: bool = True,
                  **kwargs) -> None:
         """SQLMatches API.
 
@@ -86,6 +86,8 @@ class SQLMatches(Starlette):
         ----------
         database_settings: DatabaseSettings
             Holds settings for database.
+        upload_settings: (B2UploadSettings, LocalUploadSettings)
+            by default None
         friendly_url: str
             URL to project.
         csrf_secret: str
@@ -98,8 +100,6 @@ class SQLMatches(Starlette):
             by default 0.1
         max_upload_size: int
             by default 80000000
-        demos : bool
-            By default True
         kwargs
         """
 
@@ -114,7 +114,6 @@ class SQLMatches(Starlette):
 
         middlewares = [
             Middleware(SessionMiddleware, secret_key=secret_key),
-            Middleware(CSRFProtectMiddleware, csrf_secret=csrf_secret),
             Middleware(AuthenticationMiddleware, backend=BasicAuthBackend(),
                        on_error=auth_error)
         ]
@@ -136,11 +135,8 @@ class SQLMatches(Starlette):
 
         Config.url = friendly_url
         Config.map_images = map_images
-        Config.demo_pathway = b2_settings.pathway
-        Config.cdn_url = b2_settings.cdn_url
         Config.upload_delay = upload_delay
         Config.max_upload_size = max_upload_size
-        Config.demos = demos
 
         database_url = "://{}:{}@{}:{}/{}?charset=utf8mb4".format(
             database_settings.username,
@@ -154,15 +150,26 @@ class SQLMatches(Starlette):
             database_settings.engine + database_url
         )
 
-        if demos:
-            self.b2 = backblaze.Awaiting(
-                b2_settings.key_id,
-                b2_settings.application_key
-            )
+        if upload_settings:
+            if isinstance(upload_settings, B2UploadSettings):
+                Config.demo_pathway = upload_settings.pathway
+                Config.cdn_url = upload_settings.cdn_url
+                Config.upload_type = B2UploadSettings
 
-            Sessions.bucket = self.b2.bucket(
-                b2_settings.bucket_id
-            )
+                self.b2 = backblaze.Awaiting(
+                    upload_settings.key_id,
+                    upload_settings.application_key
+                )
+
+                Sessions.bucket = self.b2.bucket(
+                    upload_settings.bucket_id
+                )
+            elif isinstance(upload_settings, LocalUploadSettings):
+                Config.demo_pathway = upload_settings.pathway
+                Config.cdn_url = upload_settings.pathway
+                Config.upload_type = LocalUploadSettings
+        else:
+            Config.upload_type = None
 
         create_tables(
             "{}+{}{}".format(
