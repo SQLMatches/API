@@ -192,7 +192,7 @@ class SQLMatches(Starlette):
         await Sessions.database.connect()
         Sessions.aiohttp = ClientSession()
 
-        if Config.demos:
+        if Config.upload_type == B2UploadSettings:
             await self.b2.authorize()
 
     async def _shutdown(self) -> None:
@@ -202,5 +202,5 @@ class SQLMatches(Starlette):
         await Sessions.database.disconnect()
         await Sessions.aiohttp.close()
 
-        if Config.demos:
+        if Config.upload_type == B2UploadSettings:
             await self.b2.close()
