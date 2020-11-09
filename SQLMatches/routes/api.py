@@ -39,7 +39,7 @@ from ..api.model_convertor import scoreboard_to_dict, match_to_dict
 
 from ..demos import Demo
 
-from ..resources import Sessions, Config
+from ..resources import Sessions
 
 from ..tables import update_table
 
