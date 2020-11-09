@@ -75,7 +75,6 @@ class SQLMatches(Starlette):
                  upload_settings: Tuple[
                      B2UploadSettings, LocalUploadSettings] = None,
                  secret_key: str = token_urlsafe(),
-                 csrf_secret: str = token_urlsafe(),
                  map_images: dict = MAP_IMAGES,
                  upload_delay: float = 0.1,
                  max_upload_size: int = 80000000,
@@ -90,8 +89,6 @@ class SQLMatches(Starlette):
             by default None
         friendly_url: str
             URL to project.
-        csrf_secret: str
-            Optionally pass your own url safe secret key.
         secret_key: str
             Optionally pass your own url safe secret key.
         map_images: dict
