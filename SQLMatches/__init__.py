@@ -76,7 +76,7 @@ class SQLMatches(Starlette):
                      B2UploadSettings, LocalUploadSettings] = None,
                  secret_key: str = token_urlsafe(),
                  map_images: dict = MAP_IMAGES,
-                 upload_delay: float = 0.1,
+                 upload_delay: float = 0.001,
                  max_upload_size: int = 80000000,
                  **kwargs) -> None:
         """SQLMatches API.
