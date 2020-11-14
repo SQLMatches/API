@@ -63,7 +63,8 @@ class Match:
             ).where(
                 and_(
                     scoreboard_total_table.c.match_id == self.match_id,
-                    scoreboard_total_table.c.name == self.community_name
+                    scoreboard_total_table.c.community_name
+                    == self.community_name
                 )
             )
 
@@ -91,7 +92,7 @@ class Match:
         ).where(
             and_(
                 scoreboard_total_table.c.match_id == self.match_id,
-                scoreboard_total_table.c.name == self.community_name
+                scoreboard_total_table.c.community_name == self.community_name
             )
         )
 
@@ -112,7 +113,7 @@ class Match:
         query = scoreboard_total_table.count().where(
             and_(
                 scoreboard_total_table.c.match_id == self.match_id,
-                scoreboard_total_table.c.name == self.community_name
+                scoreboard_total_table.c.community_name == self.community_name
             )
         )
 
@@ -146,7 +147,7 @@ class Match:
         ).where(
             and_(
                 scoreboard_total_table.c.match_id == self.match_id,
-                scoreboard_total_table.c.name == self.community_name
+                scoreboard_total_table.c.community_name == self.community_name
             )
         )
 
@@ -180,7 +181,7 @@ class Match:
         ).where(
             and_(
                 scoreboard_total_table.c.match_id == self.match_id,
-                scoreboard_total_table.c.name == self.community_name
+                scoreboard_total_table.c.community_name == self.community_name
             )
         )
 
@@ -235,7 +236,7 @@ class Match:
         ).where(
             and_(
                 scoreboard_total_table.c.match_id == self.match_id,
-                scoreboard_total_table.c.name == self.community_name
+                scoreboard_total_table.c.community_name == self.community_name
             )
         )
 

@@ -28,7 +28,7 @@ class CommunityModel:
         self.master_api_key = data["api_key"]
         self.owner_id = data["owner_id"]
         self.disabled = data["disabled"]
-        self.name = data["name"]
+        self.community_name = data["community_name"]
 
 
 class MatchModel:

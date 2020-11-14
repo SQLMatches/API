@@ -117,7 +117,7 @@ class Community:
         query = api_key_table.update().values(
             api_key=token_urlsafe(24)
         ).where(and_(
-            api_key_table.c.name == self.community_name,
+            api_key_table.c.community_name == self.community_name,
             api_key_table.c.api_key == old_key
         ))
 
@@ -128,7 +128,7 @@ class Community:
         """
 
         query = community_table.count().where(
-            community_table.c.name == self.community_name
+            community_table.c.community_name == self.community_name
         )
 
         return await Sessions.database.fetch_val(query=query) > 0
@@ -226,15 +226,16 @@ class Community:
             api_key_table.c.api_key,
             api_key_table.c.owner_id,
             community_table.c.disabled,
-            community_table.c.name
+            community_table.c.community_name
         ]).select_from(
             community_table.join(
                 api_key_table,
-                community_table.c.name == api_key_table.c.community
+                community_table.c.community_name ==
+                api_key_table.c.community_name
             )
         ).where(
             and_(
-                community_table.c.name == self.community_name,
+                community_table.c.community_name == self.community_name,
                 api_key_table.c.master == 1
             )
         )
@@ -251,7 +252,7 @@ class Community:
         """
 
         query = community_table.update().where(
-            community_table.c.name == self.community_name
+            community_table.c.community_name == self.community_name
         ).values(disabled=True)
 
         await Sessions.database.execute(query=query)
@@ -273,11 +274,11 @@ async def api_key_to_community(api_key: str) -> Community:
     """
 
     query = select([
-        community_table.c.name, api_key_table.c.master
+        community_table.c.community_name, api_key_table.c.master
     ]).select_from(
         community_table.join(
             api_key_table,
-            api_key_table.c.community == community_table.c.name
+            api_key_table.c.community_name == community_table.c.community_name
         )
     ).where(
         and_(
@@ -289,7 +290,7 @@ async def api_key_to_community(api_key: str) -> Community:
     row = await Sessions.database.fetch_one(query=query)
 
     if row:
-        return Community(row["name"]), bool(row["master"])
+        return Community(row["community_name"]), bool(row["master"])
     else:
         raise InvalidAPIKey()
 
@@ -304,7 +305,7 @@ async def get_community_from_owner(steam_id: str) -> Community:
     """
 
     query = select(
-        [community_table.c.name]
+        [community_table.c.community_name]
     ).select_from(
         community_table
     ).where(
@@ -366,7 +367,7 @@ async def create_community(steam_id: str, community_name: str,
         raise AlreadyCommunity()
 
     query = community_table.insert().values(
-        name=community_name,
+        community_name=community_name,
         owner_id=steam_id,
         disabled=disabled,
         api_key=token_urlsafe(24)
