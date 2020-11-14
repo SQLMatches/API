@@ -26,6 +26,7 @@ from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.authentication import AuthenticationMiddleware
+from starlette.middleware.cors import CORSMiddleware
 
 from secrets import token_urlsafe
 
@@ -112,7 +113,15 @@ class SQLMatches(Starlette):
         middlewares = [
             Middleware(SessionMiddleware, secret_key=secret_key),
             Middleware(AuthenticationMiddleware, backend=BasicAuthBackend(),
-                       on_error=auth_error)
+                       on_error=auth_error),
+            Middleware(
+                CORSMiddleware,
+                allow_origins=["*"],
+                allow_methods=["GET", "POST"],
+                allow_headers=["*"],
+                allow_credentials=True,
+                expose_headers=["*"]
+            )
         ]
         if "middleware" in kwargs:
             middlewares = middlewares + kwargs["middleware"]
