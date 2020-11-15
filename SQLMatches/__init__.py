@@ -121,10 +121,11 @@ class SQLMatches(Starlette):
                 allow_origins=["*"],
                 allow_methods=["GET", "POST"],
                 allow_headers=["*"],
+                expose_headers=["*"],
                 allow_credentials=True,
-                expose_headers=["*"]
             )
         ]
+
         if "middleware" in kwargs:
             middlewares = middlewares + kwargs["middleware"]
 
@@ -177,10 +178,12 @@ class SQLMatches(Starlette):
                 Config.cdn_url = None
                 Config.upload_type = LocalUploadSettings
 
-                routes += Mount(
-                    "/demos",
-                    StaticFiles(directory=upload_settings.pathway),
-                    name="demos"
+                routes.append(
+                    Mount(
+                        "/demos",
+                        StaticFiles(directory=upload_settings.pathway),
+                        name="demos"
+                    )
                 )
         else:
             Config.upload_type = None

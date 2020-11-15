@@ -21,7 +21,7 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Tuple
 
 from sqlalchemy.sql import select, and_, or_
 
@@ -116,10 +116,12 @@ class Community:
 
         query = api_key_table.update().values(
             api_key=token_urlsafe(24)
-        ).where(and_(
-            api_key_table.c.community_name == self.community_name,
-            api_key_table.c.api_key == old_key
-        ))
+        ).where(
+            and_(
+                api_key_table.c.community_name == self.community_name,
+                api_key_table.c.api_key == old_key
+            )
+        )
 
         await Sessions.database.execute(query=query)
 
@@ -258,7 +260,7 @@ class Community:
         await Sessions.database.execute(query=query)
 
 
-async def api_key_to_community(api_key: str) -> Community:
+async def api_key_to_community(api_key: str) -> Tuple[Community, bool]:
     """Converts API key to community name.
 
     Raises
@@ -304,9 +306,9 @@ async def get_community_from_owner(steam_id: str) -> Community:
         Raised when steam id doesn't own any communties.
     """
 
-    query = select(
-        [community_table.c.community_name]
-    ).select_from(
+    query = select([
+        community_table.c.community_name
+    ]).select_from(
         community_table
     ).where(
         and_(
@@ -338,7 +340,8 @@ async def owner_exists(steam_id: str) -> bool:
 
 
 async def create_community(steam_id: str, community_name: str,
-                           disabled: bool = False) -> Community:
+                           disabled: bool = False
+                           ) -> Tuple[CommunityModel, Community]:
     """Creates a community.
 
     Paramters
@@ -366,11 +369,13 @@ async def create_community(steam_id: str, community_name: str,
     if await owner_exists(steam_id):
         raise AlreadyCommunity()
 
+    api_key = token_urlsafe(24)
+
     query = community_table.insert().values(
         community_name=community_name,
         owner_id=steam_id,
         disabled=disabled,
-        api_key=token_urlsafe(24)
+        api_key=api_key
     )
 
     try:
@@ -378,4 +383,9 @@ async def create_community(steam_id: str, community_name: str,
     except Exception:
         raise CommunityTaken()
 
-    return Community(community_name)
+    return CommunityModel(data={
+        "api_key": api_key,
+        "owner_id": steam_id,
+        "disabled": disabled,
+        "community_name": community_name
+    }), Community(community_name)

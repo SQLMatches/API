@@ -13,3 +13,4 @@ webargs-starlette
 backblaze
 marshmallow
 slowapi>=0.1.2
+asynctest

@@ -53,11 +53,11 @@ ERROR_HANDLERS = {
 
 ROUTES = [
     Mount("/login", routes=[
-        Route("/steam", SteamLogin, name="SteamLogin"),
-        Route("/validate", SteamValidate),
-        Route("/logout", SteamLogout, name="SteamLogout")
+        Route("/steam/", SteamLogin, name="SteamLogin"),
+        Route("/validate/", SteamValidate),
+        Route("/logout/", SteamLogout, name="SteamLogout")
     ]),
-    Mount("/maps", StaticFiles(directory=Config.maps_dir), name="maps"),
+    Mount("/maps/", StaticFiles(directory=Config.maps_dir), name="maps"),
     Route("/matches/", MatchesAPI),
     Mount("/match", routes=[
         Route("/create/", CreateMatchAPI),

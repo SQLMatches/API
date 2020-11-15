@@ -20,15 +20,19 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
+from base64 import b64encode
 
 from .. import SQLMatches
 from ..settings import DatabaseSettings, LocalUploadSettings
+
+from ..community import create_community, Community
+from ..community.exceptions import CommunityTaken
 
 from starlette.testclient import TestClient
 
 
 class TestBase:
-    def setUp(self):
+    async def setUp(self):
         sqlmatches = SQLMatches(
             database_settings=DatabaseSettings(
                 username="sqlmatches",
@@ -37,8 +41,22 @@ class TestBase:
                 port=3306,
                 database="sqlmatches"
             ),
-            upload_settings=LocalUploadSettings()
+            upload_settings=LocalUploadSettings(),
+            friendly_url="http://127.0.0.1:8000"
         )
+
+        try:
+            community, _ = await create_community(
+                community_name="TestLeague"
+            )
+        except CommunityTaken:
+            community, _ = Community(community_name="TestLeague").get()
+
+        self.basic_auth = {
+            "Authorization": "Basic: {}".format(
+                b64encode(community.master_api_key)
+            )
+        }
 
         self.client = TestClient(
             sqlmatches

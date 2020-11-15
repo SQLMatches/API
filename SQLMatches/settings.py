@@ -20,7 +20,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
-from os import path
+from os import path, mkdir
 
 from .exceptions import UnSupportedEngine
 from .resources import Config
@@ -115,3 +115,6 @@ class LocalUploadSettings:
                 path.dirname(path.realpath(__file__)),
                 "/demos"
             )
+
+        if not path.exists(self.pathway):
+            mkdir(self.pathway)
