@@ -63,7 +63,11 @@ class Demo:
             If demo uploaded.
         """
 
-        async with aiofiles.open(Config.demo_pathway, "wb+") as f:
+        async with aiofiles.open(
+            path.join(
+                Config.demo_pathway, "{}.dem".format(self.match.match_id)
+            ), "wb+"
+                ) as f:
             total_size = 0
             async for chunk in self.request.stream():
                 await f.write(chunk)

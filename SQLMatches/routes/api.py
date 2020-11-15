@@ -70,6 +70,13 @@ class MatchAPI(HTTPEndpoint):
     @requires("authenticated")
     @limiter.limit("30/minute")
     async def get(self, request: Request) -> response:
+        """Used to get the scoreboard for a match.
+
+        Parameters
+        ----------
+        request : Request
+        """
+
         try:
             scoreboard = await request.state.community.match(
                 request.path_params["match_id"]
@@ -87,11 +94,19 @@ class MatchAPI(HTTPEndpoint):
                "end": fields.Bool()})
     @requires("master")
     @limiter.limit("30/minute")
-    async def post(self, request: Request, kwargs) -> response:
+    async def post(self, request: Request, parameters: dict) -> response:
+        """Used to update a match.
+
+        Parameters
+        ----------
+        request : Request
+        parameters : dict
+        """
+
         try:
             await request.state.community.match(
                 request.path_params["match_id"]
-            ).update(**kwargs)
+            ).update(**parameters)
         except InvalidMatchID:
             raise
         else:
@@ -100,6 +115,13 @@ class MatchAPI(HTTPEndpoint):
     @requires("master")
     @limiter.limit("30/minute")
     async def delete(self, request: Request) -> response:
+        """Used to delete a match.
+
+        Parameters
+        ----------
+        request : Request
+        """
+
         try:
             await request.state.community.match(
                 request.path_params["match_id"]
@@ -115,10 +137,18 @@ class MatchesAPI(HTTPEndpoint):
                "desc": fields.Bool()})
     @requires("authenticated")
     @limiter.limit("30/minute")
-    async def post(self, request: Request, kwargs) -> response:
+    async def post(self, request: Request, parameters: dict) -> response:
+        """Used to list matches.
+
+        Parameters
+        ----------
+        request : Request
+        parameters : dict
+        """
+
         return response([
             match_to_dict(match) async for match, _ in
-            request.state.community.matches(**kwargs)
+            request.state.community.matches(**parameters)
         ])
 
 
@@ -132,8 +162,16 @@ class CreateMatchAPI(HTTPEndpoint):
                "map_name": fields.Str(min=1, max=24, required=True)})
     @requires("master")
     @limiter.limit("30/minute")
-    async def post(self, request: Request, kwargs) -> response:
-        match = await request.state.community.create_match(**kwargs)
+    async def post(self, request: Request, parameters: dict) -> response:
+        """Used to create a match.
+
+        Parameters
+        ----------
+        request : Request
+        parameters : dict
+        """
+
+        match = await request.state.community.create_match(**parameters)
 
         return response({"match_id": match.match_id})
 
@@ -142,6 +180,13 @@ class DemoUploadAPI(HTTPEndpoint):
     @requires("master")
     @limiter.limit("30/minute")
     async def put(self, request: Request) -> response:
+        """Used to upload a demo.
+
+        Parameters
+        ----------
+        request : Request
+        """
+
         match = request.state.community.match(request.path_params["match_id"])
 
         demo = Demo(match, request)
@@ -170,6 +215,13 @@ class VersionAPI(HTTPEndpoint):
     @requires("authenticated")
     @limiter.limit("30/minute")
     async def get(self, request: Request) -> response:
+        """Used to get a version update message.
+
+        Parameters
+        ----------
+        request : Request
+        """
+
         message = await Sessions.database.fetch_val(
             select([update_table.c.message]).select_form(
                 update_table

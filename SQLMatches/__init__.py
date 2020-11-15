@@ -21,7 +21,7 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-from typing import Tuple
+from typing import Dict, Tuple
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
@@ -34,6 +34,8 @@ from databases import Database
 from aiohttp import ClientSession
 
 import backblaze
+from starlette.routing import Mount
+from starlette.staticfiles import StaticFiles
 
 from .tables import create_tables
 from .resources import Sessions, Config
@@ -76,7 +78,7 @@ class SQLMatches(Starlette):
                  upload_settings: Tuple[
                      B2UploadSettings, LocalUploadSettings] = None,
                  secret_key: str = token_urlsafe(),
-                 map_images: dict = MAP_IMAGES,
+                 map_images: Dict[str, str] = MAP_IMAGES,
                  upload_delay: float = 0.001,
                  max_upload_size: int = 80000000,
                  **kwargs) -> None:
@@ -172,8 +174,14 @@ class SQLMatches(Starlette):
                 )
             elif isinstance(upload_settings, LocalUploadSettings):
                 Config.demo_pathway = upload_settings.pathway
-                Config.cdn_url = upload_settings.pathway
+                Config.cdn_url = None
                 Config.upload_type = LocalUploadSettings
+
+                routes += Mount(
+                    "/demos",
+                    StaticFiles(directory=upload_settings.pathway),
+                    name="demos"
+                )
         else:
             Config.upload_type = None
 

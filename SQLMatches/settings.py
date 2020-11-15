@@ -20,6 +20,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
+from os import path
 
 from .exceptions import UnSupportedEngine
 from .resources import Config
@@ -107,4 +108,10 @@ class LocalUploadSettings:
             Pathway to upload to from package location, by default None
         """
 
-        self.pathway = pathway
+        if pathway:
+            self.pathway = pathway
+        else:
+            self.pathway = path.join(
+                path.dirname(path.realpath(__file__)),
+                "/demos"
+            )

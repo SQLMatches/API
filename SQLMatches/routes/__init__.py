@@ -57,14 +57,14 @@ ROUTES = [
         Route("/validate", SteamValidate),
         Route("/logout", SteamLogout, name="SteamLogout")
     ]),
-    Route("/download/{match_id}", DownloadPage, name="DownloadPage"),
     Mount("/maps", StaticFiles(directory=Config.maps_dir), name="maps"),
     Route("/matches/", MatchesAPI),
     Mount("/match", routes=[
         Route("/create/", CreateMatchAPI),
         Mount("/{match_id}", routes=[
             Route("/upload/", DemoUploadAPI),
-            Route("/", MatchAPI)
+            Route("/", MatchAPI),
+            Route("/download/", DownloadPage, name="DownloadPage")
         ])
     ]),
     Route("/version/{version}", VersionAPI)

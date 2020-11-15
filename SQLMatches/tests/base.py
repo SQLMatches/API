@@ -21,37 +21,25 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-from starlette.endpoints import HTTPEndpoint
-from starlette.requests import Request
-from starlette.responses import RedirectResponse, PlainTextResponse
+from .. import SQLMatches
+from ..settings import DatabaseSettings, LocalUploadSettings
 
-from ..settings import B2UploadSettings, LocalUploadSettings
-from ..resources import Config
+from starlette.testclient import TestClient
 
 
-class DownloadPage(HTTPEndpoint):
-    async def get(self, request: Request) -> RedirectResponse:
-        """Used to redirect users to the demo download.
+class TestBase:
+    def setUp(self):
+        sqlmatches = SQLMatches(
+            database_settings=DatabaseSettings(
+                username="sqlmatches",
+                password="Y2ZRSsje9qZHsxDu",
+                server="localhost",
+                port=3306,
+                database="sqlmatches"
+            ),
+            upload_settings=LocalUploadSettings()
+        )
 
-        Parameters
-        ----------
-        request : Request
-        """
-
-        if Config.upload_type == B2UploadSettings:
-            return RedirectResponse(
-                "{}{}{}.dem".format(
-                    Config.cdn_url,
-                    Config.demo_pathway,
-                    request.path_params["match_id"]
-                )
-            )
-        elif Config.upload_type == LocalUploadSettings:
-            return RedirectResponse(
-                "{}/{}".format(
-                    request.url_for("demos"),
-                    request.path_params["match_id"]
-                )
-            )
-        else:
-            return PlainTextResponse("Demos aren't enabled!")
+        self.client = TestClient(
+            sqlmatches
+        )
