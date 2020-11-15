@@ -21,10 +21,43 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-import unittest
+from datetime import datetime
 
-from SQLMatches.tests.test_api import *  # noqa: F403, F401
+from ..tables import user_table
+from ..resources import Sessions
+
+from .exceptions import UserExists
+from .models import UserModel
 
 
-if __name__ == "__main__":
-    unittest.main()
+async def create_user(steam_id: int, name: str) -> UserModel:
+    """Used to create a user.
+
+    Parameters
+    ----------
+    steam_id : int
+    name : str
+
+    Returns
+    -------
+    UserModel
+    """
+
+    now = datetime.now()
+
+    query = user_table.insert().values(
+        steam_id=steam_id,
+        name=name,
+        timestamp=now
+    )
+
+    try:
+        await Sessions.database.execute(query=query)
+    except Exception:
+        raise UserExists()
+    else:
+        return UserModel(data={
+            "steam_id": steam_id,
+            "name": name,
+            "timestamp": now
+        })

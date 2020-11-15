@@ -23,7 +23,7 @@ DEALINGS IN THE SOFTWARE.
 
 from typing import AsyncGenerator, Tuple
 
-from sqlalchemy.sql import select, and_, or_
+from sqlalchemy.sql import select, and_, or_, func
 
 from secrets import token_urlsafe
 from datetime import datetime
@@ -329,7 +329,7 @@ async def owner_exists(steam_id: str) -> bool:
     """Checks if given steam_id owns a community
     """
 
-    query = community_table.count().where(
+    query = select([func.count()]).select_from(community_table).where(
         and_(
             community_table.c.owner_id == steam_id,
             community_table.c.disabled == 0
@@ -340,7 +340,7 @@ async def owner_exists(steam_id: str) -> bool:
 
 
 async def create_community(steam_id: str, community_name: str,
-                           disabled: bool = False
+                           disabled: bool = False, demos: bool = True
                            ) -> Tuple[CommunityModel, Community]:
     """Creates a community.
 
@@ -369,23 +369,34 @@ async def create_community(steam_id: str, community_name: str,
     if await owner_exists(steam_id):
         raise AlreadyCommunity()
 
-    api_key = token_urlsafe(24)
-
     query = community_table.insert().values(
         community_name=community_name,
         owner_id=steam_id,
         disabled=disabled,
-        api_key=api_key
+        demos=demos,
+        timestamp=datetime.now()
     )
 
     try:
         await Sessions.database.execute(query=query)
     except Exception:
         raise CommunityTaken()
+    else:
+        api_key = token_urlsafe(24)
 
-    return CommunityModel(data={
-        "api_key": api_key,
-        "owner_id": steam_id,
-        "disabled": disabled,
-        "community_name": community_name
-    }), Community(community_name)
+        query = api_key_table.insert().values(
+            api_key=api_key,
+            owner_id=steam_id,
+            timestamp=datetime.now(),
+            community_name=community_name,
+            master=True
+        )
+
+        await Sessions.database.execute(query=query)
+
+        return CommunityModel(data={
+            "api_key": api_key,
+            "owner_id": steam_id,
+            "disabled": disabled,
+            "community_name": community_name
+        }), Community(community_name)

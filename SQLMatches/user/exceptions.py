@@ -21,10 +21,8 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-import unittest
+class UserExists(Exception):
+    """Raised when user exists.
+    """
 
-from SQLMatches.tests.test_api import *  # noqa: F403, F401
-
-
-if __name__ == "__main__":
-    unittest.main()
+    pass

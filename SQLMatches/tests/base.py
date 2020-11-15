@@ -26,38 +26,56 @@ from .. import SQLMatches
 from ..settings import DatabaseSettings, LocalUploadSettings
 
 from ..community import create_community, Community
-from ..community.exceptions import CommunityTaken
+from ..community.exceptions import AlreadyCommunity, CommunityTaken
+
+from ..user import create_user
+from ..user.exceptions import UserExists
 
 from starlette.testclient import TestClient
 
 
+sqlmatches = SQLMatches(
+    database_settings=DatabaseSettings(
+        username="sqlmatches",
+        password="Y2ZRSsje9qZHsxDu",
+        server="localhost",
+        port=3306,
+        database="sqlmatches"
+    ),
+    upload_settings=LocalUploadSettings(),
+    friendly_url="http://127.0.0.1:8000"
+)
+
+
 class TestBase:
-    async def setUp(self):
-        sqlmatches = SQLMatches(
-            database_settings=DatabaseSettings(
-                username="sqlmatches",
-                password="Y2ZRSsje9qZHsxDu",
-                server="localhost",
-                port=3306,
-                database="sqlmatches"
-            ),
-            upload_settings=LocalUploadSettings(),
-            friendly_url="http://127.0.0.1:8000"
-        )
-
-        try:
-            community, _ = await create_community(
-                community_name="TestLeague"
-            )
-        except CommunityTaken:
-            community, _ = Community(community_name="TestLeague").get()
-
-        self.basic_auth = {
-            "Authorization": "Basic: {}".format(
-                b64encode(community.master_api_key)
-            )
-        }
+    async def setUp(self) -> None:
+        await sqlmatches._startup()
 
         self.client = TestClient(
             sqlmatches
         )
+
+        USER_ID = 76561198077228213
+        COMMUNITY_NAME = "TestLeague"
+
+        try:
+            await create_user(USER_ID, "Ward")
+        except UserExists:
+            pass
+
+        try:
+            community, _ = await create_community(
+                community_name=COMMUNITY_NAME,
+                steam_id=USER_ID
+            )
+        except (CommunityTaken, AlreadyCommunity):
+            community = await Community(community_name=COMMUNITY_NAME).get()
+
+        self.basic_auth = {
+            "Authorization": "Basic: {}".format(
+                b64encode(community.master_api_key.encode("utf-8"))
+            )
+        }
+
+    async def tearDown(self) -> None:
+        await sqlmatches._shutdown()

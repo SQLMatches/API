@@ -21,10 +21,8 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-import unittest
-
-from SQLMatches.tests.test_api import *  # noqa: F403, F401
-
-
-if __name__ == "__main__":
-    unittest.main()
+class UserModel:
+    def __init__(self, data: dict) -> None:
+        self.steam_id = data["steam_id"]
+        self.timestamp = data["timestamp"]
+        self.name = data["name"]
