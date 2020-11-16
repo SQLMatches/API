@@ -33,7 +33,11 @@ from starlette.authentication import (
 )
 from starlette.requests import Request
 
-from .community import Community, api_key_to_community, get_community_from_owner
+from .community import (
+    Community,
+    api_key_to_community,
+    get_community_from_owner
+)
 from .community.exceptions import InvalidAPIKey, NoOwnership
 
 
