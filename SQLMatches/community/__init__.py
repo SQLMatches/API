@@ -117,7 +117,8 @@ class Community:
         key = token_urlsafe(24)
 
         query = api_key_table.update().values(
-            api_key=key
+            api_key=key,
+            timestamp=datetime.now()
         ).where(
             and_(
                 api_key_table.c.community_name == self.community_name,
@@ -136,7 +137,8 @@ class Community:
         key = token_urlsafe(24)
 
         query = api_key_table.update().values(
-            api_key=key
+            api_key=key,
+            timestamp=datetime.now()
         ).where(
             and_(
                 api_key_table.c.community_name == self.community_name,
@@ -251,7 +253,8 @@ class Community:
             api_key_table.c.api_key,
             api_key_table.c.owner_id,
             community_table.c.disabled,
-            community_table.c.community_name
+            community_table.c.community_name,
+            community_table.c.timestamp
         ]).select_from(
             community_table.join(
                 api_key_table,
@@ -392,12 +395,14 @@ async def create_community(steam_id: str, community_name: str,
     if await owner_exists(steam_id):
         raise AlreadyCommunity()
 
+    now = datetime.now()
+
     query = community_table.insert().values(
         community_name=community_name,
         owner_id=steam_id,
         disabled=disabled,
         demos=demos,
-        timestamp=datetime.now()
+        timestamp=now
     )
 
     try:
@@ -410,7 +415,7 @@ async def create_community(steam_id: str, community_name: str,
         query = api_key_table.insert().values(
             api_key=api_key,
             owner_id=steam_id,
-            timestamp=datetime.now(),
+            timestamp=now,
             community_name=community_name,
             master=True
         )
@@ -421,5 +426,6 @@ async def create_community(steam_id: str, community_name: str,
             "api_key": api_key,
             "owner_id": steam_id,
             "disabled": disabled,
-            "community_name": community_name
+            "community_name": community_name,
+            "timestamp": now
         }), Community(community_name)

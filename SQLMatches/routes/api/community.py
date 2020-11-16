@@ -84,7 +84,7 @@ class CommunityOwnerAPI(HTTPEndpoint):
         })
 
 
-class CommunityAPI(HTTPEndpoint):
+class CommunityCreateAPI(HTTPEndpoint):
     @use_args({"community_name": fields.Str(required=True),
               "demos": fields.Bool()})
     @requires("steam_login")
