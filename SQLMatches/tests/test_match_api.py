@@ -26,7 +26,7 @@ import asynctest
 from .base import TestBase
 
 
-class TestAPI(TestBase, asynctest.TestCase):
+class TestMatchAPI(TestBase, asynctest.TestCase):
     def test_create_and_update_and_end_match(self) -> None:
         resp = self.client.post(
             "/match/create/",

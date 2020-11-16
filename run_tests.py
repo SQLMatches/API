@@ -23,7 +23,7 @@ DEALINGS IN THE SOFTWARE.
 
 import unittest
 
-from SQLMatches.tests.test_api import *  # noqa: F403, F401
+from SQLMatches.tests.test_match_api import *  # noqa: F403, F401
 
 
 if __name__ == "__main__":
