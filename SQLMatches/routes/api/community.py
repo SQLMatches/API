@@ -37,7 +37,7 @@ from ...api import response
 from ...api.model_convertor import community_to_dict
 
 
-class CommunityAPI(HTTPEndpoint):
+class CommunityOwnerAPI(HTTPEndpoint):
     @requires("is_owner")
     @LIMITER.limit("20/minute")
     async def get(self, request: Request) -> response:
