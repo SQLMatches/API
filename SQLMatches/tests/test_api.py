@@ -71,7 +71,7 @@ class TestAPI(TestBase, asynctest.TestCase):
                     {
                         "name": "Doggy",
                         "steam_id": "76561198050395665",
-                        "team": 0,
+                        "team": 1,
                         "alive": True,
                         "ping": 69,
                         "kills": 18,
@@ -116,7 +116,7 @@ class TestAPI(TestBase, asynctest.TestCase):
                     {
                         "name": "Furry",
                         "steam_id": "76561198050395665",
-                        "team": 0,
+                        "team": 1,
                         "alive": True,
                         "ping": 69,
                         "kills": 18,

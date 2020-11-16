@@ -44,7 +44,7 @@ class SteamLogin(HTTPEndpoint):
             "openid.return_to": "{}login/validate?return={}".format(
                 Config.url,
                 request.query_params["return"] if
-                "return" in request.query_params else ""
+                "return" in request.query_params else "/"
             ),
             "openid.realm": Config.url,
         }

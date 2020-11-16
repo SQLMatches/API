@@ -33,7 +33,7 @@ from starlette.authentication import (
 )
 from starlette.requests import Request
 
-from .community import api_key_to_community
+from .community import Community, api_key_to_community
 from .community.exceptions import InvalidAPIKey
 
 
@@ -59,27 +59,36 @@ class BasicAuthBackend(AuthenticationBackend):
         AuthenticationError
         """
 
-        if "Authorization" not in request.headers:
-            return
+        if "Authorization" in request.headers:
 
-        auth = request.headers["Authorization"]
-        try:
-            scheme, credentials = auth.split()
-            if scheme.lower() != "basic":
-                return
-            decoded = b64decode(credentials).decode("ascii")
-        except (ValueError, UnicodeDecodeError, binascii.Error):
-            raise AuthenticationError(AUTH_ERROR)
+            auth = request.headers["Authorization"]
+            try:
+                scheme, credentials = auth.split()
+                if scheme.lower() != "basic":
+                    return
+                decoded = b64decode(credentials).decode("ascii")
+            except (ValueError, UnicodeDecodeError, binascii.Error):
+                raise AuthenticationError(AUTH_ERROR)
 
-        username, _, password = decoded.partition(":")
+            username, _, password = decoded.partition(":")
 
-        try:
-            request.state.community, master = await api_key_to_community(
-                password
+            try:
+                request.state.community, master = await api_key_to_community(
+                    password
+                )
+            except InvalidAPIKey:
+                raise AuthenticationError(AUTH_ERROR)
+            else:
+                return AuthCredentials([
+                    "authenticated", "master" if master else None
+                ]), SimpleUser(username)
+
+        elif "steam_id" in request.session \
+                and "community_name" in request.query_params:
+
+            request.state.community = Community(
+                request.query_params["community_name"]
             )
-        except InvalidAPIKey:
-            raise AuthenticationError(AUTH_ERROR)
-        else:
-            return AuthCredentials([
-                "authenticated", "master" if master else None
-            ]), SimpleUser(username)
+
+            return AuthCredentials(["authenticated"]), \
+                SimpleUser(request.session["steam_id"])

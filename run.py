@@ -22,26 +22,20 @@ DEALINGS IN THE SOFTWARE.
 
 
 from SQLMatches import SQLMatches
-from SQLMatches.settings import DatabaseSettings, B2UploadSettings
+from SQLMatches.settings import DatabaseSettings, LocalUploadSettings
 
 import uvicorn
 
 
 app = SQLMatches(
     database_settings=DatabaseSettings(
-        username="modulelift",
+        username="sqlmatches",
         password="Y2ZRSsje9qZHsxDu",
         server="localhost",
         port=3306,
         database="sqlmatches"
     ),
-    upload_settings=B2UploadSettings(
-        key_id="...",
-        application_key="...",
-        bucket_id="...",
-        pathway="demos/",
-        cdn_url="..."
-    ),
+    upload_settings=LocalUploadSettings(),
     friendly_url="http://127.0.0.1:8000"
 )
 
