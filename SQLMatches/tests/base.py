@@ -20,7 +20,6 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
-from base64 import b64encode
 from aiohttp import BasicAuth
 
 from .. import SQLMatches
