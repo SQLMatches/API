@@ -25,28 +25,18 @@ from starlette.endpoints import HTTPEndpoint
 from starlette.authentication import requires
 from starlette.requests import Request
 
-from slowapi import Limiter
-from slowapi.util import get_remote_address
-
 from marshmallow import Schema
 from webargs import fields
 from webargs_starlette import use_args
 
-from sqlalchemy import select
+from .rate_limiter import LIMITER
 
-from ..api import response, error_response
-from ..api.model_convertor import scoreboard_to_dict, match_to_dict
+from ...api import response
+from ...api.model_convertor import scoreboard_to_dict, match_to_dict
 
-from ..demos import Demo
+from ...demos import Demo
 
-from ..resources import Sessions
-
-from ..tables import update_table
-
-from ..community.exceptions import InvalidMatchID, DemoAlreadyUploaded
-
-
-limiter = Limiter(key_func=get_remote_address)
+from ...community.exceptions import InvalidMatchID, DemoAlreadyUploaded
 
 
 class PlayersSchema(Schema):
@@ -68,7 +58,7 @@ class PlayersSchema(Schema):
 
 class MatchAPI(HTTPEndpoint):
     @requires("authenticated")
-    @limiter.limit("30/minute")
+    @LIMITER.limit("30/minute")
     async def get(self, request: Request) -> response:
         """Used to get the scoreboard for a match.
 
@@ -93,7 +83,7 @@ class MatchAPI(HTTPEndpoint):
                "team_2_side": fields.Int(),
                "end": fields.Bool()})
     @requires("master")
-    @limiter.limit("30/minute")
+    @LIMITER.limit("30/minute")
     async def post(self, request: Request, parameters: dict) -> response:
         """Used to update a match.
 
@@ -113,7 +103,7 @@ class MatchAPI(HTTPEndpoint):
             return response()
 
     @requires("master")
-    @limiter.limit("30/minute")
+    @LIMITER.limit("30/minute")
     async def delete(self, request: Request) -> response:
         """Used to end a match.
 
@@ -136,7 +126,7 @@ class MatchesAPI(HTTPEndpoint):
     @use_args({"search": fields.Str(), "page": fields.Int(),
                "desc": fields.Bool()})
     @requires("authenticated")
-    @limiter.limit("30/minute")
+    @LIMITER.limit("30/minute")
     async def post(self, request: Request, parameters: dict) -> response:
         """Used to list matches.
 
@@ -161,7 +151,7 @@ class CreateMatchAPI(HTTPEndpoint):
                "team_2_score": fields.Int(required=True),
                "map_name": fields.Str(min=1, max=24, required=True)})
     @requires("master")
-    @limiter.limit("30/minute")
+    @LIMITER.limit("30/minute")
     async def post(self, request: Request, parameters: dict) -> response:
         """Used to create a match.
 
@@ -178,7 +168,7 @@ class CreateMatchAPI(HTTPEndpoint):
 
 class DemoUploadAPI(HTTPEndpoint):
     @requires("master")
-    @limiter.limit("30/minute")
+    @LIMITER.limit("30/minute")
     async def put(self, request: Request) -> response:
         """Used to upload a demo.
 
@@ -209,28 +199,3 @@ class DemoUploadAPI(HTTPEndpoint):
                 return response()
             else:
                 raise DemoAlreadyUploaded()
-
-
-class VersionAPI(HTTPEndpoint):
-    @requires("authenticated")
-    @limiter.limit("30/minute")
-    async def get(self, request: Request) -> response:
-        """Used to get a version update message.
-
-        Parameters
-        ----------
-        request : Request
-        """
-
-        message = await Sessions.database.fetch_val(
-            select([update_table.c.message]).select_form(
-                update_table
-            ).where(
-                update_table.c.version >= request.path_params["version"]
-            )
-        )
-
-        if message:
-            return response({"message": message})
-        else:
-            return error_response("InvalidVersion")

@@ -31,13 +31,13 @@ from webargs_starlette import WebargsHTTPException
 
 # Routes
 from .download import DownloadPage
-from .api import (
+from .api.matches import (
     MatchAPI,
     CreateMatchAPI,
     DemoUploadAPI,
-    MatchesAPI,
-    VersionAPI
+    MatchesAPI
 )
+from .api.misc import VersionAPI
 from .steam import SteamLogin, SteamValidate, SteamLogout
 from .errors import server_error, payload_error, rate_limted_error
 
