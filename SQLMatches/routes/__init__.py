@@ -38,7 +38,7 @@ from .api.matches import (
     MatchesAPI
 )
 from .api.misc import VersionAPI
-from .api.community import CommunityAPI
+from .api.community import CommunityAPI, CommunityCreateAPI
 from .steam import SteamLogin, SteamValidate, SteamLogout
 from .errors import server_error, payload_error, rate_limted_error
 
@@ -69,5 +69,8 @@ ROUTES = [
         ])
     ]),
     Route("/version/{version}", VersionAPI),
-    Route("/community", CommunityAPI)
+    Mount("/community", routes=[
+        Route("/", CommunityAPI),
+        Route("/create", CommunityCreateAPI)
+    ])
 ]

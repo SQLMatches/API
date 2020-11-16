@@ -104,5 +104,9 @@ class BasicAuthBackend(AuthenticationBackend):
             )
 
             return AuthCredentials(
-                ["authenticated", "is_owner" if is_owner else None]
+                [
+                    "authenticated",
+                    "is_owner" if is_owner else None,
+                    "steam_login"
+                ]
                 ), SimpleUser(request.session["steam_id"])

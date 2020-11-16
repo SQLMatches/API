@@ -25,8 +25,12 @@ from starlette.endpoints import HTTPEndpoint
 from starlette.authentication import requires
 from starlette.requests import Request
 
+from webargs import fields
+from webargs_starlette import use_args
+
 from .rate_limiter import LIMITER
 
+from ...community import create_community
 from ...community.exceptions import InvalidCommunity
 
 from ...api import response
@@ -78,3 +82,25 @@ class CommunityAPI(HTTPEndpoint):
         return response({
             "master_api_key": await request.state.community.regenerate_master()
         })
+
+
+class CommunityCreateAPI(HTTPEndpoint):
+    @use_args({"community_name": fields.Str(required=True),
+              "demos": fields.Bool()})
+    @requires("steam_login")
+    @LIMITER.limit("10/minute")
+    async def post(self, request: Request, parameters: dict) -> response:
+        """Used to create a community.
+
+        Parameters
+        ----------
+        request : Request
+        parameters : dict
+        """
+
+        community, _ = await create_community(
+            steam_id=request.session["steam_id"],
+            **parameters
+        )
+
+        return response(community_to_dict(community))
