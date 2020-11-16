@@ -30,6 +30,7 @@ from sqlalchemy import (
     ForeignKey,
     Integer,
     Boolean,
+    UniqueConstraint,
     PrimaryKeyConstraint,
     create_engine
 )
@@ -116,7 +117,8 @@ api_key_table = Table(
     metadata,
     Column(
         "api_key",
-        String(length=32)
+        String(length=32),
+        primary_key=True
     ),
     Column(
         "owner_id",
@@ -137,6 +139,10 @@ api_key_table = Table(
         "master",
         Boolean,
         default=False
+    ),
+    UniqueConstraint(
+        "api_key",
+        "master"
     ),
     mysql_engine="InnoDB",
     mysql_charset="utf8mb4"
@@ -240,8 +246,7 @@ scoreboard_table = Table(
     Column(
         "steam_id",
         String(length=64),
-        ForeignKey("user.steam_id"),
-        primary_key=True
+        ForeignKey("user.steam_id")
     ),
     Column(
         "team",
@@ -302,7 +307,7 @@ scoreboard_table = Table(
         Boolean,
         default=False
     ),
-    PrimaryKeyConstraint(
+    UniqueConstraint(
         "steam_id",
         "match_id",
         sqlite_on_conflict="REPLACE"

@@ -119,7 +119,7 @@ class SQLMatches(Starlette):
             Middleware(
                 CORSMiddleware,
                 allow_origins=["*"],
-                allow_methods=["GET", "POST"],
+                allow_methods=["GET", "POST", "DELETE"],
                 allow_headers=["*"],
                 expose_headers=["*"],
                 allow_credentials=True,

@@ -105,8 +105,8 @@ class Community:
 
         return Match(match_id, self.community_name)
 
-    async def regenerate(self, old_key: str) -> None:
-        """Regenerates API key.
+    async def regenerate(self, old_key: str) -> str:
+        """Regenerates a API key.
 
         Parameters
         ----------
@@ -114,8 +114,10 @@ class Community:
             Old key to update.
         """
 
+        key = token_urlsafe(24)
+
         query = api_key_table.update().values(
-            api_key=token_urlsafe(24)
+            api_key=key
         ).where(
             and_(
                 api_key_table.c.community_name == self.community_name,
@@ -124,6 +126,27 @@ class Community:
         )
 
         await Sessions.database.execute(query=query)
+
+        return key
+
+    async def regenerate_master(self) -> str:
+        """Regenerates the master API key.
+        """
+
+        key = token_urlsafe(24)
+
+        query = api_key_table.update().values(
+            api_key=key
+        ).where(
+            and_(
+                api_key_table.c.community_name == self.community_name,
+                api_key_table.c.master == 1
+            )
+        )
+
+        await Sessions.database.execute(query=query)
+
+        return key
 
     async def exists(self) -> bool:
         """Checks if community exists with name.

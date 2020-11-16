@@ -33,8 +33,8 @@ from starlette.authentication import (
 )
 from starlette.requests import Request
 
-from .community import Community, api_key_to_community
-from .community.exceptions import InvalidAPIKey
+from .community import Community, api_key_to_community, get_community_from_owner
+from .community.exceptions import InvalidAPIKey, NoOwnership
 
 
 AUTH_ERROR = "Invalid basic auth credentials"
@@ -86,9 +86,23 @@ class BasicAuthBackend(AuthenticationBackend):
         elif "steam_id" in request.session \
                 and "community_name" in request.query_params:
 
+            if "check_is_owner" in request.query_params:
+                try:
+                    community = await get_community_from_owner(
+                        request.session["steam_id"]
+                    )
+                except NoOwnership:
+                    is_owner = False
+                else:
+                    is_owner = community.community_name == \
+                        request.query_params["community_name"]
+            else:
+                is_owner = False
+
             request.state.community = Community(
                 request.query_params["community_name"]
             )
 
-            return AuthCredentials(["authenticated"]), \
-                SimpleUser(request.session["steam_id"])
+            return AuthCredentials(
+                ["authenticated", "is_owner" if is_owner else None]
+                ), SimpleUser(request.session["steam_id"])

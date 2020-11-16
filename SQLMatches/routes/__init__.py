@@ -38,6 +38,7 @@ from .api.matches import (
     MatchesAPI
 )
 from .api.misc import VersionAPI
+from .api.community import CommunityAPI
 from .steam import SteamLogin, SteamValidate, SteamLogout
 from .errors import server_error, payload_error, rate_limted_error
 
@@ -67,5 +68,6 @@ ROUTES = [
             Route("/download/", DownloadPage, name="DownloadPage")
         ])
     ]),
-    Route("/version/{version}", VersionAPI)
+    Route("/version/{version}", VersionAPI),
+    Route("/community", CommunityAPI)
 ]
