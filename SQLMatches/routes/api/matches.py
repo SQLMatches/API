@@ -57,7 +57,7 @@ class PlayersSchema(Schema):
 
 
 class MatchAPI(HTTPEndpoint):
-    @requires("authenticated")
+    @requires("community")
     @LIMITER.limit("30/minute")
     async def get(self, request: Request) -> response:
         """Used to get the scoreboard for a match.
@@ -125,7 +125,7 @@ class MatchAPI(HTTPEndpoint):
 class MatchesAPI(HTTPEndpoint):
     @use_args({"search": fields.Str(), "page": fields.Int(),
                "desc": fields.Bool()})
-    @requires("authenticated")
+    @requires("community")
     @LIMITER.limit("30/minute")
     async def post(self, request: Request, parameters: dict) -> response:
         """Used to list matches.

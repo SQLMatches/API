@@ -60,7 +60,6 @@ class BasicAuthBackend(AuthenticationBackend):
         """
 
         if "Authorization" in request.headers:
-
             auth = request.headers["Authorization"]
             try:
                 scheme, credentials = auth.split()
@@ -80,33 +79,32 @@ class BasicAuthBackend(AuthenticationBackend):
                 raise AuthenticationError(AUTH_ERROR)
             else:
                 return AuthCredentials([
-                    "authenticated", "master" if master else None
+                    "community", "master" if master else None
                 ]), SimpleUser(username)
 
-        elif "steam_id" in request.session \
-                and "community_name" in request.query_params:
+        elif "steam_id" in request.session:
+            scopes = ["steam_login"]
 
-            if "check_ownership" in request.query_params:
-                try:
-                    community = await get_community_from_owner(
-                        request.session["steam_id"]
-                    )
-                except NoOwnership:
-                    is_owner = False
-                else:
-                    is_owner = community.community_name == \
-                        request.query_params["community_name"]
-            else:
-                is_owner = False
+            if "community_name" in request.query_params:
+                scopes.append("community")
 
-            request.state.community = Community(
-                request.query_params["community_name"]
+                if "check_ownership" in request.query_params:
+                    try:
+                        community = await get_community_from_owner(
+                            request.session["steam_id"]
+                        )
+                    except NoOwnership:
+                        pass
+                    else:
+                        if community.community_name == \
+                                request.query_params["community_name"]:
+                            scopes.append("is_owner")
+
+                request.state.community = Community(
+                    request.query_params["community_name"]
+                )
+
+            return (
+                AuthCredentials(scopes),
+                SimpleUser(request.session["steam_id"])
             )
-
-            return AuthCredentials(
-                [
-                    "authenticated",
-                    "is_owner" if is_owner else None,
-                    "steam_login"
-                ]
-                ), SimpleUser(request.session["steam_id"])

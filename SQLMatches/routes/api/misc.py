@@ -34,7 +34,7 @@ from .rate_limiter import LIMITER
 
 
 class VersionAPI(HTTPEndpoint):
-    @requires("authenticated")
+    @requires("community")
     @LIMITER.limit("30/minute")
     async def get(self, request: Request) -> response:
         """Used to get a version update message.
