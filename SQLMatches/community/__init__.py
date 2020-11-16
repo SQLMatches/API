@@ -82,7 +82,7 @@ class Community:
             team_1_side=team_1_side,
             team_2_side=team_2_side,
             map=map_name,
-            name=self.community_name,
+            community_name=self.community_name,
             team_1_score=team_1_score,
             team_2_score=team_2_score,
             status=1,
