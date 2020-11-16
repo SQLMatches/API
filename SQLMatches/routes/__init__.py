@@ -60,10 +60,10 @@ ROUTES = [
     Mount("/maps/", StaticFiles(directory=Config.maps_dir), name="maps"),
     Route("/matches/", MatchesAPI),
     Mount("/match", routes=[
-        Route("/create/", CreateMatchAPI),
+        Route("/create/", CreateMatchAPI),  # Tested - POST @ 0.1.0
         Mount("/{match_id}", routes=[
             Route("/upload/", DemoUploadAPI),
-            Route("/", MatchAPI),
+            Route("/", MatchAPI),  # Tested - GET, POST, DELETE @ 0.1.0
             Route("/download/", DownloadPage, name="DownloadPage")
         ])
     ]),

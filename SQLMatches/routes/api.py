@@ -115,7 +115,7 @@ class MatchAPI(HTTPEndpoint):
     @requires("master")
     @limiter.limit("30/minute")
     async def delete(self, request: Request) -> response:
-        """Used to delete a match.
+        """Used to end a match.
 
         Parameters
         ----------

@@ -144,6 +144,32 @@ class TestAPI(TestBase, asynctest.TestCase):
 
         self.assertEqual(resp.status_code, 200, "Get scoreboard ended")
 
+    def test_end_match(self) -> None:
+        resp = self.client.post(
+            "/match/create/",
+            json={
+                "team_1_name": "Ward",
+                "team_2_name": "Doggy",
+                "team_1_side": 0,
+                "team_2_side": 1,
+                "team_1_score": 8,
+                "team_2_score": 8,
+                "map_name": "de_mirage"
+            },
+            headers=self.basic_auth
+        )
+
+        self.assertEqual(resp.status_code, 200, "Match created")
+
+        match_id = (resp.json())["data"]["match_id"]
+
+        resp = self.client.delete(
+            "match/{}/".format(match_id),
+            headers=self.basic_auth
+        )
+
+        self.assertEqual(resp.status_code, 200, "Match ended")
+
     def test_matches_list(self) -> None:
         resp = self.client.post(
             "/matches/",
