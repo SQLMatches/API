@@ -58,7 +58,7 @@ ROUTES = [
         Route("/logout/", SteamLogout, name="SteamLogout")
     ]),
     Mount("/maps/", StaticFiles(directory=Config.maps_dir), name="maps"),
-    Route("/matches/", MatchesAPI),
+    Route("/matches/", MatchesAPI),  # Tested - POST @ 0.1.0
     Mount("/match", routes=[
         Route("/create/", CreateMatchAPI),  # Tested - POST @ 0.1.0
         Mount("/{match_id}", routes=[
