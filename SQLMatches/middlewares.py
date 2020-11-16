@@ -86,7 +86,7 @@ class BasicAuthBackend(AuthenticationBackend):
         elif "steam_id" in request.session \
                 and "community_name" in request.query_params:
 
-            if "check_is_owner" in request.query_params:
+            if "check_ownership" in request.query_params:
                 try:
                     community = await get_community_from_owner(
                         request.session["steam_id"]
