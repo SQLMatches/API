@@ -10,6 +10,4 @@ class TestAPI(TestBase, asynctest.TestCase):
             headers=self.basic_auth
         )
 
-        print(resp.json())
-
         self.assertEqual(resp.status_code, 200)
