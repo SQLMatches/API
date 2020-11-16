@@ -137,6 +137,13 @@ class TestAPI(TestBase, asynctest.TestCase):
 
         self.assertEqual(resp.status_code, 200, "Match ended")
 
+        resp = self.client.get(
+            "/match/{}/".format(match_id),
+            headers=self.basic_auth
+        )
+
+        self.assertEqual(resp.status_code, 200, "Get scoreboard ended")
+
     def test_matches_list(self) -> None:
         resp = self.client.post(
             "/matches/",
