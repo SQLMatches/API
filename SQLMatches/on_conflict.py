@@ -23,7 +23,6 @@ DEALINGS IN THE SOFTWARE.
 
 from sqlalchemy.dialects.mysql import insert as mysql_insert
 from sqlalchemy.dialects.postgresql import insert as postgresql_insert
-from sqlalchemy import insert as sqlite_insert
 
 from typing import Any
 
@@ -31,19 +30,13 @@ from .tables import scoreboard_table, user_table
 from .resources import Config
 
 
-def player_insert_on_conflict_update() -> Any:
+def on_scoreboard_conflict() -> Any:
     """Used for updating a player on a scoreboard on conflict.
     """
 
     if Config.db_engine == "mysql":
-        query_insert = mysql_insert(
-            scoreboard_table,
-            user_table.join(
-                scoreboard_table.c.steam_id == user_table.c.steam_id
-            )
-        )
+        query_insert = mysql_insert(scoreboard_table)
         return query_insert.on_duplicate_key_update(
-            name=query_insert.inserted.name,
             team=query_insert.inserted.team,
             alive=query_insert.inserted.alive,
             ping=query_insert.inserted.ping,
@@ -58,15 +51,9 @@ def player_insert_on_conflict_update() -> Any:
             disconnected=query_insert.inserted.disconnected
         )
     elif Config.db_engine == "psycopg2":
-        query_insert = postgresql_insert(
-            scoreboard_table,
-            user_table.join(
-                scoreboard_table.c.steam_id == user_table.c.steam_id
-            )
-        )
+        query_insert = postgresql_insert(scoreboard_table)
         return query_insert.on_conflict_do_update(
             set_=dict(
-                name=query_insert.inserted.name,
                 team=query_insert.inserted.team,
                 alive=query_insert.inserted.alive,
                 ping=query_insert.inserted.ping,
@@ -82,9 +69,26 @@ def player_insert_on_conflict_update() -> Any:
             )
         )
     else:
-        return sqlite_insert(
-            scoreboard_table,
-            user_table.join(
-                scoreboard_table.c.steam_id == user_table.c.steam_id
+        return scoreboard_table.insert
+
+
+def on_user_conflict() -> Any:
+    """Used for updating a users on conflict.
+    """
+
+    if Config.db_engine == "mysql":
+        query_insert = mysql_insert(user_table)
+        return query_insert.on_duplicate_key_update(
+            name=query_insert.inserted.name,
+            timestamp=query_insert.inserted.timestamp
+        )
+    elif Config.db_engine == "psycopg2":
+        query_insert = postgresql_insert(user_table)
+        return query_insert.on_conflict_do_update(
+            set_=dict(
+                name=query_insert.inserted.name,
+                timestamp=query_insert.inserted.timestamp
             )
         )
+    else:
+        return user_table.insert

@@ -21,11 +21,15 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
+from typing import Any, Dict, List
+
+from datetime import datetime
+
 from sqlalchemy.sql import select, and_
 
 from asyncio import sleep
 
-from ..on_conflict import player_insert_on_conflict_update
+from ..on_conflict import on_scoreboard_conflict, on_user_conflict
 from ..tables import scoreboard_total_table, scoreboard_table, user_table
 from ..resources import Sessions
 
@@ -120,7 +124,7 @@ class Match:
         return await Sessions.database.fetch_val(query=query) > 0
 
     async def update(self, team_1_score: int, team_2_score: int,
-                     players: list = None,
+                     players: List[Dict[str, Dict[str, Any]]] = None,
                      team_1_side: int = None, team_2_side: int = None,
                      end: bool = False) -> None:
         """Updates match details.
@@ -157,14 +161,48 @@ class Match:
             raise InvalidMatchID()
         else:
             if players:
+                scoreboard_players = []
+                scoreboard_players_append = scoreboard_players.append
+
+                users = []
+                users_append = users.append
+
+                now = datetime.now()
+
                 for player in players:
-                    player["match_id"] = self.match_id
+                    scoreboard_players_append({
+                        "match_id": self.match_id,
+                        "steam_id": player["steam_id"],
+                        "team": player["team"],
+                        "alive": player["alive"],
+                        "ping": player["ping"],
+                        "kills": player["kills"],
+                        "headshots": player["headshots"],
+                        "assists": player["assists"],
+                        "deaths": player["deaths"],
+                        "shots_fired": player["shots_fired"],
+                        "shots_hit": player["shots_hit"],
+                        "mvps": player["mvps"],
+                        "score": player["score"],
+                        "disconnected": player["disconnected"]
+                    })
+
+                    users_append({
+                        "name": player["name"],
+                        "steam_id": player["steam_id"],
+                        "timestamp": now
+                    })
 
                     await sleep(0.000001)
 
                 await Sessions.database.execute_many(
-                    query=player_insert_on_conflict_update(),
-                    values=players
+                    query=on_user_conflict(),
+                    values=users
+                )
+
+                await Sessions.database.execute_many(
+                    query=on_scoreboard_conflict(),
+                    values=scoreboard_players
                 )
 
     async def end(self) -> None:
