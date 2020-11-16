@@ -20,8 +20,8 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
-import base64
 import binascii
+from base64 import b64decode
 
 from typing import Tuple
 
@@ -67,7 +67,7 @@ class BasicAuthBackend(AuthenticationBackend):
             scheme, credentials = auth.split()
             if scheme.lower() != "basic":
                 return
-            decoded = base64.b64decode(credentials).decode("ascii")
+            decoded = b64decode(credentials).decode("ascii")
         except (ValueError, UnicodeDecodeError, binascii.Error):
             raise AuthenticationError(AUTH_ERROR)
 

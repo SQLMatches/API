@@ -199,7 +199,7 @@ class Community:
             query = query.select_from(
                 scoreboard_total_table
             ).where(
-                scoreboard_total_table.c.name == self.community_name,
+                scoreboard_total_table.c.community_name == self.community_name,
             )
 
         query = query.order_by(

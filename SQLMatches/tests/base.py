@@ -21,6 +21,7 @@ DEALINGS IN THE SOFTWARE.
 """
 
 from base64 import b64encode
+from aiohttp import BasicAuth
 
 from .. import SQLMatches
 from ..settings import DatabaseSettings, LocalUploadSettings
@@ -72,9 +73,10 @@ class TestBase:
             community = await Community(community_name=COMMUNITY_NAME).get()
 
         self.basic_auth = {
-            "Authorization": "Basic: {}".format(
-                b64encode(community.master_api_key.encode("utf-8"))
-            )
+            "Authorization": BasicAuth(
+                login="",
+                password=community.master_api_key
+            ).encode()
         }
 
     async def tearDown(self) -> None:
