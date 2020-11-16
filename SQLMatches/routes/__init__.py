@@ -40,7 +40,12 @@ from .api.matches import (
 from .api.misc import VersionAPI
 from .api.community import CommunityOwnerAPI, CommunityAPI
 from .steam import SteamLogin, SteamValidate, SteamLogout
-from .errors import server_error, payload_error, rate_limted_error
+from .errors import (
+    server_error,
+    payload_error,
+    rate_limted_error,
+    internal_error
+)
 
 from ..resources import Config
 
@@ -48,7 +53,8 @@ from ..resources import Config
 ERROR_HANDLERS = {
     WebargsHTTPException: payload_error,
     RateLimitExceeded: rate_limted_error,
-    HTTPException: server_error
+    HTTPException: server_error,
+    Exception: internal_error
 }
 
 

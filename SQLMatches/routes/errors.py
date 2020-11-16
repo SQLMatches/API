@@ -40,6 +40,13 @@ def auth_error(request: Request, exc: Exception) -> error_response:
     )
 
 
+def internal_error(request: Request, exc: Exception) -> error_response:
+    return error_response(
+        error=str(exc),
+        status_code=500
+    )
+
+
 def payload_error(request: Request, exc) -> error_response:
     return error_response(
         error=exc.messages,
