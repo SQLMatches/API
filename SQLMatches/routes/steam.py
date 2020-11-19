@@ -23,24 +23,48 @@ DEALINGS IN THE SOFTWARE.
 
 from starlette.endpoints import HTTPEndpoint
 from starlette.requests import Request
+from starlette.responses import RedirectResponse
 
 from re import search
 from asyncio import sleep
+from urllib.parse import urlencode
 
-from ..api import response, error_response
 from ..resources import Config, Sessions
 
 
-class SteamValidate(HTTPEndpoint):
-    async def get(self, request: Request) -> response:
-        params = request.query_params
+class SteamLogin(HTTPEndpoint):
+    async def get(self, request: Request) -> RedirectResponse:
+        paramters = {
+            "openid.ns": "http://specs.openid.net/auth/2.0",
+            "openid.identity":
+            "http://specs.openid.net/auth/2.0/identifier_select",
+            "openid.claimed_id":
+            "http://specs.openid.net/auth/2.0/identifier_select",
+            "openid.mode": "checkid_setup",
+            "openid.return_to": "{}steam/validate?return={}".format(
+                Config.url,
+                request.query_params["return"] if
+                "return" in request.query_params else "/"
+            ),
+            "openid.realm": Config.url,
+        }
 
-        if "openid.ns" in params and "openid.mode" in params and\
-            "openid.claimed_id" in params and "openid.assoc_handle" in params\
-            and "openid.signed" in params and "openid.sig" in params\
-            and "openid.op_endpoint" in params and "openid.identity" in params\
-            and "openid.return_to" in params\
-                and "openid.response_nonce" in params:
+        return RedirectResponse(
+            "{}?{}".format(Config.steam_openid_url, urlencode(paramters))
+        )
+
+
+class SteamValidate(HTTPEndpoint):
+    async def get(self, request: Request) -> RedirectResponse:
+        params = request.query_params
+        redirect = "/"
+
+        if ("openid.ns" in params and "openid.mode" in params
+            and "openid.claimed_id" in params and "openid.assoc_handle"
+            and "openid.signed" in params and "openid.sig" in params
+            and "openid.op_endpoint" in params and "openid.identity" in params
+            and "openid.return_to" in params
+                and "openid.response_nonce" in params):
 
             validation = {
                 "openid.assoc_handle": params["openid.assoc_handle"],
@@ -77,6 +101,14 @@ class SteamValidate(HTTPEndpoint):
 
                             request.session["steam_id"] = steam_id
 
-                            return response()
+                            if "return" in params:
+                                redirect = params["return"]
 
-        return error_response("Invalid login")
+        return RedirectResponse(redirect)
+
+
+class SteamLogout(HTTPEndpoint):
+    async def get(self, request: Request) -> RedirectResponse:
+        request.session.pop("steam_id", None)
+
+        return RedirectResponse("/")

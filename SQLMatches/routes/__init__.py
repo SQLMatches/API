@@ -40,7 +40,7 @@ from .api.matches import (
 from .api.misc import VersionAPI
 from .api.community import CommunityOwnerAPI, CommunityCreateAPI
 from .api.communities import CommunitiesAPI
-from .steam import SteamValidate
+from .steam import SteamValidate, SteamLogin, SteamLogout
 from .errors import (
     server_error,
     payload_error,
@@ -60,7 +60,11 @@ ERROR_HANDLERS = {
 
 
 ROUTES = [
-    Route("/login/validate/", SteamValidate),
+    Mount("/steam", routes=[
+        Route("/login", SteamLogin),
+        Route("/validate", SteamValidate),
+        Route("/logout", SteamLogout)
+    ]),
     Mount("/maps/", StaticFiles(directory=Config.maps_dir), name="maps"),
     Route("/matches/", MatchesAPI),  # Tested - POST @ 0.1.0
     Mount("/match", routes=[
