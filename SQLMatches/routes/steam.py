@@ -23,41 +23,17 @@ DEALINGS IN THE SOFTWARE.
 
 from starlette.endpoints import HTTPEndpoint
 from starlette.requests import Request
-from starlette.responses import RedirectResponse
 
-from urllib.parse import urlencode
 from re import search
 from asyncio import sleep
 
+from ..api import response, error_response
 from ..resources import Config, Sessions
 
 
-class SteamLogin(HTTPEndpoint):
-    async def get(self, request: Request) -> RedirectResponse:
-        paramters = {
-            "openid.ns": "http://specs.openid.net/auth/2.0",
-            "openid.identity":
-            "http://specs.openid.net/auth/2.0/identifier_select",
-            "openid.claimed_id":
-            "http://specs.openid.net/auth/2.0/identifier_select",
-            "openid.mode": "checkid_setup",
-            "openid.return_to": "{}login/validate?return={}".format(
-                Config.url,
-                request.query_params["return"] if
-                "return" in request.query_params else "/"
-            ),
-            "openid.realm": Config.url,
-        }
-
-        return RedirectResponse(
-            "{}?{}".format(Config.steam_openid_url, urlencode(paramters))
-        )
-
-
 class SteamValidate(HTTPEndpoint):
-    async def get(self, request: Request) -> RedirectResponse:
+    async def get(self, request: Request) -> response:
         params = request.query_params
-        redirect = "/"
 
         if "openid.ns" in params and "openid.mode" in params and\
             "openid.claimed_id" in params and "openid.assoc_handle" in params\
@@ -101,14 +77,6 @@ class SteamValidate(HTTPEndpoint):
 
                             request.session["steam_id"] = steam_id
 
-                            if "return" in params:
-                                redirect = params["return"]
+                            return response()
 
-        return RedirectResponse(redirect)
-
-
-class SteamLogout(HTTPEndpoint):
-    async def get(self, request: Request) -> RedirectResponse:
-        request.session.pop("steam_id", None)
-
-        return RedirectResponse("/")
+        return error_response("Invalid login")

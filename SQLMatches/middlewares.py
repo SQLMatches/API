@@ -44,7 +44,7 @@ from .community.exceptions import InvalidAPIKey, NoOwnership
 AUTH_ERROR = "Invalid basic auth credentials"
 
 
-class BasicAuthBackend(AuthenticationBackend):
+class APIAuthentication(AuthenticationBackend):
     async def authenticate(self, request: Request
                            ) -> Tuple[AuthCredentials, SimpleUser]:
         """Used to authenticate basic auth.

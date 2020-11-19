@@ -21,12 +21,13 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-from typing import Dict, Tuple
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.cors import CORSMiddleware
+
+from typing import Dict, Tuple
 
 from secrets import token_urlsafe
 
@@ -40,7 +41,7 @@ from starlette.staticfiles import StaticFiles
 from .tables import create_tables
 from .resources import Sessions, Config
 from .settings import DatabaseSettings, B2UploadSettings, LocalUploadSettings
-from .middlewares import BasicAuthBackend
+from .middlewares import APIAuthentication
 
 from .routes import ROUTES, ERROR_HANDLERS
 from .routes.errors import auth_error
@@ -114,15 +115,12 @@ class SQLMatches(Starlette):
 
         middlewares = [
             Middleware(SessionMiddleware, secret_key=secret_key),
-            Middleware(AuthenticationMiddleware, backend=BasicAuthBackend(),
+            Middleware(AuthenticationMiddleware, backend=APIAuthentication(),
                        on_error=auth_error),
             Middleware(
                 CORSMiddleware,
                 allow_origins=["*"],
-                allow_methods=["GET", "POST", "DELETE"],
-                allow_headers=["*"],
-                expose_headers=["*"],
-                allow_credentials=True,
+                allow_methods=["GET", "POST", "DELETE", "OPTIONS"]
             )
         ]
 
