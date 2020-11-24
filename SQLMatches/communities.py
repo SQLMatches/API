@@ -26,10 +26,15 @@ from sqlalchemy.sql import select, or_
 
 from .resources import Sessions
 
-from .tables import community_table
+from .tables import (
+    community_table,
+    scoreboard_total_table,
+    scoreboard_table,
+    user_table
+)
 
-from .community import Community
-from .community.models import CommunityModel
+from .community import Community, Match
+from .community.models import CommunityModel, MatchModel
 
 
 async def communities(search: str = None, page: int = 1,
@@ -81,3 +86,75 @@ async def communities(search: str = None, page: int = 1,
             "timestamp": community["timestamp"],
             "disabled": community["disabled"]
         }), Community(community["community_name"])
+
+
+async def matches(search: str = None,
+                  page: int = 1, limit: int = 5, desc: bool = True
+                  ) -> AsyncGenerator[MatchModel, Match]:
+    """Lists matches.
+
+    Paramters
+    ---------
+    search: str
+    page: int
+    limit: int
+    desc: bool, optional
+        by default True
+
+    Yields
+    ------
+    MatchModel
+        Holds basic match details.
+    Match
+        Used for interacting with a match.
+    """
+
+    query = select([
+        scoreboard_total_table.c.match_id,
+        scoreboard_total_table.c.timestamp,
+        scoreboard_total_table.c.status,
+        scoreboard_total_table.c.demo_status,
+        scoreboard_total_table.c.map,
+        scoreboard_total_table.c.team_1_name,
+        scoreboard_total_table.c.team_2_name,
+        scoreboard_total_table.c.team_1_score,
+        scoreboard_total_table.c.team_2_score,
+        scoreboard_total_table.c.team_1_side,
+        scoreboard_total_table.c.team_2_side,
+        scoreboard_total_table.c.community_name
+    ])
+
+    if search:
+        like_search = "%{}%".format(search)
+
+        query = query.select_from(
+            scoreboard_total_table.join(
+                scoreboard_table,
+                scoreboard_table.c.match_id ==
+                scoreboard_total_table.c.match_id
+            ).join(
+                user_table,
+                user_table.c.steam_id == scoreboard_table.c.steam_id
+            )
+        ).where(
+            or_(
+                scoreboard_total_table.c.match_id == search,
+                scoreboard_total_table.c.map.like(like_search),
+                scoreboard_total_table.c.team_1_name.like(like_search),
+                scoreboard_total_table.c.team_2_name.like(like_search),
+                user_table.c.name.like(like_search),
+                user_table.c.steam_id == search
+            )
+        ).distinct()
+    else:
+        query = query.select_from(
+            scoreboard_total_table
+        )
+
+    query = query.order_by(
+        scoreboard_total_table.c.timestamp.desc() if desc
+        else scoreboard_total_table.c.timestamp.asc()
+    ).limit(limit).offset((page - 1) * limit if page > 1 else 0)
+
+    async for row in Sessions.database.iterate(query=query):
+        yield MatchModel(row), Match(row["match_id"], row["community_name"])

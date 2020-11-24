@@ -31,9 +31,9 @@ from webargs_starlette import use_args
 from .rate_limiter import LIMITER
 
 from ...api import response
-from ...api.model_convertor import community_to_dict
+from ...api.model_convertor import community_to_dict, match_to_dict
 
-from ...communities import communities
+from ...communities import communities, matches
 
 
 class CommunitiesAPI(HTTPEndpoint):
@@ -45,4 +45,16 @@ class CommunitiesAPI(HTTPEndpoint):
         return response([
             community_to_dict(community) async for community, _ in
             communities(**parameters)
+        ])
+
+
+class CommunityMatchesAPI(HTTPEndpoint):
+    @use_args({"search": fields.Str(), "page": fields.Int(),
+               "desc": fields.Bool()})
+    @requires("steam_login")
+    @LIMITER.limit("30/minute")
+    async def post(self, request: Request, parameters: dict) -> response:
+        return response([
+            match_to_dict(match) async for match, _ in
+            matches(**parameters)
         ])

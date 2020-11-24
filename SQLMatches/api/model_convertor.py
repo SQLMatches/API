@@ -39,6 +39,7 @@ def community_to_dict(model: CommunityModel) -> dict:
     """
 
     return {
+        "community_name": model.community_name,
         "master_api_key": model.master_api_key,
         "owner_id": model.owner_id,
         "disabled": model.disabled,

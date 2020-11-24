@@ -39,8 +39,8 @@ from .api.matches import (
 )
 from .api.misc import VersionAPI
 from .api.community import CommunityOwnerAPI, CommunityCreateAPI
-from .api.communities import CommunitiesAPI
-from .steam import SteamValidate, SteamLogin, SteamLogout
+from .api.communities import CommunitiesAPI, CommunityMatchesAPI
+from .steam import SteamValidate, SteamLogin, SteamLogout, SteamLoginTest
 from .errors import (
     server_error,
     payload_error,
@@ -64,7 +64,8 @@ ROUTES = [
         Mount("/steam", routes=[
             Route("/login", SteamLogin),
             Route("/validate", SteamValidate),
-            Route("/logout", SteamLogout)
+            Route("/logout", SteamLogout),
+            Route("/test", SteamLoginTest)
         ]),
         Mount("/maps/", StaticFiles(directory=Config.maps_dir), name="maps"),
         Route("/matches/", MatchesAPI),  # Tested - POST @ 0.1.0
@@ -81,6 +82,9 @@ ROUTES = [
             Route("/owner/", CommunityOwnerAPI),
             Route("/create/", CommunityCreateAPI)
         ]),
-        Route("/communities/", CommunitiesAPI)
+        Mount("/communities", routes=[
+            Route("/", CommunitiesAPI),
+            Route("/matches/", CommunityMatchesAPI)
+        ])
     ])
 ]
