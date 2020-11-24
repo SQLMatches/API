@@ -246,7 +246,8 @@ scoreboard_table = Table(
     Column(
         "steam_id",
         String(length=64),
-        ForeignKey("user.steam_id")
+        ForeignKey("user.steam_id"),
+        primary_key=True
     ),
     Column(
         "team",
@@ -307,7 +308,7 @@ scoreboard_table = Table(
         Boolean,
         default=False
     ),
-    UniqueConstraint(
+    PrimaryKeyConstraint(
         "steam_id",
         "match_id",
         sqlite_on_conflict="REPLACE"
