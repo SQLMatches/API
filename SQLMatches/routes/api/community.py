@@ -36,6 +36,8 @@ from ...community.exceptions import InvalidCommunity
 from ...api import response
 from ...api.model_convertor import community_to_dict
 
+from ...resources import WebsocketQueue
+
 
 class CommunityOwnerAPI(HTTPEndpoint):
     @requires("is_owner")
@@ -103,4 +105,8 @@ class CommunityCreateAPI(HTTPEndpoint):
             **parameters
         )
 
-        return response(community_to_dict(community))
+        community_dict = community_to_dict(community)
+
+        WebsocketQueue.communities.append(community_dict)
+
+        return response(community_dict)

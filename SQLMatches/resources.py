@@ -53,7 +53,7 @@ class Config:
     ws_loop_time: float
 
 
-class Queue:
-    scoreboard: dict = {}
+class WebsocketQueue:
+    scoreboards: list = []
     matches: list = []
     communities: list = []

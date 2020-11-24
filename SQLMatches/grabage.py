@@ -23,11 +23,39 @@ DEALINGS IN THE SOFTWARE.
 
 from asyncio import sleep
 
+from .resources import WebsocketQueue, Config
+
 
 async def handle_queue():
-    await sleep(10)
+    print("Start queue")
+
+    while True:
+        old_scoreboards = dict(WebsocketQueue.scoreboards)
+        old_matches = list(WebsocketQueue.matches)
+        old_communities = list(WebsocketQueue.communities)
+
+        # Giving the websocket a extra 2 seconds.
+        await sleep(Config.ws_loop_time + 2)
+
+        # Speed isn't really a concern here.
+        # This process will only be ran once every X amount of seconds.
+
+        for community in old_communities:
+            if community in WebsocketQueue.communities:
+                WebsocketQueue.communities.pop(community, None)
+
+        for matches in old_matches:
+            if matches in WebsocketQueue.matches:
+                WebsocketQueue.communities.pop(matches, None)
+
+        for scoreboard in old_scoreboards:
+            for new_scoreboard in WebsocketQueue.scoreboards:
+                if scoreboard == new_scoreboard:
+                    WebsocketQueue.scoreboards.remove(
+                        WebsocketQueue.scoreboards.index(scoreboard)
+                    )
 
 
-TO_SPAWN = [
+GRABAGE_HANDLERS_TO_SPAWN = [
     handle_queue
 ]

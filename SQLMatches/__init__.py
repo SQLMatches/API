@@ -47,7 +47,7 @@ from .middlewares import APIAuthentication
 from .routes import ROUTES, ERROR_HANDLERS
 from .routes.errors import auth_error
 
-from .grabage import TO_SPAWN
+from .grabage import GRABAGE_HANDLERS_TO_SPAWN
 
 
 __version__ = "0.1.0"
@@ -225,7 +225,7 @@ class SQLMatches(Starlette):
 
         self.grabage = await create_scheduler()
 
-        for to_spawn in TO_SPAWN:
+        for to_spawn in GRABAGE_HANDLERS_TO_SPAWN:
             await self.grabage.spawn(to_spawn())
 
     async def _shutdown(self) -> None:

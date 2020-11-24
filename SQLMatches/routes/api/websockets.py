@@ -28,27 +28,25 @@ from websockets.exceptions import WebSocketException
 
 from asyncio import sleep
 
-from ...resources import Config
+from ...resources import Config, WebsocketQueue
 from ...api import websocket_response
 
 
-class WebSocketAPI(WebSocketEndpoint):
+class CommunityWebsocketAPI(WebSocketEndpoint):
     encoding = "json"
 
     async def on_connect(self, websocket: WebSocket) -> None:
         await websocket.accept()
 
-        print("Connected")
-
         if "steam_login" in websocket.auth.scopes:
             while True:
                 try:
-                    await websocket.send_json(websocket_response({}))
+                    await websocket.send_json(
+                        websocket_response(WebsocketQueue.communities)
+                    )
                 except WebSocketException:
                     break
-                else:
-                    await sleep(Config.ws_loop_time)
+
+                await sleep(Config.ws_loop_time)
 
         await websocket.close()
-
-        print("Connection closed")
