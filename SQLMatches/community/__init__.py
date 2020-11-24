@@ -223,7 +223,11 @@ class Community:
             ).distinct()
         else:
             query = query.select_from(
-                scoreboard_total_table
+                scoreboard_total_table.join(
+                    scoreboard_table,
+                    scoreboard_table.c.match_id ==
+                    scoreboard_total_table.c.match_id
+                )
             ).where(
                 scoreboard_total_table.c.community_name == self.community_name,
             )

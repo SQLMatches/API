@@ -148,7 +148,11 @@ async def matches(search: str = None,
         ).distinct()
     else:
         query = query.select_from(
-            scoreboard_total_table
+            scoreboard_total_table.join(
+                scoreboard_table,
+                scoreboard_table.c.match_id ==
+                scoreboard_total_table.c.match_id
+            )
         )
 
     query = query.order_by(
