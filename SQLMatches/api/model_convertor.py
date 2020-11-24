@@ -70,7 +70,8 @@ def match_to_dict(model: MatchModel) -> dict:
         "team_1_score": model.team_1_score,
         "team_2_score": model.team_2_score,
         "team_1_side": model.team_1_side,
-        "team_2_side": model.team_2_side
+        "team_2_side": model.team_2_side,
+        "cover_image": model.cover_image
     }
 
 

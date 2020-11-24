@@ -22,6 +22,8 @@ DEALINGS IN THE SOFTWARE.
 
 from typing import Generator
 
+from ..resources import Config
+
 
 class CommunityModel:
     def __init__(self, data) -> None:
@@ -45,6 +47,11 @@ class MatchModel:
         self.team_2_score = data["team_2_score"]
         self.team_1_side = data["team_1_side"]
         self.team_2_side = data["team_2_side"]
+        self.cover_image = "{}maps/{}".format(
+            Config.url,
+            Config.map_images[self.map] if self.map in Config.map_images
+            else "invalid.png"
+        )
 
 
 class ScoreboardPlayerModel:
