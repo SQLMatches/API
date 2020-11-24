@@ -21,6 +21,7 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
+from typing import Any
 from starlette.responses import JSONResponse
 
 
@@ -40,14 +41,28 @@ def error_response(error: str, **kwargs) -> JSONResponse:
     return JSONResponse({"data": None, "error": error}, **kwargs)
 
 
-def response(data: dict = None, **kwargs) -> JSONResponse:
-    """
-    Handles a successful api response.
+def response(data: Any = None, **kwargs) -> JSONResponse:
+    """Handles a successful api response.
 
     Paramters
     ---------
-    data: dict
+    data: Any
         Data to respond.
     """
 
     return JSONResponse({"data": data, "error": False}, **kwargs)
+
+
+def websocket_response(data: Any) -> dict:
+    """Used to respond to websocket.
+
+    Parameters
+    ----------
+    data : Any
+
+    Returns
+    -------
+    dict
+    """
+
+    return {"data": data}

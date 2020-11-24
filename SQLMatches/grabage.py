@@ -21,39 +21,13 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-import os
-
-from backblaze.bucket.awaiting import AwaitingBucket
-from aiohttp import ClientSession
-from databases import Database
+from asyncio import sleep
 
 
-class Sessions:
-    database: Database
-    aiohttp: ClientSession
-    bucket: AwaitingBucket
+async def handle_queue():
+    await sleep(10)
 
 
-class Config:
-    maps_dir = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)),
-        "maps"
-    )
-    steam_openid_url = "https://steamcommunity.com/openid/login"
-
-    upload_type: bool
-    url: str
-    map_images: str
-    db_engine: str
-    cdn_url: str
-    demo_pathway: str
-    upload_delay: float
-    max_upload_size: int
-    timestamp_format: str
-    ws_loop_time: float
-
-
-class Queue:
-    scoreboard: dict = {}
-    matches: list = []
-    communities: list = []
+TO_SPAWN = [
+    handle_queue
+]

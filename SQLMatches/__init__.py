@@ -33,6 +33,7 @@ from secrets import token_urlsafe
 
 from databases import Database
 from aiohttp import ClientSession
+from aiojobs import create_scheduler
 
 import backblaze
 from starlette.routing import Mount
@@ -45,6 +46,8 @@ from .middlewares import APIAuthentication
 
 from .routes import ROUTES, ERROR_HANDLERS
 from .routes.errors import auth_error
+
+from .grabage import TO_SPAWN
 
 
 __version__ = "0.1.0"
@@ -83,6 +86,7 @@ class SQLMatches(Starlette):
                  upload_delay: float = 0.001,
                  max_upload_size: int = 80000000,
                  timestamp_format: str = "%m/%d/%Y-%H:%M:%S",
+                 ws_loop_time: float = 8.0,
                  **kwargs) -> None:
         """SQLMatches API.
 
@@ -103,6 +107,8 @@ class SQLMatches(Starlette):
         max_upload_size: int
             by default 80000000
         timestamp_format: str
+        ws_loop_time: int
+            How often to check ws connection, by default 8.0
         kwargs
         """
 
@@ -147,6 +153,7 @@ class SQLMatches(Starlette):
         Config.upload_delay = upload_delay
         Config.max_upload_size = max_upload_size
         Config.timestamp_format = timestamp_format
+        Config.ws_loop_time = ws_loop_time
 
         database_url = "://{}:{}@{}:{}/{}?charset=utf8mb4".format(
             database_settings.username,
@@ -216,6 +223,11 @@ class SQLMatches(Starlette):
         if Config.upload_type == B2UploadSettings:
             await self.b2.authorize()
 
+        self.grabage = await create_scheduler()
+
+        for to_spawn in TO_SPAWN:
+            await self.grabage.spawn(to_spawn())
+
     async def _shutdown(self) -> None:
         """Closes any underlying sessions.
         """
@@ -225,3 +237,5 @@ class SQLMatches(Starlette):
 
         if Config.upload_type == B2UploadSettings:
             await self.b2.close()
+
+        await self.grabage.close()

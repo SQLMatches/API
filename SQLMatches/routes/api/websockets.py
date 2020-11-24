@@ -21,39 +21,34 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-import os
+from starlette.endpoints import WebSocketEndpoint
+from starlette.websockets import WebSocket
 
-from backblaze.bucket.awaiting import AwaitingBucket
-from aiohttp import ClientSession
-from databases import Database
+from websockets.exceptions import WebSocketException
 
+from asyncio import sleep
 
-class Sessions:
-    database: Database
-    aiohttp: ClientSession
-    bucket: AwaitingBucket
+from ...resources import Config
+from ...api import websocket_response
 
 
-class Config:
-    maps_dir = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)),
-        "maps"
-    )
-    steam_openid_url = "https://steamcommunity.com/openid/login"
+class WebSocketAPI(WebSocketEndpoint):
+    encoding = "json"
 
-    upload_type: bool
-    url: str
-    map_images: str
-    db_engine: str
-    cdn_url: str
-    demo_pathway: str
-    upload_delay: float
-    max_upload_size: int
-    timestamp_format: str
-    ws_loop_time: float
+    async def on_connect(self, websocket: WebSocket) -> None:
+        await websocket.accept()
 
+        print("Connected")
 
-class Queue:
-    scoreboard: dict = {}
-    matches: list = []
-    communities: list = []
+        if "steam_login" in websocket.auth.scopes:
+            while True:
+                try:
+                    await websocket.send_json(websocket_response({}))
+                except WebSocketException:
+                    break
+                else:
+                    await sleep(Config.ws_loop_time)
+
+        await websocket.close()
+
+        print("Connection closed")

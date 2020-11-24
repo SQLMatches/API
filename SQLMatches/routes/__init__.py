@@ -21,7 +21,7 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-from starlette.routing import Route, Mount
+from starlette.routing import Route, Mount, WebSocketRoute
 from starlette.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException
 
@@ -40,6 +40,7 @@ from .api.matches import (
 from .api.misc import VersionAPI
 from .api.community import CommunityOwnerAPI, CommunityCreateAPI
 from .api.communities import CommunitiesAPI, CommunityMatchesAPI
+from .api.websockets import WebSocketAPI
 from .steam import SteamValidate, SteamLogin, SteamLogout, SteamLoginTest
 from .errors import (
     server_error,
@@ -85,6 +86,7 @@ ROUTES = [
         Mount("/communities", routes=[
             Route("/", CommunitiesAPI),
             Route("/matches/", CommunityMatchesAPI)
-        ])
-    ])
+        ]),
+        WebSocketRoute("/ws/", WebSocketAPI)
+    ]),
 ]
