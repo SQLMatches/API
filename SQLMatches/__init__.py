@@ -82,6 +82,7 @@ class SQLMatches(Starlette):
                  map_images: Dict[str, str] = MAP_IMAGES,
                  upload_delay: float = 0.001,
                  max_upload_size: int = 80000000,
+                 timestamp_format: str = "%m/%d/%Y-%H:%M:%S",
                  **kwargs) -> None:
         """SQLMatches API.
 
@@ -101,6 +102,7 @@ class SQLMatches(Starlette):
             by default 0.1
         max_upload_size: int
             by default 80000000
+        timestamp_format: str
         kwargs
         """
 
@@ -144,6 +146,7 @@ class SQLMatches(Starlette):
         Config.map_images = map_images
         Config.upload_delay = upload_delay
         Config.max_upload_size = max_upload_size
+        Config.timestamp_format = timestamp_format
 
         database_url = "://{}:{}@{}:{}/{}?charset=utf8mb4".format(
             database_settings.username,

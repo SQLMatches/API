@@ -60,25 +60,27 @@ ERROR_HANDLERS = {
 
 
 ROUTES = [
-    Mount("/steam", routes=[
-        Route("/login", SteamLogin),
-        Route("/validate", SteamValidate),
-        Route("/logout", SteamLogout)
-    ]),
-    Mount("/maps/", StaticFiles(directory=Config.maps_dir), name="maps"),
-    Route("/matches/", MatchesAPI),  # Tested - POST @ 0.1.0
-    Mount("/match", routes=[
-        Route("/create/", CreateMatchAPI),  # Tested - POST @ 0.1.0
-        Mount("/{match_id}", routes=[
-            Route("/upload/", DemoUploadAPI),
-            Route("/", MatchAPI),  # Tested - GET, POST, DELETE @ 0.1.0
-            Route("/download/", DownloadPage, name="DownloadPage")
-        ])
-    ]),
-    Route("/version/{version}", VersionAPI),
-    Mount("/community", routes=[
-        Route("/owner/", CommunityOwnerAPI),
-        Route("/create/", CommunityCreateAPI)
-    ]),
-    Route("/communities/", CommunitiesAPI)
+    Mount("/api", routes=[
+        Mount("/steam", routes=[
+            Route("/login", SteamLogin),
+            Route("/validate", SteamValidate),
+            Route("/logout", SteamLogout)
+        ]),
+        Mount("/maps/", StaticFiles(directory=Config.maps_dir), name="maps"),
+        Route("/matches/", MatchesAPI),  # Tested - POST @ 0.1.0
+        Mount("/match", routes=[
+            Route("/create/", CreateMatchAPI),  # Tested - POST @ 0.1.0
+            Mount("/{match_id}", routes=[
+                Route("/upload/", DemoUploadAPI),
+                Route("/", MatchAPI),  # Tested - GET, POST, DELETE @ 0.1.0
+                Route("/download/", DownloadPage, name="DownloadPage")
+            ])
+        ]),
+        Route("/version/{version}", VersionAPI),
+        Mount("/community", routes=[
+            Route("/owner/", CommunityOwnerAPI),
+            Route("/create/", CommunityCreateAPI)
+        ]),
+        Route("/communities/", CommunitiesAPI)
+    ])
 ]

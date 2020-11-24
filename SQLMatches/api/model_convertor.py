@@ -23,6 +23,7 @@ DEALINGS IN THE SOFTWARE.
 from itertools import chain
 
 from ..community.models import CommunityModel, MatchModel, ScoreboardModel
+from ..resources import Config
 
 
 def community_to_dict(model: CommunityModel) -> dict:
@@ -41,7 +42,7 @@ def community_to_dict(model: CommunityModel) -> dict:
         "master_api_key": model.master_api_key,
         "owner_id": model.owner_id,
         "disabled": model.disabled,
-        "timestamp": model.timestamp
+        "timestamp": model.timestamp.strftime(Config.timestamp_format)
     }
 
 
@@ -59,7 +60,7 @@ def match_to_dict(model: MatchModel) -> dict:
 
     return {
         "match_id": model.match_id,
-        "timestamp": model.timestamp.strftime("%m/%d/%Y-%H:%M:%S"),
+        "timestamp": model.timestamp.strftime(Config.timestamp_format),
         "status": model.status,
         "demo_status": model.demo_status,
         "map": model.map,

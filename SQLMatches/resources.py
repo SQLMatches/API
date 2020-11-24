@@ -49,3 +49,4 @@ class Config:
     demo_pathway: str
     upload_delay: float
     max_upload_size: int
+    timestamp_format: str

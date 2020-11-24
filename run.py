@@ -36,7 +36,7 @@ app = SQLMatches(
         database="sqlmatches"
     ),
     upload_settings=LocalUploadSettings(),
-    friendly_url="http://127.0.0.1:8000"
+    friendly_url="http://localhost/api"
 )
 
 
