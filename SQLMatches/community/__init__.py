@@ -192,7 +192,8 @@ class Community:
             scoreboard_total_table.c.team_1_score,
             scoreboard_total_table.c.team_2_score,
             scoreboard_total_table.c.team_1_side,
-            scoreboard_total_table.c.team_2_side
+            scoreboard_total_table.c.team_2_side,
+            scoreboard_total_table.c.community_name
         ])
 
         if search:

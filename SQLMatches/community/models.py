@@ -52,6 +52,7 @@ class MatchModel:
             Config.map_images[self.map] if self.map in Config.map_images
             else "invalid.png"
         )
+        self.community_name = data["community_name"]
 
 
 class ScoreboardPlayerModel:

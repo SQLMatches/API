@@ -248,6 +248,7 @@ class Match:
             scoreboard_total_table.c.team_2_score,
             scoreboard_total_table.c.team_1_side,
             scoreboard_total_table.c.team_2_side,
+            scoreboard_total_table.c.community_name,
             user_table.c.steam_id,
             user_table.c.name,
             scoreboard_table.c.team,
@@ -300,7 +301,8 @@ class Match:
                     "team_1_score": row["team_1_score"],
                     "team_2_score": row["team_2_score"],
                     "team_1_side": row["team_1_side"],
-                    "team_2_side": row["team_2_side"]
+                    "team_2_side": row["team_2_side"],
+                    "community_name": row["community_name"]
                 }
 
             team_append = team_1_append if row["team"] == 0 else team_2_append
