@@ -29,7 +29,7 @@ from .base import TestBase
 class TestMatchAPI(TestBase, asynctest.TestCase):
     def test_create_and_update_and_end_match(self) -> None:
         resp = self.client.post(
-            "/match/create/",
+            "/api/match/create/",
             json={
                 "team_1_name": "Ward",
                 "team_2_name": "Doggy",
@@ -47,7 +47,7 @@ class TestMatchAPI(TestBase, asynctest.TestCase):
         match_id = (resp.json())["data"]["match_id"]
 
         resp = self.client.post(
-            "/match/{}/".format(match_id),
+            "/api/match/{}/".format(match_id),
             json={
                 "team_1_score": 15,
                 "team_2_score": 8,
@@ -92,7 +92,7 @@ class TestMatchAPI(TestBase, asynctest.TestCase):
         self.assertEqual(resp.status_code, 200, "Match updated")
 
         resp = self.client.post(
-            "/match/{}/".format(match_id),
+            "/api/match/{}/".format(match_id),
             json={
                 "team_1_score": 16,
                 "team_2_score": 8,
@@ -138,7 +138,7 @@ class TestMatchAPI(TestBase, asynctest.TestCase):
         self.assertEqual(resp.status_code, 200, "Match ended")
 
         resp = self.client.get(
-            "/match/{}/".format(match_id),
+            "/api/match/{}/".format(match_id),
             headers=self.basic_auth
         )
 
@@ -146,7 +146,7 @@ class TestMatchAPI(TestBase, asynctest.TestCase):
 
     def test_end_match(self) -> None:
         resp = self.client.post(
-            "/match/create/",
+            "/api/match/create/",
             json={
                 "team_1_name": "Ward",
                 "team_2_name": "Doggy",
@@ -164,7 +164,7 @@ class TestMatchAPI(TestBase, asynctest.TestCase):
         match_id = (resp.json())["data"]["match_id"]
 
         resp = self.client.delete(
-            "match/{}/".format(match_id),
+            "/api/match/{}/".format(match_id),
             headers=self.basic_auth
         )
 
@@ -172,7 +172,7 @@ class TestMatchAPI(TestBase, asynctest.TestCase):
 
     def test_matches_list(self) -> None:
         resp = self.client.post(
-            "/matches/",
+            "/api/matches/",
             headers=self.basic_auth
         )
 
