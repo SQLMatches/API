@@ -39,7 +39,11 @@ from .api.matches import (
 )
 from .api.misc import VersionAPI
 from .api.community import CommunityOwnerAPI, CommunityCreateAPI
-from .api.communities import CommunitiesAPI, CommunityMatchesAPI
+from .api.communities import (
+    CommunitiesAPI,
+    CommunityMatchesAPI,
+    MatchesCommunitiesAPI
+)
 from .api.websockets import CommunityWebsocketAPI
 from .steam import SteamValidate, SteamLogin, SteamLogout, SteamLoginTest
 from .errors import (
@@ -86,6 +90,7 @@ ROUTES = [
         Mount("/communities", routes=[
             Route("/", CommunitiesAPI),
             Route("/matches/", CommunityMatchesAPI),
+            Route("/all/", MatchesCommunitiesAPI)
         ]),
         Mount("/ws", routes=[
             WebSocketRoute("/communities/", CommunityWebsocketAPI)

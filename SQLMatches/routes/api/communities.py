@@ -42,6 +42,18 @@ class CommunitiesAPI(HTTPEndpoint):
     @requires("steam_login")
     @LIMITER.limit("30/minute")
     async def post(self, request: Request, parameters: dict) -> response:
+        """Used to get communities.
+
+        Parameters
+        ----------
+        request : Request
+        parameters : dict
+
+        Returns
+        -------
+        response
+        """
+
         return response([
             community_to_dict(community) async for community, _ in
             communities(**parameters)
@@ -54,7 +66,46 @@ class CommunityMatchesAPI(HTTPEndpoint):
     @requires("steam_login")
     @LIMITER.limit("30/minute")
     async def post(self, request: Request, parameters: dict) -> response:
+        """Used to get matches outside of community context.
+
+        Parameters
+        ----------
+        request : Request
+        parameters : dict
+
+        Returns
+        -------
+        """
+
         return response([
             match_to_dict(match) async for match, _ in
             matches(**parameters)
         ])
+
+
+class MatchesCommunitiesAPI(HTTPEndpoint):
+    @requires("steam_login")
+    @LIMITER.limit("30/minute")
+    async def get(self, request: Request) -> response:
+        """Used to get communities & matches in one response,
+           ideally I'd be using GraphQL but this is the only
+           time I need to combine responses.
+
+        Parameters
+        ----------
+        request : Request
+
+        Returns
+        -------
+        response
+        """
+
+        return response({
+            "matches": [
+                match_to_dict(match) async for match, _ in matches()
+            ],
+            "communities": [
+                community_to_dict(community) async for community, _ in
+                communities()
+            ]
+        })
