@@ -24,7 +24,6 @@ DEALINGS IN THE SOFTWARE.
 from starlette.endpoints import HTTPEndpoint
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
-from starlette.authentication import requires
 
 from re import search
 from asyncio import sleep
@@ -115,9 +114,3 @@ class SteamLogout(HTTPEndpoint):
         request.session.pop("steam_id", None)
 
         return RedirectResponse("/")
-
-
-class SteamLoginTest(HTTPEndpoint):
-    @requires("steam_login")
-    async def get(self, request: Request) -> response:
-        return response()

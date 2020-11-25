@@ -47,7 +47,7 @@ from .api.communities import (
     MatchesCommunitiesAPI
 )
 from .api.websockets import CommunityWebsocketAPI
-from .steam import SteamValidate, SteamLogin, SteamLogout, SteamLoginTest
+from .steam import SteamValidate, SteamLogin, SteamLogout
 from .errors import (
     server_error,
     payload_error,
@@ -71,8 +71,7 @@ ROUTES = [
         Mount("/steam", routes=[
             Route("/login", SteamLogin),
             Route("/validate", SteamValidate),
-            Route("/logout", SteamLogout),
-            Route("/test", SteamLoginTest)
+            Route("/logout", SteamLogout)
         ]),
         Mount("/maps/", StaticFiles(directory=Config.maps_dir), name="maps"),
         Route("/matches/", MatchesAPI),  # Tested - POST @ 0.1.0
