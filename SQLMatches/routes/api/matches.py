@@ -36,7 +36,7 @@ from ...api.model_convertor import scoreboard_to_dict, match_to_dict
 
 from ...demos import Demo
 
-from ...community.exceptions import InvalidMatchID, DemoAlreadyUploaded
+from ...exceptions import InvalidMatchID, DemoAlreadyUploaded
 
 
 class PlayersSchema(Schema):

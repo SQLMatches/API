@@ -38,7 +38,7 @@ from ..tables import (
     api_key_table
 )
 
-from .exceptions import (
+from ..exceptions import (
     CommunityTaken,
     AlreadyCommunity,
     InvalidCommunity,

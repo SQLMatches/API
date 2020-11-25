@@ -31,7 +31,7 @@ from webargs_starlette import use_args
 from .rate_limiter import LIMITER
 
 from ...community import create_community
-from ...community.exceptions import InvalidCommunity
+from ...exceptions import InvalidCommunity
 
 from ...api import response
 from ...api.model_convertor import community_to_dict

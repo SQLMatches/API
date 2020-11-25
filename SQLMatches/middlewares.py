@@ -38,7 +38,7 @@ from .community import (
     api_key_to_community,
     get_community_from_owner
 )
-from .community.exceptions import InvalidAPIKey, NoOwnership
+from .exceptions import InvalidAPIKey, NoOwnership
 
 
 AUTH_ERROR = "Invalid basic auth credentials"

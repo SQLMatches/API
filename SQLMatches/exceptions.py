@@ -21,8 +21,73 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-class UnSupportedEngine(Exception):
+class SQLMatchesException(Exception):
+    """Base Exception for SQLMatches.
+    """
+
+    def __init__(self, msg="SQLMatches Exception", *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)
+
+
+class UnSupportedEngine(SQLMatchesException):
     """Raised when the database engine isn't supported.
     """
 
-    pass
+    def __init__(self, msg="SQL Engine not supported", *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)
+
+
+class CommunityTaken(SQLMatchesException):
+    """Raised when community name is taken.
+    """
+
+    def __init__(self, msg="Community name taken", *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)
+
+
+class AlreadyCommunity(SQLMatchesException):
+    """Raised when user already owns a community.
+    """
+
+    def __init__(self, msg="User already owns a community", *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)
+
+
+class InvalidCommunity(SQLMatchesException):
+    """Raised when community ID doesn't exist.
+    """
+
+    def __init__(self, msg="Invalid Community ID", *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)
+
+
+class NoOwnership(SQLMatchesException):
+    """Raised when steam id doesn't own any communties.
+    """
+
+    def __init__(self, msg="User owns no communities", *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)
+
+
+class InvalidMatchID(SQLMatchesException):
+    """Raised when match ID is invalid.
+    """
+
+    def __init__(self, msg="Invalid Match ID", *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)
+
+
+class InvalidAPIKey(SQLMatchesException):
+    """Raised when API key is invalid.
+    """
+
+    def __init__(self, msg="Invalid API Key", *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)
+
+
+class DemoAlreadyUploaded(SQLMatchesException):
+    """Raised when a demo has already been uploaded.
+    """
+
+    def __init__(self, msg="Demo already uploaded", *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)

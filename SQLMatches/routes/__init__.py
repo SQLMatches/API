@@ -29,6 +29,8 @@ from slowapi.errors import RateLimitExceeded
 
 from webargs_starlette import WebargsHTTPException
 
+from ..exceptions import SQLMatchesException
+
 # Routes
 from .download import DownloadPage
 from .api.matches import (
@@ -60,7 +62,7 @@ ERROR_HANDLERS = {
     WebargsHTTPException: payload_error,
     RateLimitExceeded: rate_limted_error,
     HTTPException: server_error,
-    Exception: internal_error
+    SQLMatchesException: internal_error
 }
 
 

@@ -34,7 +34,7 @@ from ..tables import scoreboard_total_table, scoreboard_table, user_table
 from ..resources import Sessions
 
 from .models import ScoreboardModel
-from .exceptions import InvalidMatchID
+from ..exceptions import InvalidMatchID
 
 
 class Match:
