@@ -29,8 +29,6 @@ from re import search
 from asyncio import sleep
 from urllib.parse import urlencode
 
-from ..api import response
-
 from ..resources import Config, Sessions
 
 
