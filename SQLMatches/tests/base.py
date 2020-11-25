@@ -55,18 +55,18 @@ class TestBase:
             sqlmatches
         )
 
-        USER_ID = 76561198077228213
+        STEAM_ID = "76561198077228213"
         COMMUNITY_NAME = "TestLeague"
 
         try:
-            await create_user(USER_ID, "Ward")
+            await create_user(STEAM_ID, "Ward")
         except UserExists:
             pass
 
         try:
             community, _ = await create_community(
                 community_name=COMMUNITY_NAME,
-                steam_id=USER_ID
+                steam_id=STEAM_ID
             )
         except (CommunityTaken, AlreadyCommunity):
             community = await Community(community_name=COMMUNITY_NAME).get()

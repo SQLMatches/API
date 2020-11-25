@@ -22,7 +22,12 @@ DEALINGS IN THE SOFTWARE.
 
 from itertools import chain
 
-from ..community.models import CommunityModel, MatchModel, ScoreboardModel
+from ..community.models import (
+    CommunityModel,
+    MatchModel,
+    ScoreboardModel,
+    ProfileModel
+)
 from ..resources import Config
 
 
@@ -121,3 +126,32 @@ def scoreboard_to_dict(model: ScoreboardModel) -> dict:
         })
 
     return scoreboard_data
+
+
+def profile_to_dict(model: ProfileModel) -> dict:
+    """Converts ProfileModel to dict.
+
+    Parameters
+    ----------
+    model : ProfileModel
+
+    Returns
+    -------
+    dict
+    """
+
+    return {
+        "name": model.name,
+        "steam_id": model.steam_id,
+        "kills": model.kills,
+        "headshots": model.headshots,
+        "assists": model.assists,
+        "deaths": model.deaths,
+        "kdr": model.kdr,
+        "hs_percentage": model.hs_percentage,
+        "hit_percentage": model.hit_percentage,
+        "shots_fired": model.shots_fired,
+        "shots_hit": model.shots_hit,
+        "mvps": model.mvps,
+        "timestamp": model.timestamp.strftime(Config.timestamp_format)
+    }

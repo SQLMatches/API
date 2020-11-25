@@ -35,7 +35,8 @@ from ..tables import (
     scoreboard_total_table,
     scoreboard_table,
     user_table,
-    api_key_table
+    api_key_table,
+    statistic_table
 )
 
 from ..exceptions import (
@@ -43,9 +44,10 @@ from ..exceptions import (
     AlreadyCommunity,
     InvalidCommunity,
     NoOwnership,
-    InvalidAPIKey
+    InvalidAPIKey,
+    InvalidSteamID
 )
-from .models import CommunityModel, MatchModel
+from .models import CommunityModel, MatchModel, ProfileModel
 from .match import Match
 
 
@@ -60,6 +62,51 @@ class Community:
         """
 
         self.community_name = community_name
+
+    async def profile(self, steam_id: str) -> ProfileModel:
+        """Get user profile.
+
+        Parameters
+        ----------
+        steam_id : str
+
+        Returns
+        -------
+        ProfileModel
+
+        Raises
+        ------
+        InvalidSteamID
+        """
+
+        query = select([
+            user_table.c.name,
+            user_table.c.timestamp,
+            statistic_table.c.steam_id,
+            statistic_table.c.kills,
+            statistic_table.c.headshots,
+            statistic_table.c.assists,
+            statistic_table.c.deaths,
+            statistic_table.c.shots_fired,
+            statistic_table.c.shots_hit,
+            statistic_table.c.mvps
+        ]).select_from(
+            statistic_table.join(
+                user_table,
+                user_table.c.steam_id == statistic_table.c.steam_id
+            )
+        ).where(
+            and_(
+                statistic_table.c.steam_id == steam_id,
+                statistic_table.c.community_name == self.community_name
+            )
+        )
+
+        row = await Sessions.database.fetch_one(query=query)
+        if row:
+            return ProfileModel(row)
+        else:
+            raise InvalidSteamID()
 
     async def create_match(self, team_1_name: str, team_2_name: str,
                            team_1_side: int, team_2_side: int,

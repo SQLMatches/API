@@ -91,3 +91,11 @@ class DemoAlreadyUploaded(SQLMatchesException):
 
     def __init__(self, msg="Demo already uploaded", *args, **kwargs):
         super().__init__(msg, *args, **kwargs)
+
+
+class InvalidSteamID(SQLMatchesException):
+    """Raised when Steam ID isn't valid
+    """
+
+    def __init__(self, msg="Invalid Steam ID", *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)

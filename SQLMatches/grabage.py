@@ -27,8 +27,6 @@ from .resources import WebsocketQueue, Config
 
 
 async def handle_queue():
-    print("Start queue")
-
     while True:
         old_scoreboards = dict(WebsocketQueue.scoreboards)
         old_matches = list(WebsocketQueue.matches)

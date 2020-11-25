@@ -55,6 +55,28 @@ class MatchModel:
         self.community_name = data["community_name"]
 
 
+class ProfileModel:
+    def __init__(self, data) -> None:
+        self.name = data["name"]
+        self.steam_id = data["steam_id"]
+        self.kills = data["kills"]
+        self.headshots = data["headshots"]
+        self.assists = data["assists"]
+        self.deaths = data["deaths"]
+        self.kdr = round(data["kills"] / data["deaths"], 2) \
+            if data["kills"] > 0 and data["deaths"] > 0 else 0.00
+        self.hs_percentage = round(
+            (data["headshots"] / data["kills"]) * 100, 2) \
+            if data["kills"] > 0 and data["headshots"] > 0 else 0.00
+        self.hit_percentage = round(
+            (data["shots_hit"] / data["shots_fired"]) * 100, 2) \
+            if data["shots_fired"] > 0 and data["shots_hit"] > 0 else 0.00
+        self.shots_fired = data["shots_fired"]
+        self.shots_hit = data["shots_hit"]
+        self.mvps = data["mvps"]
+        self.timestamp = data["timestamp"]
+
+
 class ScoreboardPlayerModel:
     def __init__(self, data) -> None:
         self.name = data["name"]
