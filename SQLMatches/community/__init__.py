@@ -257,7 +257,8 @@ class Community:
                 )
             ).where(
                 and_(
-                    scoreboard_total_table.c.name == self.community_name,
+                    scoreboard_total_table.c.community_name ==
+                    self.community_name,
                     or_(
                         scoreboard_total_table.c.match_id == search,
                         scoreboard_total_table.c.map.like(like_search),
@@ -277,7 +278,7 @@ class Community:
                 )
             ).where(
                 scoreboard_total_table.c.community_name == self.community_name,
-            )
+            ).distinct()
 
         query = query.order_by(
             scoreboard_total_table.c.timestamp.desc() if desc

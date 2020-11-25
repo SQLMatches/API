@@ -40,12 +40,16 @@ from .api.matches import (
     MatchesAPI
 )
 from .api.misc import VersionAPI
-from .api.community import CommunityOwnerAPI, CommunityCreateAPI
+from .api.community import (
+    CommunityOwnerAPI,
+    CommunityCreateAPI
+)
 from .api.communities import (
     CommunitiesAPI,
     CommunityMatchesAPI,
     MatchesCommunitiesAPI
 )
+from .api.profile import ProfileAPI
 from .api.websockets import CommunityWebsocketAPI
 from .steam import SteamValidate, SteamLogin, SteamLogout
 from .errors import (
@@ -83,10 +87,11 @@ ROUTES = [
                 Route("/download/", DownloadPage, name="DownloadPage")
             ])
         ]),
+        Route("/profile/{steam_id}/", ProfileAPI),
         Route("/version/{version}", VersionAPI),
         Mount("/community", routes=[
             Route("/owner/", CommunityOwnerAPI),
-            Route("/", CommunityCreateAPI)
+            Route("/", CommunityCreateAPI),
         ]),
         Mount("/communities", routes=[
             Route("/", CommunitiesAPI),

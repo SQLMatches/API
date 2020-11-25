@@ -153,7 +153,7 @@ async def matches(search: str = None,
                 scoreboard_table.c.match_id ==
                 scoreboard_total_table.c.match_id
             )
-        )
+        ).distinct()
 
     query = query.order_by(
         scoreboard_total_table.c.timestamp.desc() if desc
