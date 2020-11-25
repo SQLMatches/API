@@ -87,7 +87,7 @@ ROUTES = [
         Route("/version/{version}", VersionAPI),
         Mount("/community", routes=[
             Route("/owner/", CommunityOwnerAPI),
-            Route("/create/", CommunityCreateAPI)
+            Route("/", CommunityCreateAPI)
         ]),
         Mount("/communities", routes=[
             Route("/", CommunitiesAPI),

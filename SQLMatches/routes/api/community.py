@@ -30,7 +30,7 @@ from webargs_starlette import use_args
 
 from .rate_limiter import LIMITER
 
-from ...community import create_community
+from ...community import create_community, get_community_from_owner
 from ...exceptions import InvalidCommunity
 
 from ...api import response
@@ -110,3 +110,23 @@ class CommunityCreateAPI(HTTPEndpoint):
         WebsocketQueue.communities.append(community_dict)
 
         return response(community_dict)
+
+    @requires("steam_login")
+    @LIMITER.limit("30/minute")
+    async def get(self, request: Request) -> response:
+        """Used to valid if user owns a community.
+
+        Parameters
+        ----------
+        request : Request
+
+        Returns
+        -------
+        response
+        """
+
+        return response({
+            "community_name": (await get_community_from_owner(
+                request.session["steam_id"]
+            )).community_name
+        })
