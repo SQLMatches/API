@@ -26,7 +26,7 @@ from sqlalchemy.dialects.postgresql import insert as postgresql_insert
 
 from typing import Any
 
-from .tables import scoreboard_table, user_table
+from .tables import scoreboard_table, user_table, statistic_table
 from .resources import Config
 
 
@@ -92,3 +92,42 @@ def on_user_conflict() -> Any:
         )
     else:
         return user_table.insert
+
+
+def on_statistic_conflict() -> Any:
+    """Used for updating a statistics on conflict.
+    """
+
+    if Config.db_engine == "mysql":
+        query_insert = mysql_insert(statistic_table)
+        return query_insert.on_duplicate_key_update(
+            kills=statistic_table.c.kills + query_insert.inserted.kills,
+            headshots=statistic_table.c.headshots +
+            query_insert.inserted.headshots,
+            assists=statistic_table.c.assists + query_insert.inserted.assists,
+            deaths=statistic_table.c.deaths + query_insert.inserted.deaths,
+            shots_fired=statistic_table.c.shots_fired +
+            query_insert.inserted.shots_fired,
+            shots_hit=statistic_table.c.shots_hit +
+            query_insert.inserted.shots_hit,
+            mvps=statistic_table.c.mvps + query_insert.inserted.mvps
+        )
+    elif Config.db_engine == "psycopg2":
+        query_insert = postgresql_insert(statistic_table)
+        return query_insert.on_conflict_do_update(
+            set_=dict(
+                kills=statistic_table.c.kills + query_insert.inserted.kills,
+                headshots=statistic_table.c.headshots +
+                query_insert.inserted.headshots,
+                assists=statistic_table.c.assists +
+                query_insert.inserted.assists,
+                deaths=statistic_table.c.deaths + query_insert.inserted.deaths,
+                shots_fired=statistic_table.c.shots_fired +
+                query_insert.inserted.shots_fired,
+                shots_hit=statistic_table.c.shots_hit +
+                query_insert.inserted.shots_hit,
+                mvps=statistic_table.c.mvps + query_insert.inserted.mvps
+            )
+        )
+    else:
+        return statistic_table.insert

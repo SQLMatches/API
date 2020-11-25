@@ -29,7 +29,11 @@ from sqlalchemy.sql import select, and_
 
 from asyncio import sleep
 
-from ..on_conflict import on_scoreboard_conflict, on_user_conflict
+from ..on_conflict import (
+    on_scoreboard_conflict,
+    on_user_conflict,
+    on_statistic_conflict
+)
 from ..tables import scoreboard_total_table, scoreboard_table, user_table
 from ..resources import Sessions
 
@@ -167,6 +171,9 @@ class Match:
                 users = []
                 users_append = users.append
 
+                statistics = []
+                statistics_append = statistics.append
+
                 now = datetime.now()
 
                 for player in players:
@@ -188,9 +195,21 @@ class Match:
                     })
 
                     users_append({
-                        "name": player["name"],
                         "steam_id": player["steam_id"],
+                        "name": player["name"],
                         "timestamp": now
+                    })
+
+                    statistics_append({
+                        "community_name": self.community_name,
+                        "steam_id": player["steam_id"],
+                        "kills": player["kills"],
+                        "headshots": player["headshots"],
+                        "assists": player["assists"],
+                        "deaths": player["deaths"],
+                        "shots_fired": player["shots_fired"],
+                        "shots_hit": player["shots_hit"],
+                        "mvps": player["mvps"]
                     })
 
                     await sleep(0.000001)
@@ -203,6 +222,11 @@ class Match:
                 await Sessions.database.execute_many(
                     query=on_scoreboard_conflict(),
                     values=scoreboard_players
+                )
+
+                await Sessions.database.execute_many(
+                    query=on_statistic_conflict(),
+                    values=statistics
                 )
 
     async def end(self) -> None:

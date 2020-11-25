@@ -26,7 +26,7 @@ from .. import SQLMatches
 from ..settings import DatabaseSettings, LocalUploadSettings
 
 from ..community import create_community, Community
-from ..community.exceptions import AlreadyCommunity, CommunityTaken
+from ..exceptions import AlreadyCommunity, CommunityTaken
 
 from ..user import create_user
 from ..user.exceptions import UserExists

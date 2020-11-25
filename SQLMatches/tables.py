@@ -112,6 +112,66 @@ community_table = Table(
 )
 
 
+statistic_table = Table(
+    "statistic",
+    metadata,
+    Column(
+        "steam_id",
+        String(length=64),
+        ForeignKey("user.steam_id"),
+        primary_key=True
+    ),
+    Column(
+        "community_name",
+        String(length=32),
+        ForeignKey("community.community_name"),
+        primary_key=True
+    ),
+    Column(
+        "kills",
+        Integer,
+        default=0
+    ),
+    Column(
+        "headshots",
+        Integer,
+        default=0
+    ),
+    Column(
+        "assists",
+        Integer,
+        default=0
+    ),
+    Column(
+        "deaths",
+        Integer,
+        default=0
+    ),
+    Column(
+        "shots_fired",
+        Integer,
+        default=0
+    ),
+    Column(
+        "shots_hit",
+        Integer,
+        default=0
+    ),
+    Column(
+        "mvps",
+        Integer,
+        default=0
+    ),
+    PrimaryKeyConstraint(
+        "steam_id",
+        "community_name",
+        sqlite_on_conflict="REPLACE"
+    ),
+    mysql_engine="InnoDB",
+    mysql_charset="utf8mb4"
+)
+
+
 api_key_table = Table(
     "api_key",
     metadata,
