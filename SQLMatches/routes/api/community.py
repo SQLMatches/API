@@ -31,7 +31,7 @@ from webargs_starlette import use_args
 from .rate_limiter import LIMITER
 
 from ...community import create_community, get_community_from_owner
-from ...exceptions import InvalidCommunity
+from ...exceptions import InvalidCommunity, NoOwnership
 
 from ...api import response
 from ...api.model_convertor import community_to_dict
@@ -125,8 +125,11 @@ class CommunityCreateAPI(HTTPEndpoint):
         response
         """
 
-        return response({
-            "community_name": (await get_community_from_owner(
-                request.session["steam_id"]
-            )).community_name
-        })
+        try:
+            return response({
+                "community_name": (await get_community_from_owner(
+                    request.session["steam_id"]
+                )).community_name
+            })
+        except NoOwnership:
+            return response({"community_name": None})
