@@ -126,10 +126,13 @@ class CommunityCreateAPI(HTTPEndpoint):
         """
 
         try:
-            return response({
-                "community_name": (await get_community_from_owner(
-                    request.session["steam_id"]
-                )).community_name
-            })
+            community_name = (await get_community_from_owner(
+                request.session["steam_id"]
+            )).community_name
         except NoOwnership:
-            return response({"community_name": None})
+            community_name = None
+
+        return response({
+            "community_name": community_name,
+            "steam_id": request.session["steam_id"]
+        })
