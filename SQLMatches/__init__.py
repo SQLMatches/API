@@ -93,6 +93,7 @@ class SQLMatches(Starlette):
                  upload_delay: float = 0.00001,
                  free_upload_size: float = 50.0,
                  max_upload_size: float = 100.0,
+                 cost_per_mb: float = 0.15,
                  timestamp_format: str = "%m/%d/%Y-%H:%M:%S",
                  ws_loop_time: float = 8.0,
                  community_types: List[str] = COMMUNITY_TYPES,
@@ -166,6 +167,7 @@ class SQLMatches(Starlette):
         Config.upload_delay = upload_delay
         Config.free_upload_size = free_upload_size
         Config.max_upload_size = max_upload_size
+        Config.cost_per_mb = cost_per_mb
         Config.timestamp_format = timestamp_format
         Config.ws_loop_time = ws_loop_time
 

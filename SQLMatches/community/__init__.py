@@ -499,7 +499,11 @@ async def create_community(steam_id: str, community_name: str,
         timestamp=now,
         community_type_id=community_type_id,
         max_upload=max_upload,
-        paid=max_upload == Config.free_upload_size
+        paid=max_upload == Config.free_upload_size,
+        monthly_cost=round(
+            (max_upload - Config.free_upload_size) * Config.cost_per_mb,
+            2
+        )
     )
 
     try:

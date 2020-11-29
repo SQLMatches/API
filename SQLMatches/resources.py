@@ -51,6 +51,7 @@ class Config:
     upload_delay: float
     free_upload_size: float
     max_upload_size: float
+    cost_per_mb: float
     timestamp_format: str
     ws_loop_time: float
     # Type string, type ID

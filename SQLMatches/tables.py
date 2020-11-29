@@ -132,13 +132,15 @@ community_table = Table(
     ),
     Column(
         "max_upload",
-        Float,
-        nullable=True
+        Float
     ),
     Column(
         "paid",
-        Boolean,
-        nullable=True
+        Boolean
+    ),
+    Column(
+        "monthly_cost",
+        Float
     ),
     mysql_engine="InnoDB",
     mysql_charset="utf8mb4"
