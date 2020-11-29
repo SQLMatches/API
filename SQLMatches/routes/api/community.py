@@ -89,6 +89,7 @@ class CommunityOwnerAPI(HTTPEndpoint):
 class CommunityCreateAPI(HTTPEndpoint):
     @use_args({"community_name": fields.Str(required=True, max=32, min=4),
                "community_type": fields.Str(),
+               "max_upload": fields.Float(),
                "demos": fields.Bool()})
     @requires("steam_login")
     @LIMITER.limit("10/minute")

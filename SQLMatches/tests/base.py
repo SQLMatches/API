@@ -26,10 +26,9 @@ from .. import SQLMatches, COMMUNITY_TYPES
 from ..settings import DatabaseSettings, LocalUploadSettings
 
 from ..community import create_community, Community
-from ..exceptions import AlreadyCommunity, CommunityTaken
+from ..exceptions import AlreadyCommunity, CommunityTaken, UserExists
 
 from ..user import create_user
-from ..user.exceptions import UserExists
 
 from starlette.testclient import TestClient
 

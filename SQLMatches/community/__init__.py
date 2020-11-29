@@ -41,14 +41,18 @@ from ..tables import (
     statistic_table
 )
 
+from ..user import create_user
+
 from ..exceptions import (
     CommunityTaken,
     AlreadyCommunity,
     InvalidCommunity,
-    InvalidCommunityName, InvalidCommunityType,
+    InvalidCommunityName,
+    InvalidCommunityType,
     NoOwnership,
     InvalidAPIKey,
-    InvalidSteamID
+    InvalidSteamID,
+    UserExists
 )
 from .models import CommunityModel, MatchModel, ProfileModel
 from .match import Match
@@ -423,7 +427,8 @@ async def owner_exists(steam_id: str) -> bool:
 
 async def create_community(steam_id: str, community_name: str,
                            disabled: bool = False, demos: bool = True,
-                           community_type: str = None
+                           community_type: str = None,
+                           max_upload: float = 50.0
                            ) -> Tuple[CommunityModel, Community]:
     """Creates a community.
 
@@ -438,6 +443,8 @@ async def create_community(steam_id: str, community_name: str,
     community_type: str
         Community type str
         ["personal", "community", "team", "organization"]
+    max_upload: float
+        Defaults to 50.0
 
     Returns
     -------
@@ -471,6 +478,11 @@ async def create_community(steam_id: str, community_name: str,
     if await owner_exists(steam_id):
         raise AlreadyCommunity()
 
+    try:
+        await create_user(steam_id, "Unknown")
+    except UserExists:
+        pass
+
     now = datetime.now()
 
     query = community_table.insert().values(
@@ -479,7 +491,9 @@ async def create_community(steam_id: str, community_name: str,
         disabled=disabled,
         demos=demos,
         timestamp=now,
-        community_type_id=community_type_id
+        community_type_id=community_type_id,
+        max_upload=max_upload,
+        paid=max_upload <= Config.max_upload_size / 1000000
     )
 
     try:

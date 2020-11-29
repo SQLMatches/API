@@ -26,7 +26,7 @@ from datetime import datetime
 from ..tables import user_table
 from ..resources import Sessions
 
-from .exceptions import UserExists
+from ..exceptions import UserExists
 from .models import UserModel
 
 
@@ -41,6 +41,10 @@ async def create_user(steam_id: int, name: str) -> UserModel:
     Returns
     -------
     UserModel
+
+    Raises
+    ------
+    UserExists
     """
 
     now = datetime.now()

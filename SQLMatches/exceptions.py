@@ -116,3 +116,11 @@ class InvalidCommunityType(SQLMatchesException):
 
     def __init__(self, msg="Commany type invalid", *args, **kwargs):
         super().__init__(msg, *args, **kwargs)
+
+
+class UserExists(SQLMatchesException):
+    """Raised when user exists.
+    """
+
+    def __init__(self, msg="User exists", *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)

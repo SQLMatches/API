@@ -91,7 +91,7 @@ class SQLMatches(Starlette):
                  secret_key: str = token_urlsafe(),
                  map_images: Dict[str, str] = MAP_IMAGES,
                  upload_delay: float = 0.001,
-                 max_upload_size: int = 80000000,
+                 max_upload_size: int = 50000000,
                  timestamp_format: str = "%m/%d/%Y-%H:%M:%S",
                  ws_loop_time: float = 8.0,
                  community_types: List[str] = COMMUNITY_TYPES,
@@ -113,7 +113,7 @@ class SQLMatches(Starlette):
         upload_delay: float
             by default 0.1
         max_upload_size: int
-            by default 80000000
+            by default 50000000
         timestamp_format: str
         ws_loop_time: int
             How often to check ws connection, by default 8.0

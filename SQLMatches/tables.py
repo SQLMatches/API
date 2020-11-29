@@ -36,6 +36,8 @@ from sqlalchemy import (
 )
 from datetime import datetime
 
+from sqlalchemy.sql.sqltypes import Float
+
 
 metadata = MetaData()
 
@@ -127,6 +129,16 @@ community_table = Table(
         "demos",
         Boolean,
         default=False
+    ),
+    Column(
+        "max_upload",
+        Float,
+        nullable=True
+    ),
+    Column(
+        "paid",
+        Boolean,
+        nullable=True
     ),
     mysql_engine="InnoDB",
     mysql_charset="utf8mb4"
