@@ -75,7 +75,8 @@ class Demo:
 
                 await asyncio.sleep(Config.upload_delay)
 
-            if total_size > Config.max_upload_size or total_size == 0:
+            if (total_size == 0 or
+                    total_size * 1000000 > Config.max_upload_size):
                 await f.truncate()
                 return False
             else:
@@ -118,7 +119,8 @@ class Demo:
             await parts.data(chunked)
             total_size += len(chunked)
 
-        if total_size > Config.max_upload_size or total_size == 0:
+        if (total_size == 0 or
+                total_size * 1000000 > Config.max_upload_size):
             await file.cancel()
             return False
         else:

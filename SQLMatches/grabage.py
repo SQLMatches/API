@@ -20,6 +20,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
+import logging
 
 from asyncio import sleep
 
@@ -40,17 +41,17 @@ async def handle_queue():
 
         for community in old_communities:
             if community in WebsocketQueue.communities:
-                WebsocketQueue.communities.pop(community, None)
+                WebsocketQueue.communities.remove(community)
 
         for matches in old_matches:
             if matches in WebsocketQueue.matches:
-                WebsocketQueue.communities.pop(matches, None)
+                WebsocketQueue.communities.remove(matches)
 
         for scoreboard in old_scoreboards:
             for new_scoreboard in WebsocketQueue.scoreboards:
                 if scoreboard == new_scoreboard:
-                    WebsocketQueue.scoreboards.remove(
-                        WebsocketQueue.scoreboards.index(scoreboard)
+                    WebsocketQueue.scoreboards.pop(
+                        scoreboard
                     )
 
 

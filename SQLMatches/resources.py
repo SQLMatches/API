@@ -49,7 +49,7 @@ class Config:
     cdn_url: str
     demo_pathway: str
     upload_delay: float
-    max_upload_size: int
+    max_upload_size: float
     timestamp_format: str
     ws_loop_time: float
     # Type string, type ID
