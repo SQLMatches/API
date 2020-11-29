@@ -90,8 +90,9 @@ class SQLMatches(Starlette):
                      B2UploadSettings, LocalUploadSettings] = None,
                  secret_key: str = token_urlsafe(),
                  map_images: Dict[str, str] = MAP_IMAGES,
-                 upload_delay: float = 0.001,
-                 max_upload_size: float = 50.0,
+                 upload_delay: float = 0.00001,
+                 free_upload_size: float = 50.0,
+                 max_upload_size: float = 100.0,
                  timestamp_format: str = "%m/%d/%Y-%H:%M:%S",
                  ws_loop_time: float = 8.0,
                  community_types: List[str] = COMMUNITY_TYPES,
@@ -112,8 +113,10 @@ class SQLMatches(Starlette):
             Key as actual map name, value as image name.
         upload_delay: float
             by default 0.1
-        max_upload_size: float
+        free_upload_size: float
             by default 50.0
+        max_upload_size: float
+            by default 100.0
         timestamp_format: str
         ws_loop_time: int
             How often to check ws connection, by default 8.0
@@ -161,6 +164,7 @@ class SQLMatches(Starlette):
         Config.url = friendly_url
         Config.map_images = map_images
         Config.upload_delay = upload_delay
+        Config.free_upload_size = free_upload_size
         Config.max_upload_size = max_upload_size
         Config.timestamp_format = timestamp_format
         Config.ws_loop_time = ws_loop_time
@@ -236,7 +240,6 @@ class SQLMatches(Starlette):
             await self.b2.authorize()
 
         self.grabage = await create_scheduler()
-
         for to_spawn in GRABAGE_HANDLERS_TO_SPAWN:
             await self.grabage.spawn(to_spawn())
 

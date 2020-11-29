@@ -124,3 +124,11 @@ class UserExists(SQLMatchesException):
 
     def __init__(self, msg="User exists", *args, **kwargs):
         super().__init__(msg, *args, **kwargs)
+
+
+class InvalidUploadSize(SQLMatchesException):
+    """Raised when upload size is incorrect.
+    """
+
+    def __init__(self, msg="Must be between 50 & 100 MB", *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)

@@ -48,7 +48,7 @@ from ..exceptions import (
     AlreadyCommunity,
     InvalidCommunity,
     InvalidCommunityName,
-    InvalidCommunityType,
+    InvalidCommunityType, InvalidUploadSize,
     NoOwnership,
     InvalidAPIKey,
     InvalidSteamID,
@@ -462,6 +462,8 @@ async def create_community(steam_id: str, community_name: str,
         or character length is above 32 or below 4.
     InvalidCommunityType
         Raised when community type isn't valid.
+    InvalidUploadSize
+        Raised when upload size is incorrect.
     """
 
     if community_type:
@@ -474,6 +476,10 @@ async def create_community(steam_id: str, community_name: str,
 
     if not re.match("^[a-zA-Z0-9]{4,32}$", community_name):
         raise InvalidCommunityName()
+
+    if (max_upload < Config.free_upload_size
+            or max_upload > Config.max_upload_size):
+        raise InvalidUploadSize()
 
     if await owner_exists(steam_id):
         raise AlreadyCommunity()
@@ -493,7 +499,7 @@ async def create_community(steam_id: str, community_name: str,
         timestamp=now,
         community_type_id=community_type_id,
         max_upload=max_upload,
-        paid=max_upload <= Config.max_upload_size
+        paid=max_upload == Config.free_upload_size
     )
 
     try:

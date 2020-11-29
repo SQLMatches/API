@@ -49,6 +49,7 @@ class Config:
     cdn_url: str
     demo_pathway: str
     upload_delay: float
+    free_upload_size: float
     max_upload_size: float
     timestamp_format: str
     ws_loop_time: float
