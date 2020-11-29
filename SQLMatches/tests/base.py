@@ -22,7 +22,7 @@ DEALINGS IN THE SOFTWARE.
 
 from aiohttp import BasicAuth
 
-from .. import SQLMatches
+from .. import SQLMatches, COMMUNITY_TYPES
 from ..settings import DatabaseSettings, LocalUploadSettings
 
 from ..community import create_community, Community
@@ -66,7 +66,8 @@ class TestBase:
         try:
             community, _ = await create_community(
                 community_name=COMMUNITY_NAME,
-                steam_id=STEAM_ID
+                steam_id=STEAM_ID,
+                community_type=COMMUNITY_TYPES[0]
             )
         except (CommunityTaken, AlreadyCommunity):
             community = await Community(community_name=COMMUNITY_NAME).get()

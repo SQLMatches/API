@@ -27,7 +27,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.cors import CORSMiddleware
 
-from typing import Dict, Tuple
+from typing import Dict, List, Tuple
 
 from secrets import token_urlsafe
 
@@ -39,7 +39,7 @@ import backblaze
 from starlette.routing import Mount
 from starlette.staticfiles import StaticFiles
 
-from .tables import create_tables
+from .tables import create_tables, community_type_table
 from .resources import Sessions, Config
 from .settings import DatabaseSettings, B2UploadSettings, LocalUploadSettings
 from .middlewares import APIAuthentication
@@ -75,6 +75,13 @@ MAP_IMAGES = {
     "de_train": "train.jpg",
 }
 
+COMMUNITY_TYPES = [
+    "personal",
+    "community",
+    "team",
+    "organization"
+]
+
 
 class SQLMatches(Starlette):
     def __init__(self, database_settings: DatabaseSettings,
@@ -87,6 +94,7 @@ class SQLMatches(Starlette):
                  max_upload_size: int = 80000000,
                  timestamp_format: str = "%m/%d/%Y-%H:%M:%S",
                  ws_loop_time: float = 8.0,
+                 community_types: List[str] = COMMUNITY_TYPES,
                  **kwargs) -> None:
         """SQLMatches API.
 
@@ -109,6 +117,8 @@ class SQLMatches(Starlette):
         timestamp_format: str
         ws_loop_time: int
             How often to check ws connection, by default 8.0
+        community_types: list
+            List of community types.
         kwargs
         """
 
@@ -154,6 +164,8 @@ class SQLMatches(Starlette):
         Config.max_upload_size = max_upload_size
         Config.timestamp_format = timestamp_format
         Config.ws_loop_time = ws_loop_time
+
+        self.community_types = community_types
 
         database_url = "://{}:{}@{}:{}/{}?charset=utf8mb4".format(
             database_settings.username,
@@ -227,6 +239,31 @@ class SQLMatches(Starlette):
 
         for to_spawn in GRABAGE_HANDLERS_TO_SPAWN:
             await self.grabage.spawn(to_spawn())
+
+        # Caching community types
+        query = community_type_table.select(
+            community_type_table.c.community_type.in_(self.community_types)
+        ).order_by(community_type_table.c.community_type_id.asc())
+
+        last_id = 0
+        async for row in Sessions.database.iterate(query):
+            last_id = row["community_type_id"]
+            Config.community_types[
+                row["community_type"]
+            ] = row["community_type_id"]
+
+        for community_type in self.community_types:
+            if community_type not in Config.community_types:
+                last_id += 1
+
+                await Sessions.database.execute(
+                    community_type_table.insert().values(
+                        community_type_id=last_id,
+                        community_type=community_type
+                    )
+                )
+
+                Config.community_types[community_type] = last_id
 
     async def _shutdown(self) -> None:
         """Closes any underlying sessions.

@@ -79,6 +79,21 @@ user_table = Table(
 )
 
 
+community_type_table = Table(
+    "community_type",
+    metadata,
+    Column(
+        "community_type_id",
+        Integer,
+        primary_key=True
+    ),
+    Column(
+        "community_type",
+        String(length=12)
+    )
+)
+
+
 community_table = Table(
     "community",
     metadata,
@@ -91,6 +106,12 @@ community_table = Table(
         "owner_id",
         String(length=64),
         ForeignKey("user.steam_id")
+    ),
+    Column(
+        "community_type_id",
+        Integer,
+        ForeignKey("community_type.community_type_id"),
+        nullable=True
     ),
     Column(
         "timestamp",

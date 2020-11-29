@@ -28,14 +28,12 @@ from starlette.requests import Request
 from webargs import fields
 from webargs_starlette import use_args
 
-import re
-
 from .rate_limiter import LIMITER
 
 from ...community import create_community, get_community_from_owner
 from ...exceptions import InvalidCommunity, NoOwnership
 
-from ...api import response, error_response
+from ...api import response
 from ...api.model_convertor import community_to_dict
 
 from ...resources import WebsocketQueue
@@ -90,7 +88,8 @@ class CommunityOwnerAPI(HTTPEndpoint):
 
 class CommunityCreateAPI(HTTPEndpoint):
     @use_args({"community_name": fields.Str(required=True, max=32, min=4),
-              "demos": fields.Bool()})
+               "community_type": fields.Str(),
+               "demos": fields.Bool()})
     @requires("steam_login")
     @LIMITER.limit("10/minute")
     async def post(self, request: Request, parameters: dict) -> response:
@@ -101,9 +100,6 @@ class CommunityCreateAPI(HTTPEndpoint):
         request : Request
         parameters : dict
         """
-
-        if re.match("^[a-zA-Z0-9]{4,32}$", parameters["community_name"]):
-            return error_response("AlphanumericOnly")
 
         community, _ = await create_community(
             steam_id=request.session["steam_id"],

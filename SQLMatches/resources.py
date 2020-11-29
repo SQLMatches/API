@@ -22,6 +22,7 @@ DEALINGS IN THE SOFTWARE.
 
 
 import os
+from typing import Dict
 
 from backblaze.bucket.awaiting import AwaitingBucket
 from aiohttp import ClientSession
@@ -51,6 +52,8 @@ class Config:
     max_upload_size: int
     timestamp_format: str
     ws_loop_time: float
+    # Type string, type ID
+    community_types: Dict[str, int] = {}
 
 
 class WebsocketQueue:

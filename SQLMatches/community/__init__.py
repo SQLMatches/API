@@ -21,6 +21,8 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
+import re
+
 from typing import AsyncGenerator, Tuple
 
 from sqlalchemy.sql import select, and_, or_, func
@@ -29,7 +31,7 @@ from secrets import token_urlsafe
 from datetime import datetime
 from uuid import uuid4
 
-from ..resources import Sessions
+from ..resources import Sessions, Config
 from ..tables import (
     community_table,
     scoreboard_total_table,
@@ -43,6 +45,7 @@ from ..exceptions import (
     CommunityTaken,
     AlreadyCommunity,
     InvalidCommunity,
+    InvalidCommunityName, InvalidCommunityType,
     NoOwnership,
     InvalidAPIKey,
     InvalidSteamID
@@ -419,7 +422,8 @@ async def owner_exists(steam_id: str) -> bool:
 
 
 async def create_community(steam_id: str, community_name: str,
-                           disabled: bool = False, demos: bool = True
+                           disabled: bool = False, demos: bool = True,
+                           community_type: str = None
                            ) -> Tuple[CommunityModel, Community]:
     """Creates a community.
 
@@ -431,6 +435,9 @@ async def create_community(steam_id: str, community_name: str,
         Name of community.
     disabled: bool
         Defaults to False.
+    community_type: str
+        Community type str
+        ["personal", "community", "team", "organization"]
 
     Returns
     -------
@@ -443,7 +450,23 @@ async def create_community(steam_id: str, community_name: str,
         Raised when community name is taken.
     AlreadyCommunity
         Raised when owner already owns a community.
+    InvalidCommunityName
+        Raised when community name isn't alphanumeric
+        or character length is above 32 or below 4.
+    InvalidCommunityType
+        Raised when community type isn't valid.
     """
+
+    if community_type:
+        if community_type in Config.community_types:
+            community_type_id = Config.community_types[community_type]
+        else:
+            raise InvalidCommunityType()
+    else:
+        community_type_id = None
+
+    if not re.match("^[a-zA-Z0-9]{4,32}$", community_name):
+        raise InvalidCommunityName()
 
     if await owner_exists(steam_id):
         raise AlreadyCommunity()
@@ -455,7 +478,8 @@ async def create_community(steam_id: str, community_name: str,
         owner_id=steam_id,
         disabled=disabled,
         demos=demos,
-        timestamp=now
+        timestamp=now,
+        community_type_id=community_type_id
     )
 
     try:

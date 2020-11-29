@@ -99,3 +99,20 @@ class InvalidSteamID(SQLMatchesException):
 
     def __init__(self, msg="Invalid Steam ID", *args, **kwargs):
         super().__init__(msg, *args, **kwargs)
+
+
+class InvalidCommunityName(SQLMatchesException):
+    """Raised when community name isn't alphanumeric
+       or character length is above 32 or below 4.
+    """
+
+    def __init__(self, msg="Commany Name not alphanumeric", *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)
+
+
+class InvalidCommunityType(SQLMatchesException):
+    """Raised when community type isn't valid.
+    """
+
+    def __init__(self, msg="Commany type invalid", *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)
