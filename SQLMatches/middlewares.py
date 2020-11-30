@@ -100,8 +100,8 @@ class APIAuthentication(AuthenticationBackend):
                     except NoOwnership:
                         pass
                     else:
-                        if community.community_name == \
-                                request.query_params["community_name"]:
+                        if (community.community_name ==
+                                request.query_params["community_name"]):
                             scopes.append("is_owner")
 
                 request.state.community = Community(
