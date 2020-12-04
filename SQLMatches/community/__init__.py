@@ -23,7 +23,7 @@ DEALINGS IN THE SOFTWARE.
 
 import re
 
-from typing import AsyncGenerator, Tuple
+from typing import AsyncGenerator, List, Tuple
 
 from sqlalchemy.sql import select, and_, or_, func
 
@@ -178,6 +178,15 @@ class Community:
             return ProfileModel(row)
         else:
             raise InvalidSteamID()
+
+    async def delete_matches(self, matches: List[str]) -> None:
+        """Used to bulk delete matches.
+
+        Parameters
+        ----------
+        matches : List[str]
+            List of match IDs to delete.
+        """
 
     async def create_match(self, team_1_name: str, team_2_name: str,
                            team_1_side: int, team_2_side: int,

@@ -42,7 +42,8 @@ from .api.matches import (
 from .api.misc import VersionAPI
 from .api.community import (
     CommunityOwnerAPI,
-    CommunityCreateAPI
+    CommunityCreateAPI,
+    CommunityOwnerMatchesAPI
 )
 from .api.communities import (
     CommunitiesAPI,
@@ -90,7 +91,10 @@ ROUTES = [
         Route("/profile/{steam_id}/", ProfileAPI),
         Route("/version/{version}", VersionAPI),
         Mount("/community", routes=[
-            Route("/owner/", CommunityOwnerAPI),
+            Mount("/owner", routes=[
+                Route("/", CommunityOwnerAPI),
+                Route("/matches/", CommunityOwnerMatchesAPI),
+            ]),
             Route("/", CommunityCreateAPI),
         ]),
         Mount("/communities", routes=[

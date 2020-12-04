@@ -63,7 +63,7 @@ class CommunityOwnerAPI(HTTPEndpoint):
             })
 
     @requires("is_owner")
-    @LIMITER.limit("1/minute")
+    @LIMITER.limit("30/minute")
     async def delete(self, request: Request) -> response:
         """Used to disable a community.
 
@@ -89,6 +89,27 @@ class CommunityOwnerAPI(HTTPEndpoint):
         return response({
             "master_api_key": await request.state.community.regenerate_master()
         })
+
+
+class CommunityOwnerMatchesAPI(HTTPEndpoint):
+    @use_args({"matches": fields.List(fields.String(), required=True)})
+    @requires("is_owner")
+    @LIMITER.limit("30/minute")
+    async def delete(self, request: Request, parameters: dict) -> response:
+        """Used to bulk delete matches.
+
+        Parameters
+        ----------
+        request : Request
+        parameters : dict
+
+        Returns
+        -------
+        response
+        """
+
+        await request.state.community.delete_matches(**parameters)
+        return response()
 
 
 class CommunityCreateAPI(HTTPEndpoint):
