@@ -86,10 +86,13 @@ class Community:
         # Todo:
         # This should be one single query :/
 
-        total_matches_query = select([func.count()]).select_from(
+        total_matches = select([func.count()]).select_from(
             scoreboard_total_table
         ).where(
-            scoreboard_total_table.c.community_name == self.community_name
+            and_(
+                scoreboard_total_table.c.community_name == self.community_name,
+                scoreboard_total_table.c.status == 0
+            )
         )
 
         active_matches = select([func.count()]).select_from(
@@ -118,7 +121,7 @@ class Community:
 
         return CommunityStatsModel({
             "total_matches": await Sessions.database.fetch_val(
-                total_matches_query
+                total_matches
             ),
             "active_matches": await Sessions.database.fetch_val(
                 active_matches
@@ -276,7 +279,8 @@ class Community:
         return await Sessions.database.fetch_val(query=query) > 0
 
     async def matches(self, search: str = None,
-                      page: int = 1, limit: int = 5, desc: bool = True
+                      page: int = 1, limit: int = 5, desc: bool = True,
+                      require_scoreboard: bool = True
                       ) -> AsyncGenerator[MatchModel, Match]:
         """Lists matches.
 
@@ -287,6 +291,9 @@ class Community:
         limit: int
         desc: bool, optional
             by default True
+        require_scoreboard : bool, optional
+            If enabled scoreboard will need to be ready
+            to pull match, by default True
 
         Yields
         ------
@@ -337,7 +344,7 @@ class Community:
                     )
                 )
             ).distinct()
-        else:
+        elif require_scoreboard:
             query = query.select_from(
                 scoreboard_total_table.join(
                     scoreboard_table,
@@ -347,6 +354,12 @@ class Community:
             ).where(
                 scoreboard_total_table.c.community_name == self.community_name,
             ).distinct()
+        else:
+            query = query.select_from(
+                scoreboard_total_table
+            ).where(
+                scoreboard_total_table.c.community_name == self.community_name,
+            )
 
         query = query.order_by(
             scoreboard_total_table.c.timestamp.desc() if desc
