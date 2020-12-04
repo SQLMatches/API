@@ -54,7 +54,12 @@ from ..exceptions import (
     InvalidSteamID,
     UserExists
 )
-from .models import CommunityModel, MatchModel, ProfileModel
+from .models import (
+    CommunityModel,
+    MatchModel,
+    ProfileModel,
+    CommunityStatsModel
+)
 from .match import Match
 
 
@@ -69,6 +74,62 @@ class Community:
         """
 
         self.community_name = community_name
+
+    async def stats(self) -> CommunityStatsModel:
+        """Gets basic stats about community.
+
+        Returns
+        -------
+        CommunityStatsModel
+        """
+
+        # Todo:
+        # This should be one single query :/
+
+        total_matches_query = select([func.count()]).select_from(
+            scoreboard_total_table
+        ).where(
+            scoreboard_total_table.c.community_name == self.community_name
+        )
+
+        active_matches = select([func.count()]).select_from(
+            scoreboard_total_table
+        ).where(
+            and_(
+                scoreboard_total_table.c.community_name == self.community_name,
+                scoreboard_total_table.c.status == 1
+            )
+        )
+
+        stored_demos = select([func.count()]).select_from(
+            scoreboard_total_table
+        ).where(
+            and_(
+                scoreboard_total_table.c.community_name == self.community_name,
+                scoreboard_total_table.c.demo_status == 2
+            )
+        )
+
+        total_users = select([func.count()]).select_from(
+            statistic_table
+        ).where(
+            statistic_table.c.community_name == self.community_name
+        )
+
+        return CommunityStatsModel({
+            "total_matches": await Sessions.database.fetch_val(
+                total_matches_query
+            ),
+            "active_matches": await Sessions.database.fetch_val(
+                active_matches
+            ),
+            "stored_demos": await Sessions.database.fetch_val(
+                stored_demos
+            ),
+            "total_users": await Sessions.database.fetch_val(
+                total_users
+            )
+        })
 
     async def profile(self, steam_id: str) -> ProfileModel:
         """Get user profile.
@@ -208,7 +269,7 @@ class Community:
         """Checks if community exists with name.
         """
 
-        query = community_table.count().where(
+        query = select([func.count()]).select_from(community_table).where(
             community_table.c.community_name == self.community_name
         )
 

@@ -92,7 +92,9 @@ class APIAuthentication(AuthenticationBackend):
             if "community_name" in request.query_params:
                 scopes.append("community")
 
-                if "check_ownership" in request.query_params:
+                if ("check_ownership" in request.query_params and
+                        request.query_params["check_ownership"].lower()
+                        == "true"):
                     try:
                         community = await get_community_from_owner(
                             request.session["steam_id"]

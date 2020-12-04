@@ -133,3 +133,11 @@ class ScoreboardModel(MatchModel):
 
         for player in self.__team_2:
             yield ScoreboardPlayerModel(player)
+
+
+class CommunityStatsModel:
+    def __init__(self, data: dict) -> None:
+        self.total_matches = data["total_matches"]
+        self.active_matches = data["active_matches"]
+        self.stored_demos = data["stored_demos"]
+        self.total_users = data["total_users"]

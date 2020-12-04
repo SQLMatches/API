@@ -26,7 +26,8 @@ from ..community.models import (
     CommunityModel,
     MatchModel,
     ScoreboardModel,
-    ProfileModel
+    ProfileModel,
+    CommunityStatsModel
 )
 from ..resources import Config
 
@@ -154,4 +155,24 @@ def profile_to_dict(model: ProfileModel) -> dict:
         "shots_hit": model.shots_hit,
         "mvps": model.mvps,
         "timestamp": model.timestamp.strftime(Config.timestamp_format)
+    }
+
+
+def community_stats_to_dict(model: CommunityStatsModel) -> dict:
+    """Converts CommunityStatsModel to dict.
+
+    Parameters
+    ----------
+    model : CommunityStatsModel
+
+    Returns
+    -------
+    dict
+    """
+
+    return {
+        "total_matches": model.total_matches,
+        "active_matches": model.active_matches,
+        "stored_demos": model.stored_demos,
+        "total_users": model.total_users
     }

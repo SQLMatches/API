@@ -34,7 +34,7 @@ from ...community import create_community, get_community_from_owner
 from ...exceptions import InvalidCommunity, NoOwnership
 
 from ...api import response
-from ...api.model_convertor import community_to_dict
+from ...api.model_convertor import community_to_dict, community_stats_to_dict
 
 from ...resources import WebsocketQueue
 
@@ -55,7 +55,12 @@ class CommunityOwnerAPI(HTTPEndpoint):
         except InvalidCommunity:
             raise
         else:
-            return response(community_to_dict(community))
+            return response({
+                "community": community_to_dict(community),
+                "stats": community_stats_to_dict(
+                    await request.state.community.stats()
+                )
+            })
 
     @requires("is_owner")
     @LIMITER.limit("1/minute")
