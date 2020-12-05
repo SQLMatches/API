@@ -64,7 +64,7 @@ async def demo_delete():
         for match_id in list(DemoQueue.matches):
             DemoQueue.matches.remove(match_id)
 
-        await sleep(10)
+        await sleep(10.0)
 
 
 GRABAGE_HANDLERS_TO_SPAWN = [
