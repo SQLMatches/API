@@ -335,7 +335,7 @@ scoreboard_table = Table(
     Column(
         "match_id",
         String(length=36),
-        ForeignKey("scoreboard_total.match_id"),
+        ForeignKey("scoreboard_total.match_id", ondelete="CASCADE"),
         primary_key=True
     ),
     Column(

@@ -22,7 +22,7 @@ DEALINGS IN THE SOFTWARE.
 
 
 import os
-from typing import Dict
+from typing import Any, Dict
 
 from backblaze.bucket.awaiting import AwaitingBucket
 from aiohttp import ClientSession
@@ -42,7 +42,7 @@ class Config:
     )
     steam_openid_url = "https://steamcommunity.com/openid/login"
 
-    upload_type: bool
+    upload_type: Any
     url: str
     map_images: str
     db_engine: str
@@ -62,3 +62,7 @@ class WebsocketQueue:
     scoreboards: list = []
     matches: list = []
     communities: list = []
+
+
+class DemoQueue:
+    matches: list = []

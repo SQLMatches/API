@@ -22,10 +22,13 @@ DEALINGS IN THE SOFTWARE.
 
 from asyncio import sleep
 
-from .resources import WebsocketQueue, Config
+from .resources import WebsocketQueue, Config, DemoQueue
 
 
 async def handle_queue():
+    """Handles cleaning up WS queue.
+    """
+
     while True:
         old_scoreboards = dict(WebsocketQueue.scoreboards)
         old_matches = list(WebsocketQueue.matches)
@@ -53,6 +56,18 @@ async def handle_queue():
                     )
 
 
+async def demo_delete():
+    """Handles deleting demos in background.
+    """
+
+    while True:
+        for match_id in list(DemoQueue.matches):
+            DemoQueue.matches.remove(match_id)
+
+        await sleep(10)
+
+
 GRABAGE_HANDLERS_TO_SPAWN = [
-    handle_queue
+    handle_queue,
+    demo_delete
 ]

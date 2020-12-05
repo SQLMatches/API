@@ -25,13 +25,13 @@ import re
 
 from typing import AsyncGenerator, List, Tuple
 
-from sqlalchemy.sql import select, and_, or_, func
+from sqlalchemy.sql import select, and_, or_, func, Delete
 
 from secrets import token_urlsafe
 from datetime import datetime
 from uuid import uuid4
 
-from ..resources import Sessions, Config
+from ..resources import Sessions, Config, DemoQueue
 from ..tables import (
     community_table,
     scoreboard_total_table,
@@ -83,10 +83,42 @@ class Community:
         CommunityStatsModel
         """
 
-        # Todo:
-        # This should be one single query :/
+        sub_active_matches = select([
+            func.count().label("active_matches")
+        ]).select_from(
+            scoreboard_total_table
+        ).where(
+            and_(
+                scoreboard_total_table.c.community_name == self.community_name,
+                scoreboard_total_table.c.status == 1
+            )
+        ).alias("sub_active_matches")
 
-        total_matches = select([func.count()]).select_from(
+        sub_stored_demos = select([
+            func.count().label("stored_demos")
+        ]).select_from(
+            scoreboard_total_table
+        ).where(
+            and_(
+                scoreboard_total_table.c.community_name == self.community_name,
+                scoreboard_total_table.c.demo_status == 2
+            )
+        ).alias("stored_demos")
+
+        sub_total_users = select([
+            func.count().label("total_users")
+        ]).select_from(
+            statistic_table
+        ).where(
+            statistic_table.c.community_name == self.community_name
+        ).alias("total_users")
+
+        query = select([
+            func.count().label("total_matches"),
+            sub_active_matches.c.active_matches,
+            sub_stored_demos.c.stored_demos,
+            sub_total_users.c.total_users
+        ]).select_from(
             scoreboard_total_table
         ).where(
             and_(
@@ -95,44 +127,9 @@ class Community:
             )
         )
 
-        active_matches = select([func.count()]).select_from(
-            scoreboard_total_table
-        ).where(
-            and_(
-                scoreboard_total_table.c.community_name == self.community_name,
-                scoreboard_total_table.c.status == 1
-            )
+        return CommunityStatsModel(
+            await Sessions.database.fetch_one(query)
         )
-
-        stored_demos = select([func.count()]).select_from(
-            scoreboard_total_table
-        ).where(
-            and_(
-                scoreboard_total_table.c.community_name == self.community_name,
-                scoreboard_total_table.c.demo_status == 2
-            )
-        )
-
-        total_users = select([func.count()]).select_from(
-            statistic_table
-        ).where(
-            statistic_table.c.community_name == self.community_name
-        )
-
-        return CommunityStatsModel({
-            "total_matches": await Sessions.database.fetch_val(
-                total_matches
-            ),
-            "active_matches": await Sessions.database.fetch_val(
-                active_matches
-            ),
-            "stored_demos": await Sessions.database.fetch_val(
-                stored_demos
-            ),
-            "total_users": await Sessions.database.fetch_val(
-                total_users
-            )
-        })
 
     async def profile(self, steam_id: str) -> ProfileModel:
         """Get user profile.
@@ -187,6 +184,22 @@ class Community:
         matches : List[str]
             List of match IDs to delete.
         """
+
+        query = scoreboard_total_table.delete().where(
+            scoreboard_total_table.c.match_id == scoreboard_table.c.match_id
+        ).where(
+            and_(
+                scoreboard_total_table.c.community_name == self.community_name,
+                scoreboard_total_table.c.match_id.in_(matches)
+            )
+        )
+
+        print(query)
+
+        await Sessions.database.execute(query)
+
+        if Config.upload_type is not None:
+            DemoQueue.matches.append(matches)
 
     async def create_match(self, team_1_name: str, team_2_name: str,
                            team_1_side: int, team_2_side: int,
