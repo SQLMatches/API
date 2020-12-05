@@ -57,7 +57,7 @@ async def handle_queue():
 
 
 async def demo_delete():
-    """Handles deleting demos in background.
+    """Handles deleting demos in background off local storage or B2.
     """
 
     while True:

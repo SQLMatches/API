@@ -47,7 +47,7 @@ from .middlewares import APIAuthentication
 from .routes import ROUTES, ERROR_HANDLERS
 from .routes.errors import auth_error
 
-from .grabage import GRABAGE_HANDLERS_TO_SPAWN
+from .garbage import GRABAGE_HANDLERS_TO_SPAWN
 
 
 __version__ = "0.1.0"
