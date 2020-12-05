@@ -40,15 +40,25 @@ import backblaze
 from starlette.routing import Mount
 from starlette.staticfiles import StaticFiles
 
-from .tables import create_tables, community_type_table
+from .tables import create_tables
 from .resources import Sessions, Config
-from .settings import DatabaseSettings, B2UploadSettings, LocalUploadSettings
+from .settings import (
+    DatabaseSettings,
+    B2UploadSettings,
+    LocalUploadSettings,
+    MemoryCacheSettings,
+    RedisCacheSettings
+)
 from .middlewares import APIAuthentication
 
 from .routes import ROUTES, ERROR_HANDLERS
 from .routes.errors import auth_error
 
 from .garbage import GRABAGE_HANDLERS_TO_SPAWN
+
+from .misc import cache_community_types
+
+from .constants import MAP_IMAGES, COMMUNITY_TYPES
 
 
 __version__ = "0.1.0"
@@ -62,30 +72,10 @@ __author_email__ = "wardpearce@protonmail.com"
 __license__ = "GPL v3"
 
 
-MAP_IMAGES = {
-    "de_austria": "austria.jpg",
-    "de_cache": "cache.jpg",
-    "de_canals": "canals.jpg",
-    "de_cbble": "cbble.jpg",
-    "de_dust": "dust.jpg",
-    "de_dust2": "dust2.jpg",
-    "de_inferno": "inferno.jpg",
-    "de_mirage": "mirage.jpg",
-    "de_nuke": "nuke.jpg",
-    "de_overpass": "overpass.jpg",
-    "de_train": "train.jpg",
-}
-
-COMMUNITY_TYPES = [
-    "personal",
-    "community",
-    "team",
-    "organization"
-]
-
-
 class SQLMatches(Starlette):
     def __init__(self, database_settings: DatabaseSettings,
+                 cache_settings: Tuple[MemoryCacheSettings,
+                                       RedisCacheSettings],
                  friendly_url: str,
                  upload_settings: Tuple[
                      B2UploadSettings, LocalUploadSettings] = None,
@@ -105,6 +95,7 @@ class SQLMatches(Starlette):
         ----------
         database_settings: DatabaseSettings
             Holds settings for database.
+        cache_settings: (MemoryCacheSettings, RedisCacheSettings)
         upload_settings: (B2UploadSettings, LocalUploadSettings)
             by default None
         friendly_url: str
@@ -173,6 +164,7 @@ class SQLMatches(Starlette):
         Config.ws_loop_time = ws_loop_time
 
         self.community_types = community_types
+        self.cache_settings = cache_settings
 
         database_url = "://{}:{}@{}:{}/{}?charset=utf8mb4".format(
             database_settings.username,
@@ -238,7 +230,12 @@ class SQLMatches(Starlette):
 
         await Sessions.database.connect()
         Sessions.aiohttp = ClientSession()
-        Sessions.cache = Cache()
+
+        if type(self.cache_settings) == MemoryCacheSettings:
+            Sessions.cache = Cache()
+        else:
+            Sessions.cache = Cache(Cache.REDIS)
+            Sessions.cache.from_url(self.cache_settings.connection_str)
 
         if Config.upload_type == B2UploadSettings:
             await self.b2.authorize()
@@ -247,30 +244,7 @@ class SQLMatches(Starlette):
         for to_spawn in GRABAGE_HANDLERS_TO_SPAWN:
             await self.grabage.spawn(to_spawn())
 
-        # Caching community types
-        query = community_type_table.select(
-            community_type_table.c.community_type.in_(self.community_types)
-        ).order_by(community_type_table.c.community_type_id.asc())
-
-        last_id = 0
-        async for row in Sessions.database.iterate(query):
-            last_id = row["community_type_id"]
-            Config.community_types[
-                row["community_type"]
-            ] = row["community_type_id"]
-
-        for community_type in self.community_types:
-            if community_type not in Config.community_types:
-                last_id += 1
-
-                await Sessions.database.execute(
-                    community_type_table.insert().values(
-                        community_type_id=last_id,
-                        community_type=community_type
-                    )
-                )
-
-                Config.community_types[community_type] = last_id
+        await cache_community_types(self.community_types)
 
     async def _shutdown(self) -> None:
         """Closes any underlying sessions.

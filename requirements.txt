@@ -16,4 +16,4 @@ slowapi>=0.1.2
 asynctest
 websockets
 aiojobs
-aiocache[redis,memcached]
+aiocache[redis]

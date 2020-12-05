@@ -21,29 +21,24 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-from SQLMatches import SQLMatches
-from SQLMatches.settings import (
-    DatabaseSettings,
-    LocalUploadSettings,
-    MemoryCacheSettings
-)
-
-import uvicorn
-
-
-app = SQLMatches(
-    database_settings=DatabaseSettings(
-        username="sqlmatches",
-        password="Y2ZRSsje9qZHsxDu",
-        server="localhost",
-        port=3306,
-        database="sqlmatches"
-    ),
-    cache_settings=MemoryCacheSettings(),
-    upload_settings=LocalUploadSettings(),
-    friendly_url="http://localhost/api"
-)
+MAP_IMAGES = {
+    "de_austria": "austria.jpg",
+    "de_cache": "cache.jpg",
+    "de_canals": "canals.jpg",
+    "de_cbble": "cbble.jpg",
+    "de_dust": "dust.jpg",
+    "de_dust2": "dust2.jpg",
+    "de_inferno": "inferno.jpg",
+    "de_mirage": "mirage.jpg",
+    "de_nuke": "nuke.jpg",
+    "de_overpass": "overpass.jpg",
+    "de_train": "train.jpg",
+}
 
 
-if __name__ == "__main__":
-    uvicorn.run(app)
+COMMUNITY_TYPES = [
+    "personal",
+    "community",
+    "team",
+    "organization"
+]

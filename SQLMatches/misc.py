@@ -20,30 +20,39 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
-
-from SQLMatches import SQLMatches
-from SQLMatches.settings import (
-    DatabaseSettings,
-    LocalUploadSettings,
-    MemoryCacheSettings
-)
-
-import uvicorn
+from typing import List
+from .tables import community_type_table
+from .resources import Sessions, Config
 
 
-app = SQLMatches(
-    database_settings=DatabaseSettings(
-        username="sqlmatches",
-        password="Y2ZRSsje9qZHsxDu",
-        server="localhost",
-        port=3306,
-        database="sqlmatches"
-    ),
-    cache_settings=MemoryCacheSettings(),
-    upload_settings=LocalUploadSettings(),
-    friendly_url="http://localhost/api"
-)
+async def cache_community_types(community_types: List[str]):
+    """Caches community types.
 
+    Parameters
+    ----------
+    community_types : List[str]
+    """
 
-if __name__ == "__main__":
-    uvicorn.run(app)
+    query = community_type_table.select(
+        community_type_table.c.community_type.in_(community_types)
+    ).order_by(community_type_table.c.community_type_id.asc())
+
+    last_id = 0
+    async for row in Sessions.database.iterate(query):
+        last_id = row["community_type_id"]
+        Config.community_types[
+            row["community_type"]
+        ] = row["community_type_id"]
+
+    for community_type in community_types:
+        if community_type not in Config.community_types:
+            last_id += 1
+
+            await Sessions.database.execute(
+                community_type_table.insert().values(
+                    community_type_id=last_id,
+                    community_type=community_type
+                )
+            )
+
+            Config.community_types[community_type] = last_id
