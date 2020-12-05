@@ -33,7 +33,8 @@ from .tables import (
     user_table
 )
 
-from .community import Community, Match
+from .community import Community
+from .community.match import Match
 from .community.models import CommunityModel, MatchModel
 
 
