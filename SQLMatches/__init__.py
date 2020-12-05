@@ -29,8 +29,6 @@ from starlette.middleware.cors import CORSMiddleware
 
 from typing import Dict, List, Tuple
 
-from secrets import token_urlsafe
-
 from databases import Database
 from aiohttp import ClientSession
 from aiojobs import create_scheduler
@@ -56,7 +54,7 @@ from .routes.errors import auth_error
 
 from .garbage import GRABAGE_HANDLERS_TO_SPAWN
 
-from .misc import cache_community_types
+from .misc import cache_community_types, SessionKey
 
 from .constants import MAP_IMAGES, COMMUNITY_TYPES
 
@@ -79,7 +77,6 @@ class SQLMatches(Starlette):
                  friendly_url: str,
                  upload_settings: Tuple[
                      B2UploadSettings, LocalUploadSettings] = None,
-                 secret_key: str = token_urlsafe(),
                  map_images: Dict[str, str] = MAP_IMAGES,
                  upload_delay: float = 0.00001,
                  free_upload_size: float = 50.0,
@@ -100,8 +97,6 @@ class SQLMatches(Starlette):
             by default None
         friendly_url: str
             URL to project.
-        secret_key: str
-            Optionally pass your own url safe secret key.
         map_images: dict
             Key as actual map name, value as image name.
         upload_delay: float
@@ -126,6 +121,11 @@ class SQLMatches(Starlette):
 
         if "on_shutdown" in kwargs:
             shutdown_tasks = shutdown_tasks + kwargs["on_shutdown"]
+
+        session_key = SessionKey()
+        secret_key = session_key.load()
+        if not secret_key:
+            secret_key = session_key.save()
 
         middlewares = [
             Middleware(SessionMiddleware, secret_key=secret_key),

@@ -21,6 +21,9 @@ DEALINGS IN THE SOFTWARE.
 """
 
 from typing import List
+from os import path
+from secrets import token_urlsafe
+
 from .tables import community_type_table
 from .resources import Sessions, Config
 
@@ -56,3 +59,24 @@ async def cache_community_types(community_types: List[str]):
             )
 
             Config.community_types[community_type] = last_id
+
+
+class SessionKey:
+    def __init__(self, pathway: str = None) -> None:
+        self.pathway = path.join(
+            path.dirname(path.realpath(__file__)) if not pathway else pathway,
+            ".session_key_secret"
+        )
+
+    def load(self) -> str:
+        try:
+            with open(self.pathway, "r") as f:
+                return f.read()
+        except FileNotFoundError:
+            return
+
+    def save(self, key: str = token_urlsafe()) -> str:
+        with open(self.pathway, "w") as f:
+            f.write(key)
+
+        return key
