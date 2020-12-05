@@ -194,9 +194,20 @@ class Community:
             )
         )
 
-        print(query)
-
         await Sessions.database.execute(query)
+
+        # Todo
+        # Work out sqlalchemy left joining delete,
+        # so i don't need this ugly mess.
+        await Sessions.database.execute(
+            scoreboard_total_table.delete().where(
+                and_(
+                    scoreboard_total_table.c.community_name
+                    == self.community_name,
+                    scoreboard_total_table.c.match_id.in_(matches)
+                )
+            )
+        )
 
         if Config.upload_type is not None:
             DemoQueue.matches.append(matches)
