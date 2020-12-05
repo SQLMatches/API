@@ -31,10 +31,13 @@ from secrets import token_urlsafe
 from datetime import datetime
 
 from ..resources import Sessions, Config
+
 from ..tables import (
     community_table,
     api_key_table
 )
+
+from ..caches import CommunitiesCache, CommunityCache
 
 from ..user import create_user
 
@@ -232,10 +235,15 @@ async def create_community(steam_id: str, community_name: str,
 
         await Sessions.database.execute(query=query)
 
-        return CommunityModel(data={
+        data = {
             "api_key": api_key,
             "owner_id": steam_id,
             "disabled": disabled,
             "community_name": community_name,
             "timestamp": now
-        }), Community(community_name)
+        }
+
+        await CommunityCache(community_name).set(data)
+        await CommunitiesCache().expire()
+
+        return CommunityModel(data), Community(community_name)

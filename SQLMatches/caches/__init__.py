@@ -21,50 +21,34 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-import os
-from typing import Any, Dict
-
-from backblaze.bucket.awaiting import AwaitingBucket
-from aiohttp import ClientSession
-from databases import Database
-from aiocache import Cache
+from typing import Any
+from ..resources import Sessions
 
 
-class Sessions:
-    database: Database
-    aiohttp: ClientSession
-    bucket: AwaitingBucket
-    cache: Cache
+class CacheBase:
+    def __init__(self, key: str) -> None:
+        self.key = key
+
+    async def expire(self) -> None:
+        await Sessions.cache.expire(self.key)
+
+    async def set(self, value: Any) -> None:
+        await Sessions.cache.set(self.key, value)
+
+    async def get(self) -> Any:
+        return await Sessions.cache.get(self.key)
 
 
-class Config:
-    maps_dir = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)),
-        "maps"
-    )
-    steam_openid_url = "https://steamcommunity.com/openid/login"
-
-    upload_type: Any
-    url: str
-    map_images: str
-    db_engine: str
-    cdn_url: str
-    demo_pathway: str
-    upload_delay: float
-    free_upload_size: float
-    max_upload_size: float
-    cost_per_mb: float
-    timestamp_format: str
-    ws_loop_time: float
-    # Type string, type ID
-    community_types: Dict[str, int] = {}
+class __SubMatchesCache:
+    def matches(self) -> CacheBase:
+        return CacheBase(self.key + "-matches")
 
 
-class WebsocketQueue:
-    scoreboards: list = []
-    matches: list = []
-    communities: list = []
+class CommunityCache(CacheBase, __SubMatchesCache):
+    def __init__(self, community_name: str) -> None:
+        super().__init__(community_name)
 
 
-class DemoQueue:
-    matches: list = []
+class CommunitiesCache(CacheBase, __SubMatchesCache):
+    def __init__(self, key: str = "communities") -> None:
+        super().__init__(key)

@@ -358,8 +358,10 @@ class Community:
                     or_(
                         scoreboard_total_table.c.match_id == search,
                         scoreboard_total_table.c.map.like(like_search),
-                        scoreboard_total_table.c.team_1_name.like(like_search),
-                        scoreboard_total_table.c.team_2_name.like(like_search),
+                        scoreboard_total_table.c.team_1_name.like(
+                            like_search),
+                        scoreboard_total_table.c.team_2_name.like(
+                            like_search),
                         user_table.c.name.like(like_search),
                         user_table.c.steam_id == search
                     )
@@ -373,13 +375,15 @@ class Community:
                     scoreboard_total_table.c.match_id
                 )
             ).where(
-                scoreboard_total_table.c.community_name == self.community_name,
+                scoreboard_total_table.c.community_name
+                == self.community_name,
             ).distinct()
         else:
             query = query.select_from(
                 scoreboard_total_table
             ).where(
-                scoreboard_total_table.c.community_name == self.community_name,
+                scoreboard_total_table.c.community_name
+                == self.community_name,
             )
 
         query = query.order_by(
@@ -424,7 +428,6 @@ class Community:
         )
 
         row = await Sessions.database.fetch_one(query=query)
-
         if row:
             return CommunityModel(row)
         else:

@@ -34,6 +34,7 @@ from secrets import token_urlsafe
 from databases import Database
 from aiohttp import ClientSession
 from aiojobs import create_scheduler
+from aiocache import Cache
 
 import backblaze
 from starlette.routing import Mount
@@ -237,6 +238,7 @@ class SQLMatches(Starlette):
 
         await Sessions.database.connect()
         Sessions.aiohttp = ClientSession()
+        Sessions.cache = Cache()
 
         if Config.upload_type == B2UploadSettings:
             await self.b2.authorize()
@@ -276,6 +278,7 @@ class SQLMatches(Starlette):
 
         await Sessions.database.disconnect()
         await Sessions.aiohttp.close()
+        await Sessions.cache.close()
 
         if Config.upload_type == B2UploadSettings:
             await self.b2.close()

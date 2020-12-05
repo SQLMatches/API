@@ -39,6 +39,7 @@ setup(
         "SQLMatches.routes",
         "SQLMatches.routes.api",
         "SQLMatches.user",
+        "SQLMatches.caches",
         "SQLMatches.tests"
     ],
     python_requires=">=3.6",

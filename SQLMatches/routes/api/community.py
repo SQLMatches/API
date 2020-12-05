@@ -38,6 +38,8 @@ from ...api.model_convertor import community_to_dict, community_stats_to_dict
 
 from ...resources import WebsocketQueue
 
+from ...caches import CommunityCache
+
 
 class CommunityOwnerAPI(HTTPEndpoint):
     @requires("is_owner")
@@ -50,17 +52,26 @@ class CommunityOwnerAPI(HTTPEndpoint):
         request : Request
         """
 
+        cache = CommunityCache(request.state.community.community_name)
+        cache_get = await cache.get()
+        if cache_get:
+            return response(cache_get)
+
         try:
             community = await request.state.community.get()
         except InvalidCommunity:
             raise
         else:
-            return response({
+            data = {
                 "community": community_to_dict(community),
                 "stats": community_stats_to_dict(
                     await request.state.community.stats()
                 )
-            })
+            }
+
+            await cache.set(data)
+
+            return response(data)
 
     @requires("is_owner")
     @LIMITER.limit("30/minute")
@@ -73,6 +84,8 @@ class CommunityOwnerAPI(HTTPEndpoint):
         """
 
         await request.state.community.disable()
+
+        await CommunityCache(request.state.community.community_name).expire()
 
         return response()
 
@@ -109,6 +122,11 @@ class CommunityOwnerMatchesAPI(HTTPEndpoint):
         """
 
         await request.state.community.delete_matches(**parameters)
+
+        await (CommunityCache(
+            request.state.community.community_name
+        ).matches()).expire()
+
         return response()
 
 
@@ -136,6 +154,10 @@ class CommunityCreateAPI(HTTPEndpoint):
         community_dict = community_to_dict(community)
 
         WebsocketQueue.communities.append(community_dict)
+
+        await CommunityCache(request.state.community.community_name).set(
+            community_dict
+        )
 
         return response(community_dict)
 

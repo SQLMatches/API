@@ -35,6 +35,8 @@ from ...api.model_convertor import community_to_dict, match_to_dict
 
 from ...communities import communities, matches
 
+from ...caches import CommunitiesCache
+
 
 class CommunitiesAPI(HTTPEndpoint):
     @use_args({"search": fields.Str(), "page": fields.Int(),
@@ -54,10 +56,19 @@ class CommunitiesAPI(HTTPEndpoint):
         response
         """
 
-        return response([
+        cache = CommunitiesCache()
+        cache_get = await cache.get()
+        if cache_get:
+            return cache_get
+
+        data = [
             community_to_dict(community) async for community, _ in
             communities(**parameters)
-        ])
+        ]
+
+        await cache.set(data)
+
+        return response(data)
 
 
 class CommunityMatchesAPI(HTTPEndpoint):
@@ -77,10 +88,19 @@ class CommunityMatchesAPI(HTTPEndpoint):
         -------
         """
 
-        return response([
+        cache = CommunitiesCache().matches()
+        cache_get = await cache.get()
+        if cache_get:
+            return cache_get
+
+        data = [
             match_to_dict(match) async for match, _ in
             matches(**parameters)
-        ])
+        ]
+
+        await cache.set(data)
+
+        return response(data)
 
 
 class MatchesCommunitiesAPI(HTTPEndpoint):
@@ -100,12 +120,26 @@ class MatchesCommunitiesAPI(HTTPEndpoint):
         response
         """
 
-        return response({
-            "matches": [
-                match_to_dict(match) async for match, _ in matches()
-            ],
-            "communities": [
+        data = {}
+
+        cache = CommunitiesCache()
+        matches_cache = cache.matches()
+
+        cache_get = await cache.get()
+        if cache_get:
+            data["communities"] = cache_get
+        else:
+            data["communities"] = [
                 community_to_dict(community) async for community, _ in
                 communities()
             ]
-        })
+
+        matches_cache_get = await matches_cache.get()
+        if matches_cache_get:
+            data["matches"] = matches_cache_get
+        else:
+            data["matches"] = [
+                match_to_dict(match) async for match, _ in matches()
+            ]
+
+        return response(data)
