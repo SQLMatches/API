@@ -30,6 +30,8 @@ from .rate_limiter import LIMITER
 from ...api import response
 from ...api.model_convertor import profile_to_dict
 
+from ...caches import CommunityCache
+
 
 class ProfileAPI(HTTPEndpoint):
     @requires("community")
@@ -47,8 +49,20 @@ class ProfileAPI(HTTPEndpoint):
         response
         """
 
-        return response(profile_to_dict(
+        cache = CommunityCache(
+            request.state.community.community_name
+        ).profile(request.path_params["steam_id"])
+
+        cache_get = await cache.get()
+        if cache_get:
+            return response(cache_get)
+
+        data = profile_to_dict(
             await request.state.community.profile(
                 request.path_params["steam_id"]
             )
-        ))
+        )
+
+        await cache.set(data)
+
+        return response(data)

@@ -151,15 +151,15 @@ class CommunityCreateAPI(HTTPEndpoint):
             **parameters
         )
 
-        community_dict = community_to_dict(community)
+        data = community_to_dict(community)
 
-        WebsocketQueue.communities.append(community_dict)
+        WebsocketQueue.communities.append(data)
 
         await CommunityCache(request.state.community.community_name).set(
-            community_dict
+            data
         )
 
-        return response(community_dict)
+        return response(data)
 
     @requires("steam_login")
     @LIMITER.limit("30/minute")

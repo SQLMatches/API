@@ -36,6 +36,8 @@ from ...api.model_convertor import scoreboard_to_dict, match_to_dict
 
 from ...demos import Demo
 
+from ...caches import CommunityCache
+
 from ...exceptions import InvalidMatchID, DemoAlreadyUploaded
 
 
@@ -67,6 +69,14 @@ class MatchAPI(HTTPEndpoint):
         request : Request
         """
 
+        cache = CommunityCache(
+            request.state.community.community_name
+        ).scoreboard(request.path_params["match_id"])
+
+        cache_get = await cache.get()
+        if cache_get:
+            return response(cache_get)
+
         try:
             scoreboard = await request.state.community.match(
                 request.path_params["match_id"]
@@ -74,7 +84,11 @@ class MatchAPI(HTTPEndpoint):
         except InvalidMatchID:
             raise
         else:
-            return response(scoreboard_to_dict(scoreboard))
+            data = scoreboard_to_dict(scoreboard)
+
+            await cache.set(data)
+
+            return response(data)
 
     @use_args({"team_1_score": fields.Int(required=True),
                "team_2_score": fields.Int(required=True),
@@ -100,6 +114,10 @@ class MatchAPI(HTTPEndpoint):
         except InvalidMatchID:
             raise
         else:
+            await (CommunityCache(
+                request.state.community.community_name
+            ).scoreboard(request.path_params["match_id"])).expire()
+
             return response()
 
     @requires("master")
@@ -119,6 +137,10 @@ class MatchAPI(HTTPEndpoint):
         except InvalidMatchID:
             raise
         else:
+            await (CommunityCache(
+                request.state.community.community_name
+            ).scoreboard(request.path_params["match_id"])).expire()
+
             return response()
 
 
@@ -136,10 +158,28 @@ class MatchesAPI(HTTPEndpoint):
         parameters : dict
         """
 
-        return response([
-            match_to_dict(match) async for match, _ in
-            request.state.community.matches(**parameters)
-        ])
+        if not parameters:
+            cache = CommunityCache(
+                request.state.community.community_name
+            ).matches()
+
+            cache_get = await cache.get()
+            if cache_get:
+                return response(cache_get)
+
+            data = [
+                match_to_dict(match) async for match, _ in
+                request.state.community.matches(**parameters)
+            ]
+
+            await cache.set(data)
+        else:
+            data = [
+                match_to_dict(match) async for match, _ in
+                request.state.community.matches(**parameters)
+            ]
+
+        return response(data)
 
 
 class CreateMatchAPI(HTTPEndpoint):
@@ -162,6 +202,10 @@ class CreateMatchAPI(HTTPEndpoint):
         """
 
         match = await request.state.community.create_match(**parameters)
+
+        await (CommunityCache(
+            request.state.community.community_name
+        ).matches()).expire()
 
         return response({"match_id": match.match_id})
 
@@ -195,6 +239,10 @@ class DemoUploadAPI(HTTPEndpoint):
                     await match.set_demo_status(2)
                 else:
                     await match.set_demo_status(3)
+
+                await (CommunityCache(
+                    request.state.community.community_name
+                ).scoreboard(request.path_params["match_id"])).expire()
 
                 return response()
             else:

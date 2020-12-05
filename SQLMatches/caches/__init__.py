@@ -29,19 +29,19 @@ class CacheBase:
     def __init__(self, key: str) -> None:
         self.key = key
 
-    async def expire(self, ttl: int = 1) -> None:
-        await Sessions.cache.expire(self.key, ttl=ttl)
+    async def expire(self) -> None:
+        await Sessions.cache.delete(self.key)
 
     async def set(self, value: Any) -> None:
-        await Sessions.cache.set(self.key, value)
+        await Sessions.cache.set(self.key, value, ttl=45)
 
     async def get(self) -> Any:
         return await Sessions.cache.get(self.key)
 
 
-class __MatchScoreboard:
+class __ScoreboardCache:
     def scoreboard(self, match_id: str) -> CacheBase:
-        return CacheBase(self.key + "-" + match_id + "-scoreboard")
+        return CacheBase(self.key + "-" + match_id)
 
 
 class __MatchesCache:
@@ -49,7 +49,13 @@ class __MatchesCache:
         return CacheBase(self.key + "-matches")
 
 
-class CommunityCache(CacheBase, __MatchesCache, __MatchScoreboard):
+class __ProfileCache:
+    def profile(self, steam_id: str) -> CacheBase:
+        return CacheBase(self.key + steam_id)
+
+
+class CommunityCache(CacheBase, __MatchesCache, __ScoreboardCache,
+                     __ProfileCache):
     def __init__(self, community_name: str) -> None:
         super().__init__(community_name)
 
@@ -57,3 +63,8 @@ class CommunityCache(CacheBase, __MatchesCache, __MatchScoreboard):
 class CommunitiesCache(CacheBase, __MatchesCache):
     def __init__(self, key: str = "communities") -> None:
         super().__init__(key)
+
+
+class VersionCache(CacheBase):
+    def __init__(self, version: str) -> None:
+        super().__init__("version-" + version)

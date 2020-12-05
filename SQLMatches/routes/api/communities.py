@@ -59,7 +59,7 @@ class CommunitiesAPI(HTTPEndpoint):
         cache = CommunitiesCache()
         cache_get = await cache.get()
         if cache_get:
-            return cache_get
+            return response(cache_get)
 
         data = [
             community_to_dict(community) async for community, _ in
@@ -91,7 +91,7 @@ class CommunityMatchesAPI(HTTPEndpoint):
         cache = CommunitiesCache().matches()
         cache_get = await cache.get()
         if cache_get:
-            return cache_get
+            return response(cache_get)
 
         data = [
             match_to_dict(match) async for match, _ in

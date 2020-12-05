@@ -29,6 +29,7 @@ from sqlalchemy import select
 from ...resources import Sessions
 from ...tables import update_table
 from ...api import response, error_response
+from ...caches import VersionCache
 
 from .rate_limiter import LIMITER
 
@@ -44,6 +45,11 @@ class VersionAPI(HTTPEndpoint):
         request : Request
         """
 
+        cache = VersionCache(request.path_params["version"])
+        cache_get = await cache.get()
+        if cache_get:
+            return response({"message": cache_get})
+
         message = await Sessions.database.fetch_val(
             select([update_table.c.message]).select_form(
                 update_table
@@ -53,6 +59,8 @@ class VersionAPI(HTTPEndpoint):
         )
 
         if message:
+            await cache.set(message)
+
             return response({"message": message})
         else:
             return error_response("InvalidVersion")
