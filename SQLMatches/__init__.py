@@ -231,11 +231,10 @@ class SQLMatches(Starlette):
         await Sessions.database.connect()
         Sessions.aiohttp = ClientSession()
 
-        if type(self.cache_settings) == MemoryCacheSettings:
-            Sessions.cache = Cache()
-        else:
+        if type(self.cache_settings) == RedisCacheSettings:
             Sessions.cache = Cache(Cache.REDIS)
-            Sessions.cache.from_url(self.cache_settings.connection_str)
+        else:
+            Sessions.cache = Cache()
 
         if Config.upload_type == B2UploadSettings:
             await self.b2.authorize()
