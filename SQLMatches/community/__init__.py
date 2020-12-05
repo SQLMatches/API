@@ -25,7 +25,7 @@ import re
 
 from typing import AsyncGenerator, List, Tuple
 
-from sqlalchemy.sql import select, and_, or_, func, Delete
+from sqlalchemy.sql import select, and_, or_, func
 
 from secrets import token_urlsafe
 from datetime import datetime
