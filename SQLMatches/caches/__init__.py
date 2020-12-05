@@ -29,8 +29,8 @@ class CacheBase:
     def __init__(self, key: str) -> None:
         self.key = key
 
-    async def expire(self) -> None:
-        await Sessions.cache.expire(self.key)
+    async def expire(self, ttl: int = 1) -> None:
+        await Sessions.cache.expire(self.key, ttl=ttl)
 
     async def set(self, value: Any) -> None:
         await Sessions.cache.set(self.key, value)
@@ -39,16 +39,21 @@ class CacheBase:
         return await Sessions.cache.get(self.key)
 
 
-class __SubMatchesCache:
+class __MatchScoreboard:
+    def scoreboard(self, match_id: str) -> CacheBase:
+        return CacheBase(self.key + "-" + match_id + "-scoreboard")
+
+
+class __MatchesCache:
     def matches(self) -> CacheBase:
         return CacheBase(self.key + "-matches")
 
 
-class CommunityCache(CacheBase, __SubMatchesCache):
+class CommunityCache(CacheBase, __MatchesCache, __MatchScoreboard):
     def __init__(self, community_name: str) -> None:
         super().__init__(community_name)
 
 
-class CommunitiesCache(CacheBase, __SubMatchesCache):
+class CommunitiesCache(CacheBase, __MatchesCache):
     def __init__(self, key: str = "communities") -> None:
         super().__init__(key)
