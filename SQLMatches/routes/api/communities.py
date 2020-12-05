@@ -134,6 +134,8 @@ class MatchesCommunitiesAPI(HTTPEndpoint):
                 communities()
             ]
 
+            await cache.set(data["communities"])
+
         matches_cache_get = await matches_cache.get()
         if matches_cache_get:
             data["matches"] = matches_cache_get
@@ -141,5 +143,7 @@ class MatchesCommunitiesAPI(HTTPEndpoint):
             data["matches"] = [
                 match_to_dict(match) async for match, _ in matches()
             ]
+
+            await matches_cache.set(data["matches"])
 
         return response(data)
