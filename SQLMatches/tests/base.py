@@ -23,7 +23,9 @@ DEALINGS IN THE SOFTWARE.
 from aiohttp import BasicAuth
 
 from .. import SQLMatches, COMMUNITY_TYPES
-from ..settings import DatabaseSettings, LocalUploadSettings
+from ..settings import (
+    DatabaseSettings, LocalUploadSettings, MemoryCacheSettings
+)
 
 from ..community import create_community, Community
 from ..exceptions import AlreadyCommunity, CommunityTaken, UserExists
@@ -41,6 +43,7 @@ sqlmatches = SQLMatches(
         port=3306,
         database="sqlmatches"
     ),
+    cache_settings=MemoryCacheSettings(),
     upload_settings=LocalUploadSettings(),
     friendly_url="http://127.0.0.1:8000"
 )

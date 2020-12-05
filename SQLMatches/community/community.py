@@ -91,21 +91,10 @@ class Community:
                 scoreboard_total_table.c.community_name == self.community_name,
                 scoreboard_total_table.c.demo_status == 2
             )
-        ).alias("stored_demos")
+        ).alias("sub_stored_demos")
 
-        sub_total_users = select([
-            func.count().label("total_users")
-        ]).select_from(
-            statistic_table
-        ).where(
-            statistic_table.c.community_name == self.community_name
-        ).alias("total_users")
-
-        query = select([
+        sub_total_matches = select([
             func.count().label("total_matches"),
-            sub_active_matches.c.active_matches,
-            sub_stored_demos.c.stored_demos,
-            sub_total_users.c.total_users
         ]).select_from(
             scoreboard_total_table
         ).where(
@@ -113,6 +102,17 @@ class Community:
                 scoreboard_total_table.c.community_name == self.community_name,
                 scoreboard_total_table.c.status == 0
             )
+        ).alias("sub_total_matches")
+
+        query = select([
+            func.count().label("total_users"),
+            sub_active_matches.c.active_matches,
+            sub_stored_demos.c.stored_demos,
+            sub_total_matches.c.total_matches
+        ]).select_from(
+            statistic_table
+        ).where(
+            statistic_table.c.community_name == self.community_name
         )
 
         return CommunityStatsModel(

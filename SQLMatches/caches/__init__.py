@@ -33,7 +33,7 @@ class CacheBase:
         await Sessions.cache.delete(self.key)
 
     async def set(self, value: Any) -> None:
-        await Sessions.cache.set(self.key, value, ttl=45)
+        await Sessions.cache.set(self.key, value, ttl=60)
 
     async def get(self) -> Any:
         return await Sessions.cache.get(self.key)

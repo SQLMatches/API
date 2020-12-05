@@ -123,9 +123,11 @@ class CommunityOwnerMatchesAPI(HTTPEndpoint):
 
         await request.state.community.delete_matches(**parameters)
 
-        await (CommunityCache(
-            request.state.community.community_name
-        ).matches()).expire()
+        cache = CommunityCache(request.state.community.community_name)
+        cache_matches = cache.matches()
+
+        await cache.expire()
+        await cache_matches.expire()
 
         return response()
 
