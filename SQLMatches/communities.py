@@ -75,7 +75,9 @@ async def communities(search: str = None, page: int = 1,
     if search:
         query = query.where(
             or_(
-                community_table.c.community_name.like("%{}%".format(search)),
+                community_table.c.community_name.like("%{}%".format(
+                    search.replace(" ", "%")
+                )),
                 community_table.c.owner_id == search
             )
         )
