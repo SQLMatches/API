@@ -52,26 +52,34 @@ class CommunityOwnerAPI(HTTPEndpoint):
         request : Request
         """
 
+        data = {}
+
         cache = CommunityCache(request.state.community.community_name)
         cache_get = await cache.get()
         if cache_get:
-            return response(cache_get)
-
-        try:
-            community = await request.state.community.get()
-        except InvalidCommunity:
-            raise
+            data["community"] = cache_get
         else:
-            data = {
-                "community": community_to_dict(community),
-                "stats": community_stats_to_dict(
-                    await request.state.community.stats()
-                )
-            }
+            try:
+                community = await request.state.community.get()
+            except InvalidCommunity:
+                raise
+            else:
+                data["community"] = community_to_dict(community)
 
-            await cache.set(data)
+                await cache.set(data["community"])
 
-            return response(data)
+        stats_cache = cache.stats()
+        stats_cache_get = await stats_cache.get()
+        if stats_cache_get:
+            data["stats"] = stats_cache_get
+        else:
+            data["stats"] = community_stats_to_dict(
+                await request.state.community.stats()
+            )
+
+            await stats_cache.set(data["stats"])
+
+        return response(data)
 
     @requires("is_owner")
     @LIMITER.limit("30/minute")
@@ -157,7 +165,7 @@ class CommunityCreateAPI(HTTPEndpoint):
 
         WebsocketQueue.communities.append(data)
 
-        await CommunityCache(request.state.community.community_name).set(
+        await CommunityCache(parameters["community_name"]).set(
             data
         )
 
