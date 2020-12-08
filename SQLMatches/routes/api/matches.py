@@ -35,7 +35,7 @@ from ...responses import response
 
 from ...demos import Demo
 
-from ...caches import CommunityCache
+from ...caches import CommunityCache, CommunitiesCache
 
 from ...exceptions import InvalidMatchID, DemoAlreadyUploaded
 
@@ -106,16 +106,20 @@ class MatchAPI(HTTPEndpoint):
         parameters : dict
         """
 
+        match = request.state.community.match(
+            request.path_params["match_id"]
+        )
+
         try:
-            await request.state.community.match(
-                request.path_params["match_id"]
-            ).update(**parameters)
+            await match.update(**parameters)
         except InvalidMatchID:
             raise
         else:
             await (CommunityCache(
                 request.state.community.community_name
-            ).scoreboard(request.path_params["match_id"])).expire()
+            ).scoreboard(request.path_params["match_id"])).set(
+                await match.scoreboard()
+            )
 
             return response()
 
@@ -129,16 +133,20 @@ class MatchAPI(HTTPEndpoint):
         request : Request
         """
 
+        match = request.state.community.match(
+            request.path_params["match_id"]
+        )
+
         try:
-            await request.state.community.match(
-                request.path_params["match_id"]
-            ).end()
+            await match.end()
         except InvalidMatchID:
             raise
         else:
             await (CommunityCache(
                 request.state.community.community_name
-            ).scoreboard(request.path_params["match_id"])).expire()
+            ).scoreboard(request.path_params["match_id"])).set(
+                await match.scoreboard()
+            )
 
             return response()
 
@@ -206,6 +214,8 @@ class CreateMatchAPI(HTTPEndpoint):
             request.state.community.community_name
         ).matches()).expire()
 
+        await CommunitiesCache().expire()
+
         return response({"match_id": match.match_id})
 
 
@@ -241,7 +251,9 @@ class DemoUploadAPI(HTTPEndpoint):
 
                 await (CommunityCache(
                     request.state.community.community_name
-                ).scoreboard(request.path_params["match_id"])).expire()
+                ).scoreboard(request.path_params["match_id"])).set(
+                    await match.scoreboard()
+                )
 
                 return response()
             else:

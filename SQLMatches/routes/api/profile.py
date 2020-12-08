@@ -60,6 +60,6 @@ class ProfileAPI(HTTPEndpoint):
             request.path_params["steam_id"]
         )).profile_api_schema
 
-        await cache.set(data)
+        await cache.set(data, ttl=30)
 
         return response(data)

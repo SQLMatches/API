@@ -48,7 +48,7 @@ class VersionAPI(HTTPEndpoint):
         cache = VersionCache(request.path_params["version"])
         cache_get = await cache.get()
         if cache_get:
-            return response({"message": cache_get})
+            return response(cache_get)
 
         message = await Sessions.database.fetch_val(
             select([update_table.c.message]).select_form(
@@ -59,8 +59,10 @@ class VersionAPI(HTTPEndpoint):
         )
 
         if message:
-            await cache.set(message)
+            data = {"message": cache_get}
 
-            return response({"message": message})
+            await cache.set(data)
+
+            return response(data)
         else:
             return error_response("InvalidVersion")
