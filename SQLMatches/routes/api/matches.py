@@ -118,7 +118,7 @@ class MatchAPI(HTTPEndpoint):
             await (CommunityCache(
                 request.state.community.community_name
             ).scoreboard(request.path_params["match_id"])).set(
-                await match.scoreboard()
+                (await match.scoreboard()).scoreboard_api_schema
             )
 
             return response()
@@ -142,11 +142,14 @@ class MatchAPI(HTTPEndpoint):
         except InvalidMatchID:
             raise
         else:
-            await (CommunityCache(
-                request.state.community.community_name
-            ).scoreboard(request.path_params["match_id"])).set(
-                await match.scoreboard()
-            )
+            try:
+                await (CommunityCache(
+                    request.state.community.community_name
+                ).scoreboard(request.path_params["match_id"])).set(
+                    (await match.scoreboard()).scoreboard_api_schema
+                )
+            except InvalidMatchID:
+                pass
 
             return response()
 
@@ -214,7 +217,10 @@ class CreateMatchAPI(HTTPEndpoint):
             request.state.community.community_name
         ).matches()).expire()
 
-        await CommunitiesCache().expire()
+        cache = CommunitiesCache()
+
+        await cache.matches().expire()
+        await cache.expire()
 
         return response({"match_id": match.match_id})
 
@@ -252,7 +258,7 @@ class DemoUploadAPI(HTTPEndpoint):
                 await (CommunityCache(
                     request.state.community.community_name
                 ).scoreboard(request.path_params["match_id"])).set(
-                    await match.scoreboard()
+                    (await match.scoreboard()).scoreboard_api_schema
                 )
 
                 return response()

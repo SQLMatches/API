@@ -96,13 +96,17 @@ class Match:
         """
 
         query = select([scoreboard_total_table.c.demo_status]).select_from(
-            scoreboard_total_table
+            scoreboard_total_table.join(
+                scoreboard_table,
+                scoreboard_table.c.match_id ==
+                scoreboard_total_table.c.match_id
+            )
         ).where(
             and_(
                 scoreboard_total_table.c.match_id == self.match_id,
                 scoreboard_total_table.c.community_name == self.community_name
             )
-        )
+        ).distinct()
 
         demo_status = await Sessions.database.fetch_val(query=query)
         if demo_status is not None:

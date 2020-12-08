@@ -83,8 +83,8 @@ ROUTES = [
         Mount("/match", routes=[
             Route("/create/", CreateMatchAPI),  # Tested - POST @ 0.1.0
             Mount("/{match_id}", routes=[
-                Route("/upload/", DemoUploadAPI),
                 Route("/", MatchAPI),  # Tested - GET, POST, DELETE @ 0.1.0
+                Route("/upload/", DemoUploadAPI),
                 Route("/download/", DownloadPage, name="DownloadPage")
             ])
         ]),
