@@ -147,7 +147,7 @@ class MatchesAPI(HTTPEndpoint):
     @use_args({"search": fields.Str(), "page": fields.Int(),
                "desc": fields.Bool(), "require_scoreboard": fields.Bool()})
     @requires("community")
-    @LIMITER.limit("30/minute")
+    @LIMITER.limit("60/minute")
     async def post(self, request: Request, parameters: dict) -> response:
         """Used to list matches.
 

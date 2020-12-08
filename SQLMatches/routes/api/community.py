@@ -42,7 +42,7 @@ from ...caches import CommunityCache
 
 class CommunityOwnerAPI(HTTPEndpoint):
     @requires("is_owner")
-    @LIMITER.limit("20/minute")
+    @LIMITER.limit("30/minute")
     async def get(self, request: Request) -> response:
         """Gets community details including secrets.
 
@@ -145,7 +145,7 @@ class CommunityCreateAPI(HTTPEndpoint):
                "max_upload": fields.Float(),
                "demos": fields.Bool()})
     @requires("steam_login")
-    @LIMITER.limit("10/minute")
+    @LIMITER.limit("60/minute")
     async def post(self, request: Request, parameters: dict) -> response:
         """Used to create a community.
 
@@ -169,7 +169,7 @@ class CommunityCreateAPI(HTTPEndpoint):
         return response(community.api_schema)
 
     @requires("steam_login")
-    @LIMITER.limit("30/minute")
+    @LIMITER.limit("60/minute")
     async def get(self, request: Request) -> response:
         """Used to valid if user owns a community.
 

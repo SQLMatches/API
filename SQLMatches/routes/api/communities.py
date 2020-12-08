@@ -41,7 +41,7 @@ class CommunitiesAPI(HTTPEndpoint):
     @use_args({"search": fields.Str(), "page": fields.Int(),
                "desc": fields.Bool()})
     @requires("steam_login")
-    @LIMITER.limit("30/minute")
+    @LIMITER.limit("60/minute")
     async def post(self, request: Request, parameters: dict) -> response:
         """Used to get communities.
 
@@ -67,7 +67,7 @@ class CommunityMatchesAPI(HTTPEndpoint):
     @use_args({"search": fields.Str(), "page": fields.Int(),
                "desc": fields.Bool()})
     @requires("steam_login")
-    @LIMITER.limit("30/minute")
+    @LIMITER.limit("60/minute")
     async def post(self, request: Request, parameters: dict) -> response:
         """Used to get matches outside of community context.
 
@@ -90,7 +90,7 @@ class CommunityMatchesAPI(HTTPEndpoint):
 
 class MatchesCommunitiesAPI(HTTPEndpoint):
     @requires("steam_login")
-    @LIMITER.limit("30/minute")
+    @LIMITER.limit("60/minute")
     async def get(self, request: Request) -> response:
         """Used to get communities & matches in one response,
            ideally I'd be using GraphQL but this is the only
