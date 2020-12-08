@@ -160,13 +160,13 @@ class CommunityCreateAPI(HTTPEndpoint):
             **parameters
         )
 
-        WebsocketQueue.communities.append(community.api_schema)
+        WebsocketQueue.communities.append(community.community_api_schema)
 
         await CommunityCache(parameters["community_name"]).set(
-            community.api_schema
+            community.community_api_schema
         )
 
-        return response(community.api_schema)
+        return response(community.community_api_schema)
 
     @requires("steam_login")
     @LIMITER.limit("60/minute")
