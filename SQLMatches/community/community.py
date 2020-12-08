@@ -305,7 +305,7 @@ class Community:
         return await Sessions.database.fetch_val(query=query) > 0
 
     async def matches(self, search: str = None,
-                      page: int = 1, limit: int = 5, desc: bool = True,
+                      page: int = 1, limit: int = 10, desc: bool = True,
                       require_scoreboard: bool = True
                       ) -> AsyncGenerator[MatchModel, Match]:
         """Lists matches.

@@ -39,7 +39,7 @@ from .community.models import CommunityModel, MatchModel
 
 
 async def communities(search: str = None, page: int = 1,
-                      limit: int = 5, desc: bool = True
+                      limit: int = 10, desc: bool = True
                       ) -> AsyncGenerator[CommunityModel, Community]:
     """Used to list communities.
 
@@ -89,7 +89,7 @@ async def communities(search: str = None, page: int = 1,
 
 
 async def matches(search: str = None,
-                  page: int = 1, limit: int = 5, desc: bool = True
+                  page: int = 1, limit: int = 10, desc: bool = True
                   ) -> AsyncGenerator[MatchModel, Match]:
     """Lists matches.
 
