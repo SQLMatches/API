@@ -237,7 +237,7 @@ class SQLMatches(Starlette):
 
         try:
             Sessions.cache = Cache(Cache.REDIS)
-            await Sessions.cache.increment("connection")
+            await Sessions.cache.exists("connection")
         except ConnectionRefusedError:
             Sessions.cache = Cache(Cache.MEMORY)
             logger.warning(
