@@ -21,6 +21,8 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
+import logging
+
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
@@ -43,9 +45,7 @@ from .resources import Sessions, Config
 from .settings import (
     DatabaseSettings,
     B2UploadSettings,
-    LocalUploadSettings,
-    MemoryCacheSettings,
-    RedisCacheSettings
+    LocalUploadSettings
 )
 from .middlewares import APIAuthentication
 
@@ -70,10 +70,11 @@ __author_email__ = "wardpearce@protonmail.com"
 __license__ = "GPL v3"
 
 
+logger = logging.getLogger("SQLMatches")
+
+
 class SQLMatches(Starlette):
     def __init__(self, database_settings: DatabaseSettings,
-                 cache_settings: Tuple[MemoryCacheSettings,
-                                       RedisCacheSettings],
                  friendly_url: str,
                  upload_settings: Tuple[
                      B2UploadSettings, LocalUploadSettings] = None,
@@ -92,7 +93,6 @@ class SQLMatches(Starlette):
         ----------
         database_settings: DatabaseSettings
             Holds settings for database.
-        cache_settings: (MemoryCacheSettings, RedisCacheSettings)
         upload_settings: (B2UploadSettings, LocalUploadSettings)
             by default None
         friendly_url: str
@@ -164,7 +164,6 @@ class SQLMatches(Starlette):
         Config.ws_loop_time = ws_loop_time
 
         self.community_types = community_types
-        self.cache_settings = cache_settings
 
         database_url = "://{}:{}@{}:{}/{}?charset=utf8mb4".format(
             database_settings.username,
@@ -192,6 +191,7 @@ class SQLMatches(Starlette):
                 Sessions.bucket = self.b2.bucket(
                     upload_settings.bucket_id
                 )
+
             elif isinstance(upload_settings, LocalUploadSettings):
                 Config.demo_pathway = upload_settings.pathway
                 Config.cdn_url = None
@@ -203,6 +203,10 @@ class SQLMatches(Starlette):
                         StaticFiles(directory=upload_settings.pathway),
                         name="demos"
                     )
+                )
+
+                logger.warning(
+                    "Using local storage for demos, use b2 for production."
                 )
         else:
             Config.upload_type = None
@@ -231,10 +235,14 @@ class SQLMatches(Starlette):
         await Sessions.database.connect()
         Sessions.aiohttp = ClientSession()
 
-        if type(self.cache_settings) == RedisCacheSettings:
+        try:
             Sessions.cache = Cache(Cache.REDIS)
-        else:
-            Sessions.cache = Cache()
+            await Sessions.cache.increment("connection")
+        except ConnectionRefusedError:
+            Sessions.cache = Cache(Cache.MEMORY)
+            logger.warning(
+                "Memory cache being used, use redis for production."
+            )
 
         if Config.upload_type == B2UploadSettings:
             await self.b2.authorize()

@@ -24,7 +24,7 @@ from aiohttp import BasicAuth
 
 from .. import SQLMatches, COMMUNITY_TYPES
 from ..settings import (
-    DatabaseSettings, LocalUploadSettings, MemoryCacheSettings
+    DatabaseSettings, LocalUploadSettings
 )
 
 from ..community import create_community, Community
@@ -43,7 +43,6 @@ sqlmatches = SQLMatches(
         port=3306,
         database="sqlmatches"
     ),
-    cache_settings=MemoryCacheSettings(),
     upload_settings=LocalUploadSettings(),
     friendly_url="http://127.0.0.1:8000"
 )

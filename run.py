@@ -25,7 +25,6 @@ from SQLMatches import SQLMatches
 from SQLMatches.settings import (
     DatabaseSettings,
     LocalUploadSettings,
-    MemoryCacheSettings
 )
 
 import uvicorn
@@ -39,7 +38,6 @@ app = SQLMatches(
         port=3306,
         database="sqlmatches"
     ),
-    cache_settings=MemoryCacheSettings(),
     upload_settings=LocalUploadSettings(),
     friendly_url="http://localhost/api"
 )

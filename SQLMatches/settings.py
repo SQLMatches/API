@@ -118,19 +118,3 @@ class LocalUploadSettings:
 
         if not path.exists(self.pathway):
             mkdir(self.pathway)
-
-
-class MemoryCacheSettings:
-    def __init__(self) -> None:
-        """Caches into memory, shouldn't be used for production.
-        """
-
-        super().__init__()
-
-
-class RedisCacheSettings:
-    def __init__(self) -> None:
-        """Caches to redis, production use!
-        """
-
-        super().__init__()
