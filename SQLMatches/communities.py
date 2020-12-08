@@ -83,12 +83,9 @@ async def communities(search: str = None, page: int = 1,
         )
 
     async for community in Sessions.database.iterate(query=query):
-        yield CommunityModel({
-            "community_name": community["community_name"],
-            "owner_id": community["owner_id"],
-            "timestamp": community["timestamp"],
-            "disabled": community["disabled"]
-        }), Community(community["community_name"])
+        yield (
+            CommunityModel(**community), Community(community["community_name"])
+        )
 
 
 async def matches(search: str = None,
@@ -164,4 +161,4 @@ async def matches(search: str = None,
     ).limit(limit).offset((page - 1) * limit if page > 1 else 0)
 
     async for row in Sessions.database.iterate(query=query):
-        yield MatchModel(row), Match(row["match_id"], row["community_name"])
+        yield MatchModel(**row), Match(row["match_id"], row["community_name"])

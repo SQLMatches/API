@@ -349,6 +349,6 @@ class Match:
             })
 
         if scoreboard_data["match"]:
-            return ScoreboardModel(scoreboard_data)
+            return ScoreboardModel(**scoreboard_data)
         else:
             raise InvalidMatchID()

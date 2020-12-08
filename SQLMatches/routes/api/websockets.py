@@ -29,7 +29,7 @@ from websockets.exceptions import WebSocketException
 from asyncio import sleep
 
 from ...resources import Config, WebsocketQueue
-from ...api import websocket_response
+from ...responses import websocket_response
 
 
 class CommunityWebsocketAPI(WebSocketEndpoint):

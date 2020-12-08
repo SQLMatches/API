@@ -121,7 +121,7 @@ class Community:
         ])
 
         return CommunityStatsModel(
-            await Sessions.database.fetch_one(query)
+            **await Sessions.database.fetch_one(query)
         )
 
     async def profile(self, steam_id: str) -> ProfileModel:
@@ -165,7 +165,7 @@ class Community:
 
         row = await Sessions.database.fetch_one(query=query)
         if row:
-            return ProfileModel(row)
+            return ProfileModel(**row)
         else:
             raise InvalidSteamID()
 
@@ -397,7 +397,7 @@ class Community:
         ).limit(limit).offset((page - 1) * limit if page > 1 else 0)
 
         async for row in Sessions.database.iterate(query=query):
-            yield MatchModel(row), self.match(row["match_id"])
+            yield MatchModel(**row), self.match(row["match_id"])
 
     async def get(self) -> CommunityModel:
         """Gets base community details.
@@ -434,7 +434,7 @@ class Community:
 
         row = await Sessions.database.fetch_one(query=query)
         if row:
-            return CommunityModel(row)
+            return CommunityModel(**row)
         else:
             raise InvalidCommunity()
 

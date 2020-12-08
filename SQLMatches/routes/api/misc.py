@@ -28,7 +28,7 @@ from sqlalchemy import select
 
 from ...resources import Sessions
 from ...tables import update_table
-from ...api import response, error_response
+from ...responses import error_response, response
 from ...caches import VersionCache
 
 from .rate_limiter import LIMITER

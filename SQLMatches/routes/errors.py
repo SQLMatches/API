@@ -27,7 +27,7 @@ from webargs_starlette import WebargsHTTPException
 from slowapi.errors import RateLimitExceeded
 from starlette.exceptions import HTTPException
 
-from ..api import error_response
+from ..responses import error_response
 
 
 def server_error(request: Request, exc: HTTPException) -> error_response:

@@ -246,4 +246,4 @@ async def create_community(steam_id: str, community_name: str,
         await CommunityCache(community_name).set(data)
         await CommunitiesCache().expire()
 
-        return CommunityModel(data), Community(community_name)
+        return CommunityModel(**data), Community(community_name)

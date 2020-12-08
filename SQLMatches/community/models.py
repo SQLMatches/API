@@ -20,124 +20,223 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
-from typing import Generator
+from typing import Any, Dict, Generator, List
+from datetime import datetime
 
 from ..resources import Config
 
 
+class _DepthStatsModel:
+    def __init__(self, kills: int, deaths: int,
+                 headshots: int, shots_hit: int,
+                 shots_fired: int) -> None:
+        self.kills = kills
+        self.deaths = deaths
+        self.headshots = headshots
+        self.shots_hit = shots_hit
+        self.shots_fired = shots_fired
+
+    @property
+    def kdr(self) -> float:
+        return (
+            round(self.kills / self.deaths, 2)
+            if self.kills > 0 and self.deaths > 0 else 0.00
+        )
+
+    @property
+    def hs_percentage(self) -> float:
+        return (
+            round((self.headshots / self.kills) * 100, 2)
+            if self.kills > 0 and self.headshots > 0 else 0.00
+        )
+
+    @property
+    def hit_percentage(self) -> float:
+        return (
+            round((self.shots_hit / self.shots_fired) * 100, 2)
+            if self.shots_fired > 0 and self.shots_hit > 0 else 0.00
+        )
+
+
 class CommunityModel:
-    def __init__(self, data) -> None:
-        self.master_api_key = data["api_key"] if "api_key" in data else None
-        self.owner_id = data["owner_id"]
-        self.disabled = data["disabled"]
-        self.community_name = data["community_name"]
-        self.timestamp = data["timestamp"]
+    def __init__(self, owner_id: str, disabled: bool, community_name: str,
+                 timestamp: datetime, api_key: str = None, **kwargs) -> None:
+        self.master_api_key = api_key
+        self.owner_id = owner_id
+        self.disabled = disabled
+        self.community_name = community_name
+        self.timestamp = timestamp
+
+    @property
+    def community_api_schema(self) -> dict:
+        return {
+            "community_name": self.community_name,
+            "master_api_key": self.master_api_key,
+            "owner_id": self.owner_id,
+            "disabled": self.disabled,
+            "timestamp": self.timestamp.strftime(Config.timestamp_format),
+        }
 
 
 class MatchModel:
-    def __init__(self, data) -> None:
-        self.match_id = data["match_id"]
-        self.timestamp = data["timestamp"]
-        self.status = data["status"]
-        self.demo_status = data["demo_status"]
-        self.map = data["map"]
-        self.team_1_name = data["team_1_name"]
-        self.team_2_name = data["team_2_name"]
-        self.team_1_score = data["team_1_score"]
-        self.team_2_score = data["team_2_score"]
-        self.team_1_side = data["team_1_side"]
-        self.team_2_side = data["team_2_side"]
+    def __init__(self, match_id: str, timestamp: datetime, status: int,
+                 demo_status: int, map: str, team_1_name: str,
+                 team_2_name: str, team_1_score: int,
+                 team_2_score: int, team_1_side: int,
+                 team_2_side: int, community_name: str) -> None:
+        self.match_id = match_id
+        self.timestamp = timestamp
+        self.status = status
+        self.demo_status = demo_status
+        self.map = map
+        self.team_1_name = team_1_name
+        self.team_2_name = team_2_name
+        self.team_1_score = team_1_score
+        self.team_2_score = team_2_score
+        self.team_1_side = team_1_side
+        self.team_2_side = team_2_side
         self.cover_image = "{}maps/{}".format(
             Config.url,
             Config.map_images[self.map] if self.map in Config.map_images
             else "invalid.png"
         )
-        self.community_name = data["community_name"]
+        self.community_name = community_name
+
+    @property
+    def match_api_schema(self) -> dict:
+        return {
+            "match_id": self.match_id,
+            "timestamp": self.timestamp.strftime(Config.timestamp_format),
+            "status": self.status,
+            "demo_status": self.demo_status,
+            "map": self.map,
+            "team_1_name": self.team_1_name,
+            "team_2_name": self.team_2_name,
+            "team_1_score": self.team_1_score,
+            "team_2_score": self.team_2_score,
+            "team_1_side": self.team_1_side,
+            "team_2_side": self.team_2_side,
+            "cover_image": self.cover_image,
+            "community_name": self.community_name
+        }
 
 
-class ProfileModel:
-    def __init__(self, data) -> None:
-        self.name = data["name"]
-        self.steam_id = data["steam_id"]
-        self.kills = data["kills"]
-        self.headshots = data["headshots"]
-        self.assists = data["assists"]
-        self.deaths = data["deaths"]
-        self.kdr = round(data["kills"] / data["deaths"], 2) \
-            if data["kills"] > 0 and data["deaths"] > 0 else 0.00
-        self.hs_percentage = round(
-            (data["headshots"] / data["kills"]) * 100, 2) \
-            if data["kills"] > 0 and data["headshots"] > 0 else 0.00
-        self.hit_percentage = round(
-            (data["shots_hit"] / data["shots_fired"]) * 100, 2) \
-            if data["shots_fired"] > 0 and data["shots_hit"] > 0 else 0.00
-        self.shots_fired = data["shots_fired"]
-        self.shots_hit = data["shots_hit"]
-        self.mvps = data["mvps"]
-        self.timestamp = data["timestamp"]
+class ProfileModel(_DepthStatsModel):
+    def __init__(self, name: str, steam_id: str, kills: int, headshots: int,
+                 assists: int, deaths: int, shots_fired: int, shots_hit: int,
+                 mvps: int, timestamp: datetime) -> None:
+        _DepthStatsModel.__init__(self, kills, deaths,
+                                  headshots, shots_hit, shots_fired)
+
+        self.name = name
+        self.steam_id = steam_id
+        self.kills = kills
+        self.headshots = headshots
+        self.assists = assists
+        self.deaths = deaths
+        self.shots_fired = shots_fired
+        self.shots_hit = shots_hit
+        self.mvps = mvps
+        self.timestamp = timestamp
+
+    @property
+    def profile_api_schema(self) -> dict:
+        return {
+            "name": self.name,
+            "steam_id": self.steam_id,
+            "kills": self.kills,
+            "headshots": self.headshots,
+            "assists": self.assists,
+            "deaths": self.deaths,
+            "kdr": self.kdr,
+            "hs_percentage": self.hs_percentage,
+            "hit_percentage": self.hit_percentage,
+            "shots_fired": self.shots_fired,
+            "shots_hit": self.shots_hit,
+            "mvps": self.mvps,
+            "timestamp": self.timestamp.strftime(Config.timestamp_format)
+        }
 
 
-class ScoreboardPlayerModel:
-    def __init__(self, data) -> None:
-        self.name = data["name"]
-        self.steam_id = data["steam_id"]
-        self.team = data["team"]
-        self.alive = data["alive"]
-        self.ping = data["ping"]
-        self.kills = data["kills"]
-        self.headshots = data["headshots"]
-        self.assists = data["assists"]
-        self.deaths = data["deaths"]
-        self.kdr = round(data["kills"] / data["deaths"], 2) \
-            if data["kills"] > 0 and data["deaths"] > 0 else 0.00
-        self.hs_percentage = round(
-            (data["headshots"] / data["kills"]) * 100, 2) \
-            if data["kills"] > 0 and data["headshots"] > 0 else 0.00
-        self.hit_percentage = round(
-            (data["shots_hit"] / data["shots_fired"]) * 100, 2) \
-            if data["shots_fired"] > 0 and data["shots_hit"] > 0 else 0.00
-        self.shots_fired = data["shots_fired"]
-        self.shots_hit = data["shots_hit"]
-        self.mvps = data["mvps"]
-        self.score = data["score"]
-        self.disconnected = data["disconnected"]
+class _ScoreboardPlayerModel(_DepthStatsModel):
+    def __init__(self, name: str, steam_id: str, team: int,
+                 alive: bool, ping: int, kills: int, headshots: int,
+                 assists: int, deaths: int, shots_fired: int,
+                 shots_hit: int, mvps: int, score: int,
+                 disconnected: bool) -> None:
+        _DepthStatsModel.__init__(self, kills, deaths,
+                                  headshots, shots_hit, shots_fired)
+
+        self.name = name
+        self.steam_id = steam_id
+        self.team = team
+        self.alive = alive
+        self.ping = ping
+        self.kills = kills
+        self.headshots = headshots
+        self.assists = assists
+        self.deaths = deaths
+        self.shots_fired = shots_fired
+        self.shots_hit = shots_hit
+        self.mvps = mvps
+        self.score = score
+        self.disconnected = disconnected
 
 
 class ScoreboardModel(MatchModel):
-    def __init__(self, data) -> None:
-        MatchModel.__init__(self, data["match"])
+    def __init__(self, team_1: List[Dict[str, Any]],
+                 team_2: List[Dict[str, Any]], match: Dict[str, Any]) -> None:
+        MatchModel.__init__(self, **match)
 
-        self.__team_1 = data["team_1"]
-        self.__team_2 = data["team_2"]
+        self.__team_1 = team_1
+        self.__team_2 = team_2
 
-    def team_1(self) -> Generator[ScoreboardPlayerModel, None, None]:
+    def team_1(self) -> Generator[_ScoreboardPlayerModel, None, None]:
         """Lists players in team 1.
 
         Yields
         ------
-        ScoreboardPlayerModel
+        _ScoreboardPlayerModel
             Holds player data.
         """
 
         for player in self.__team_1:
-            yield ScoreboardPlayerModel(player)
+            yield _ScoreboardPlayerModel(**player)
 
-    def team_2(self) -> Generator[ScoreboardPlayerModel, None, None]:
+    def team_2(self) -> Generator[_ScoreboardPlayerModel, None, None]:
         """Lists players in team 2.
 
         Yields
         ------
-        ScoreboardPlayerModel
+        _ScoreboardPlayerModel
             Holds player data.
         """
 
         for player in self.__team_2:
-            yield ScoreboardPlayerModel(player)
+            yield _ScoreboardPlayerModel(**player)
+
+    @property
+    def scoreboard_api_schema(self) -> dict:
+        return {
+            **self.match_api_schema,
+            "team_1": self.__team_1,
+            "team_2": self.__team_2
+        }
 
 
 class CommunityStatsModel:
-    def __init__(self, data: dict) -> None:
-        self.total_matches = data["total_matches"]
-        self.active_matches = data["active_matches"]
-        self.stored_demos = data["stored_demos"]
-        self.total_users = data["total_users"]
+    def __init__(self, total_matches: int, active_matches: int,
+                 stored_demos: int, total_users: int) -> None:
+        self.total_matches = total_matches
+        self.active_matches = active_matches
+        self.stored_demos = stored_demos
+        self.total_users = total_users
+
+    @property
+    def stats_api_schema(self) -> dict:
+        return {
+            "total_matches": self.total_matches,
+            "active_matches": self.active_matches,
+            "stored_demos": self.stored_demos,
+            "total_users": self.total_users
+        }

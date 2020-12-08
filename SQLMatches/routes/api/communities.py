@@ -30,8 +30,7 @@ from webargs_starlette import use_args
 
 from .rate_limiter import LIMITER
 
-from ...api import response
-from ...api.model_convertor import community_to_dict, match_to_dict
+from ...responses import response
 
 from ...communities import communities, matches
 
@@ -57,7 +56,7 @@ class CommunitiesAPI(HTTPEndpoint):
         """
 
         data = [
-            community_to_dict(community) async for community, _ in
+            community.community_api_schema async for community, _ in
             communities(**parameters)
         ]
 
@@ -82,7 +81,7 @@ class CommunityMatchesAPI(HTTPEndpoint):
         """
 
         data = [
-            match_to_dict(match) async for match, _ in
+            match.match_api_schema async for match, _ in
             matches(**parameters)
         ]
 
@@ -116,7 +115,7 @@ class MatchesCommunitiesAPI(HTTPEndpoint):
             data["communities"] = cache_get
         else:
             data["communities"] = [
-                community_to_dict(community) async for community, _ in
+                community.community_api_schema async for community, _ in
                 communities()
             ]
 
@@ -127,7 +126,7 @@ class MatchesCommunitiesAPI(HTTPEndpoint):
             data["matches"] = matches_cache_get
         else:
             data["matches"] = [
-                match_to_dict(match) async for match, _ in matches()
+                match.match_api_schema async for match, _ in matches()
             ]
 
             await matches_cache.set(data["matches"])

@@ -34,7 +34,6 @@ setup(
     license=get_variable("__license__"),
     packages=[
         "SQLMatches",
-        "SQLMatches.api",
         "SQLMatches.community",
         "SQLMatches.routes",
         "SQLMatches.routes.api",

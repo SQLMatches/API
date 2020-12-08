@@ -33,8 +33,7 @@ from .rate_limiter import LIMITER
 from ...community import create_community, get_community_from_owner
 from ...exceptions import InvalidCommunity, NoOwnership
 
-from ...api import response
-from ...api.model_convertor import community_to_dict, community_stats_to_dict
+from ...responses import response
 
 from ...resources import WebsocketQueue
 
@@ -64,7 +63,7 @@ class CommunityOwnerAPI(HTTPEndpoint):
             except InvalidCommunity:
                 raise
             else:
-                data["community"] = community_to_dict(community)
+                data["community"] = community.community_api_schema
 
                 await cache.set(data["community"])
 
@@ -73,9 +72,9 @@ class CommunityOwnerAPI(HTTPEndpoint):
         if stats_cache_get:
             data["stats"] = stats_cache_get
         else:
-            data["stats"] = community_stats_to_dict(
+            data["stats"] = (
                 await request.state.community.stats()
-            )
+            ).stats_api_schema
 
             await stats_cache.set(data["stats"])
 
@@ -161,15 +160,13 @@ class CommunityCreateAPI(HTTPEndpoint):
             **parameters
         )
 
-        data = community_to_dict(community)
-
-        WebsocketQueue.communities.append(data)
+        WebsocketQueue.communities.append(community.api_schema)
 
         await CommunityCache(parameters["community_name"]).set(
-            data
+            community.api_schema
         )
 
-        return response(data)
+        return response(community.api_schema)
 
     @requires("steam_login")
     @LIMITER.limit("30/minute")

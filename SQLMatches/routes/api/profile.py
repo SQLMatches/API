@@ -27,8 +27,7 @@ from starlette.requests import Request
 
 from .rate_limiter import LIMITER
 
-from ...api import response
-from ...api.model_convertor import profile_to_dict
+from ...responses import response
 
 from ...caches import CommunityCache
 
@@ -57,11 +56,9 @@ class ProfileAPI(HTTPEndpoint):
         if cache_get:
             return response(cache_get)
 
-        data = profile_to_dict(
-            await request.state.community.profile(
-                request.path_params["steam_id"]
-            )
-        )
+        data = (await request.state.community.profile(
+            request.path_params["steam_id"]
+        )).profile_api_schema
 
         await cache.set(data)
 

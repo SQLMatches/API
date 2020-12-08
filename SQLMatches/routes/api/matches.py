@@ -31,8 +31,7 @@ from webargs_starlette import use_args
 
 from .rate_limiter import LIMITER
 
-from ...api import response
-from ...api.model_convertor import scoreboard_to_dict, match_to_dict
+from ...responses import response
 
 from ...demos import Demo
 
@@ -84,7 +83,7 @@ class MatchAPI(HTTPEndpoint):
         except InvalidMatchID:
             raise
         else:
-            data = scoreboard_to_dict(scoreboard)
+            data = scoreboard.scoreboard_api_schema
 
             await cache.set(data)
 
@@ -168,14 +167,14 @@ class MatchesAPI(HTTPEndpoint):
                 return response(cache_get)
 
             data = [
-                match_to_dict(match) async for match, _ in
+                match.match_api_schema async for match, _ in
                 request.state.community.matches(**parameters)
             ]
 
             await cache.set(data)
         else:
             data = [
-                match_to_dict(match) async for match, _ in
+                match.match_api_schema async for match, _ in
                 request.state.community.matches(**parameters)
             ]
 
