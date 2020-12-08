@@ -67,6 +67,8 @@ async def communities(search: str = None, page: int = 1,
         community_table.c.disabled
     ]).select_from(
         community_table
+    ).where(
+        community_table.c.disabled == False  # noqa: E712
     ).order_by(
         community_table.c.timestamp.desc() if desc
         else community_table.c.timestamp.asc()
@@ -89,7 +91,7 @@ async def communities(search: str = None, page: int = 1,
 
 
 async def matches(search: str = None,
-                  page: int = 1, limit: int = 5, desc: bool = True
+                  page: int = 1, limit: int = 3, desc: bool = True
                   ) -> AsyncGenerator[MatchModel, Match]:
     """Lists matches.
 
@@ -135,6 +137,10 @@ async def matches(search: str = None,
             ).join(
                 user_table,
                 user_table.c.steam_id == scoreboard_table.c.steam_id
+            ).join(
+                community_table,
+                community_table.c.community_name ==
+                scoreboard_total_table.c.community_name
             )
         ).where(
             or_(
@@ -145,17 +151,23 @@ async def matches(search: str = None,
                 user_table.c.name.like(like_search),
                 user_table.c.steam_id == search
             )
-        ).distinct()
+        )
     else:
         query = query.select_from(
             scoreboard_total_table.join(
                 scoreboard_table,
                 scoreboard_table.c.match_id ==
                 scoreboard_total_table.c.match_id
+            ).join(
+                community_table,
+                community_table.c.community_name ==
+                scoreboard_total_table.c.community_name
             )
-        ).distinct()
+        )
 
-    query = query.order_by(
+    query = query.where(
+        community_table.c.disabled == False  # noqa: E712
+    ).distinct().order_by(
         scoreboard_total_table.c.timestamp.desc() if desc
         else scoreboard_total_table.c.timestamp.asc()
     ).limit(limit).offset((page - 1) * limit if page > 1 else 0)

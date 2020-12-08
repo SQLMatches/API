@@ -371,7 +371,7 @@ class Community:
                         user_table.c.steam_id == search
                     )
                 )
-            ).distinct()
+            )
         elif require_scoreboard:
             query = query.select_from(
                 scoreboard_total_table.join(
@@ -382,7 +382,7 @@ class Community:
             ).where(
                 scoreboard_total_table.c.community_name
                 == self.community_name,
-            ).distinct()
+            )
         else:
             query = query.select_from(
                 scoreboard_total_table
@@ -391,7 +391,7 @@ class Community:
                 == self.community_name,
             )
 
-        query = query.order_by(
+        query = query.distinct().order_by(
             scoreboard_total_table.c.timestamp.desc() if desc
             else scoreboard_total_table.c.timestamp.asc()
         ).limit(limit).offset((page - 1) * limit if page > 1 else 0)
