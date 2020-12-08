@@ -56,6 +56,7 @@ class Config:
     cost_per_mb: float
     timestamp_format: str
     ws_loop_time: float
+    root_steam_id_hashed: str
     # Type string, type ID
     community_types: Dict[str, int] = {}
 

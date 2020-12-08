@@ -22,6 +22,7 @@ DEALINGS IN THE SOFTWARE.
 
 
 import logging
+import bcrypt
 
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
@@ -76,6 +77,7 @@ logger = logging.getLogger("SQLMatches")
 class SQLMatches(Starlette):
     def __init__(self, database_settings: DatabaseSettings,
                  friendly_url: str,
+                 root_steam_id: str,
                  upload_settings: Tuple[
                      B2UploadSettings, LocalUploadSettings] = None,
                  map_images: Dict[str, str] = MAP_IMAGES,
@@ -97,6 +99,8 @@ class SQLMatches(Starlette):
             by default None
         friendly_url: str
             URL to project.
+        root_steam_id: str
+            Steam ID 64 to give root access.
         map_images: dict
             Key as actual map name, value as image name.
         upload_delay: float
@@ -162,6 +166,9 @@ class SQLMatches(Starlette):
         Config.cost_per_mb = cost_per_mb
         Config.timestamp_format = timestamp_format
         Config.ws_loop_time = ws_loop_time
+        Config.root_steam_id_hashed = bcrypt.hashpw(
+            root_steam_id.encode(), bcrypt.gensalt()
+        )
 
         self.community_types = community_types
 

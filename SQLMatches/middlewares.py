@@ -20,7 +20,9 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
+
 import binascii
+import bcrypt
 from base64 import b64decode
 
 from typing import Tuple
@@ -38,6 +40,7 @@ from .community import (
     api_key_to_community,
     get_community_from_owner
 )
+from .resources import Config
 from .exceptions import InvalidAPIKey, NoOwnership
 
 
@@ -105,6 +108,12 @@ class APIAuthentication(AuthenticationBackend):
                         if (community.community_name ==
                                 request.query_params["community_name"]):
                             scopes.append("is_owner")
+
+                        if (Config.root_steam_id_hashed ==
+                                bcrypt.hashpw(
+                                    request.session["steam_id"].encode(),
+                                    Config.root_steam_id_hashed)):
+                            scopes.append("root_login")
 
                 request.state.community = Community(
                     request.query_params["community_name"]

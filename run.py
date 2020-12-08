@@ -39,7 +39,8 @@ app = SQLMatches(
         database="sqlmatches"
     ),
     upload_settings=LocalUploadSettings(),
-    friendly_url="http://localhost/api"
+    friendly_url="http://localhost/api",
+    root_steam_id="76561198077228213"
 )
 
 
