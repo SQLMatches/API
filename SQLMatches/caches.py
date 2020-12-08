@@ -22,7 +22,7 @@ DEALINGS IN THE SOFTWARE.
 
 
 from typing import Any
-from ..resources import Sessions
+from .resources import Sessions
 
 
 class CacheBase:
