@@ -89,7 +89,7 @@ async def communities(search: str = None, page: int = 1,
 
 
 async def matches(search: str = None,
-                  page: int = 1, limit: int = 10, desc: bool = True
+                  page: int = 1, limit: int = 5, desc: bool = True
                   ) -> AsyncGenerator[MatchModel, Match]:
     """Lists matches.
 
