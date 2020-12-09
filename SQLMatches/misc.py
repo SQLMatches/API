@@ -23,6 +23,8 @@ DEALINGS IN THE SOFTWARE.
 from typing import List
 from os import path
 from secrets import token_urlsafe
+from asyncio import sleep
+from random import randint
 
 from .tables import community_type_table
 from .resources import Sessions, Config
@@ -80,3 +82,17 @@ class SessionKey:
             f.write(key)
 
         return key
+
+
+async def websocket_sleep(min_int: int = 1, max_int: int = 4) -> None:
+    """Randomizes websocket timer to help load balance.
+
+    Parameters
+    ----------
+    min_int : int, optional
+        by default 1
+    max_int : int, optional
+        by default 4
+    """
+
+    await sleep(Config.ws_loop_time + randint(min_int, max_int))

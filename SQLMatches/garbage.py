@@ -34,8 +34,8 @@ async def handle_queue():
         old_matches = list(WebsocketQueue.matches)
         old_communities = list(WebsocketQueue.communities)
 
-        # Giving the websocket a extra 2 seconds.
-        await sleep(Config.ws_loop_time + 2)
+        # Giving the websocket a extra 5 seconds.
+        await sleep(Config.ws_loop_time + 5)
 
         # Speed isn't really a concern here.
         # This process will only be ran once every X amount of seconds.

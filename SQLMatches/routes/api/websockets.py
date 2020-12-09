@@ -26,10 +26,9 @@ from starlette.websockets import WebSocket
 
 from websockets.exceptions import WebSocketException
 
-from asyncio import sleep
-
 from ...resources import Config, WebsocketQueue
 from ...responses import websocket_response
+from ...misc import websocket_sleep
 
 
 class CommunityWebsocketAPI(WebSocketEndpoint):
@@ -48,7 +47,7 @@ class CommunityWebsocketAPI(WebSocketEndpoint):
                     except WebSocketException:
                         break
 
-                await sleep(Config.ws_loop_time)
+                await websocket_sleep()
 
         await websocket.close()
 
@@ -74,6 +73,6 @@ class ScoreboardWebsocketAPI(WebSocketEndpoint):
                     except WebSocketException:
                         break
 
-                await sleep(Config.ws_loop_time)
+                await websocket_sleep()
 
         await websocket.close()
