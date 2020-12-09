@@ -40,12 +40,13 @@ class CommunityWebsocketAPI(WebSocketEndpoint):
 
         if "steam_login" in websocket.auth.scopes:
             while True:
-                try:
-                    await websocket.send_json(
-                        websocket_response(WebsocketQueue.communities)
-                    )
-                except WebSocketException:
-                    break
+                if WebsocketQueue.communities:
+                    try:
+                        await websocket.send_json(
+                            websocket_response(WebsocketQueue.communities)
+                        )
+                    except WebSocketException:
+                        break
 
                 await sleep(Config.ws_loop_time)
 
