@@ -23,6 +23,7 @@ DEALINGS IN THE SOFTWARE.
 
 import logging
 import bcrypt
+import backblaze
 
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
@@ -37,7 +38,6 @@ from aiohttp import ClientSession
 from aiojobs import create_scheduler
 from aiocache import Cache
 
-import backblaze
 from starlette.routing import Mount
 from starlette.staticfiles import StaticFiles
 
