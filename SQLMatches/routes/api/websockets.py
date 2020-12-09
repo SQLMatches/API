@@ -26,7 +26,7 @@ from starlette.websockets import WebSocket
 
 from websockets.exceptions import WebSocketException
 
-from ...resources import Config, WebsocketQueue
+from ...resources import WebsocketQueue
 from ...responses import websocket_response
 from ...misc import websocket_sleep
 
