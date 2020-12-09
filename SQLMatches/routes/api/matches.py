@@ -33,6 +33,8 @@ from .rate_limiter import LIMITER
 
 from ...responses import response
 
+from ...resources import WebsocketQueue
+
 from ...demos import Demo
 
 from ...caches import CommunityCache, CommunitiesCache
@@ -115,11 +117,16 @@ class MatchAPI(HTTPEndpoint):
         except InvalidMatchID:
             raise
         else:
+            scoreboard = await match.scoreboard()
+            data = scoreboard.scoreboard_api_schema
+
             await (CommunityCache(
                 request.state.community.community_name
             ).scoreboard(request.path_params["match_id"])).set(
-                (await match.scoreboard()).scoreboard_api_schema
+                data
             )
+
+            WebsocketQueue.scoreboards[scoreboard.match_id] = data
 
             return response()
 
@@ -143,13 +150,19 @@ class MatchAPI(HTTPEndpoint):
             raise
         else:
             try:
+                scoreboard = await match.scoreboard()
+            except InvalidMatchID:
+                pass
+            else:
+                data = scoreboard.scoreboard_api_schema
+
                 await (CommunityCache(
                     request.state.community.community_name
                 ).scoreboard(request.path_params["match_id"])).set(
-                    (await match.scoreboard()).scoreboard_api_schema
+                    data
                 )
-            except InvalidMatchID:
-                pass
+
+                WebsocketQueue.scoreboards[scoreboard.match_id] = data
 
             return response()
 
@@ -220,7 +233,6 @@ class CreateMatchAPI(HTTPEndpoint):
         cache = CommunitiesCache()
 
         await cache.matches().expire()
-        await cache.expire()
 
         return response({"match_id": match.match_id})
 
@@ -255,11 +267,16 @@ class DemoUploadAPI(HTTPEndpoint):
                 else:
                     await match.set_demo_status(3)
 
+                scoreboard = await match.scoreboard()
+                data = scoreboard.scoreboard_api_schema
+
                 await (CommunityCache(
                     request.state.community.community_name
                 ).scoreboard(request.path_params["match_id"])).set(
-                    (await match.scoreboard()).scoreboard_api_schema
+                    data
                 )
+
+                WebsocketQueue.scoreboards[scoreboard.match_id] = data
 
                 return response()
             else:

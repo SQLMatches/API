@@ -62,7 +62,7 @@ class Config:
 
 
 class WebsocketQueue:
-    scoreboards: list = []
+    scoreboards: dict = {}
     matches: list = []
     communities: list = []
 
