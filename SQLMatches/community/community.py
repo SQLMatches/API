@@ -21,7 +21,7 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-from typing import AsyncGenerator, List
+from typing import AsyncGenerator, List, Tuple
 from uuid import uuid4
 from datetime import datetime
 from secrets import token_urlsafe
@@ -208,7 +208,7 @@ class Community:
     async def create_match(self, team_1_name: str, team_2_name: str,
                            team_1_side: int, team_2_side: int,
                            team_1_score: int, team_2_score: int,
-                           map_name: str) -> Match:
+                           map_name: str) -> Tuple[MatchModel, Match]:
         """Creates a match.
 
         Returns
@@ -218,6 +218,9 @@ class Community:
         """
 
         match_id = str(uuid4())
+        now = datetime.now()
+        status = 1
+        demo_status = 0
 
         query = scoreboard_total_table.insert().values(
             match_id=match_id,
@@ -229,14 +232,20 @@ class Community:
             community_name=self.community_name,
             team_1_score=team_1_score,
             team_2_score=team_2_score,
-            status=1,
-            demo_status=0,
-            timestamp=datetime.now()
+            status=status,
+            demo_status=demo_status,
+            timestamp=now
         )
 
         await Sessions.database.execute(query=query)
 
-        return self.match(match_id)
+        return MatchModel(
+            match_id=match_id, timestamp=now, status=status,
+            demo_status=demo_status, map=map_name, team_1_name=team_1_name,
+            team_2_name=team_2_name, team_1_score=team_1_score,
+            team_2_score=team_2_score, team_1_side=team_1_side,
+            team_2_side=team_2_side, community_name=self.community_name
+        ), self.match(match_id)
 
     def match(self, match_id) -> Match:
         """Handles interactions with a match

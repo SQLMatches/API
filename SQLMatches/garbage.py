@@ -46,10 +46,10 @@ async def handle_queue():
 
         for matches in old_matches:
             if matches in WebsocketQueue.matches:
-                WebsocketQueue.communities.remove(matches)
+                WebsocketQueue.matches.remove(matches)
 
         for scoreboard in old_scoreboards:
-            for new_scoreboard in WebsocketQueue.scoreboards:
+            for new_scoreboard in dict(WebsocketQueue.scoreboards):
                 if scoreboard == new_scoreboard:
                     WebsocketQueue.scoreboards.pop(
                         scoreboard

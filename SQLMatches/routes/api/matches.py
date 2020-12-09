@@ -32,13 +32,9 @@ from webargs_starlette import use_args
 from .rate_limiter import LIMITER
 
 from ...responses import response
-
 from ...resources import WebsocketQueue
-
 from ...demos import Demo
-
 from ...caches import CommunityCache, CommunitiesCache
-
 from ...exceptions import InvalidMatchID, DemoAlreadyUploaded
 
 
@@ -120,13 +116,16 @@ class MatchAPI(HTTPEndpoint):
             scoreboard = await match.scoreboard()
             data = scoreboard.scoreboard_api_schema
 
-            await (CommunityCache(
-                request.state.community.community_name
-            ).scoreboard(request.path_params["match_id"])).set(
+            await ((CommunitiesCache()).matches()).expire()
+
+            cache = CommunityCache(request.state.community.community_name)
+            await (cache.matches()).expire()
+            await (cache.scoreboard(request.path_params["match_id"])).set(
                 data
             )
 
             WebsocketQueue.scoreboards[scoreboard.match_id] = data
+            WebsocketQueue.matches.append(scoreboard.match_api_schema)
 
             return response()
 
@@ -156,13 +155,16 @@ class MatchAPI(HTTPEndpoint):
             else:
                 data = scoreboard.scoreboard_api_schema
 
-                await (CommunityCache(
-                    request.state.community.community_name
-                ).scoreboard(request.path_params["match_id"])).set(
+                await ((CommunitiesCache()).matches()).expire()
+
+                cache = CommunityCache(request.state.community.community_name)
+                await (cache.matches()).expire()
+                await (cache.scoreboard(request.path_params["match_id"])).set(
                     data
                 )
 
                 WebsocketQueue.scoreboards[scoreboard.match_id] = data
+                WebsocketQueue.matches.append(scoreboard.match_api_schema)
 
             return response()
 
@@ -224,7 +226,7 @@ class CreateMatchAPI(HTTPEndpoint):
         parameters : dict
         """
 
-        match = await request.state.community.create_match(**parameters)
+        data, match = await request.state.community.create_match(**parameters)
 
         await (CommunityCache(
             request.state.community.community_name
@@ -233,6 +235,8 @@ class CreateMatchAPI(HTTPEndpoint):
         cache = CommunitiesCache()
 
         await cache.matches().expire()
+
+        WebsocketQueue.matches.append(data.match_api_schema)
 
         return response({"match_id": match.match_id})
 
@@ -277,6 +281,7 @@ class DemoUploadAPI(HTTPEndpoint):
                 )
 
                 WebsocketQueue.scoreboards[scoreboard.match_id] = data
+                WebsocketQueue.matches.append(scoreboard.match_api_schema)
 
                 return response()
             else:

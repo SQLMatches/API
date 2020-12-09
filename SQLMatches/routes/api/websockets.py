@@ -52,6 +52,27 @@ class CommunityWebsocketAPI(WebSocketEndpoint):
         await websocket.close()
 
 
+class MatchesWebsocketAPI(WebSocketEndpoint):
+    encoding = "json"
+
+    async def on_connect(self, websocket: WebSocket) -> None:
+        await websocket.accept()
+
+        if "steam_login" in websocket.auth.scopes:
+            while True:
+                if WebsocketQueue.matches:
+                    try:
+                        await websocket.send_json(
+                            websocket_response(WebsocketQueue.matches)
+                        )
+                    except WebSocketException:
+                        break
+
+                await websocket_sleep()
+
+        await websocket.close()
+
+
 class ScoreboardWebsocketAPI(WebSocketEndpoint):
     encoding = "json"
 

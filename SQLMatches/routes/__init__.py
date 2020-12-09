@@ -53,7 +53,8 @@ from .api.communities import (
 from .api.profile import ProfileAPI
 from .api.websockets import (
     CommunityWebsocketAPI,
-    ScoreboardWebsocketAPI
+    ScoreboardWebsocketAPI,
+    MatchesWebsocketAPI
 )
 from .steam import SteamValidate, SteamLogin, SteamLogout
 from .errors import (
@@ -106,7 +107,10 @@ ROUTES = [
             Route("/all/", MatchesCommunitiesAPI)
         ]),
         Mount("/ws", routes=[
-            WebSocketRoute("/communities/", CommunityWebsocketAPI),
+            Mount("/communities/", routes=[
+                WebSocketRoute("/", CommunityWebsocketAPI),
+                WebSocketRoute("/matches/", MatchesWebsocketAPI)
+            ]),
             WebSocketRoute("/scoreboard/{match_id}", ScoreboardWebsocketAPI)
         ])
     ]),
