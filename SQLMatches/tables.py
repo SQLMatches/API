@@ -135,15 +135,41 @@ community_table = Table(
         Float
     ),
     Column(
-        "paid",
-        Boolean
-    ),
-    Column(
         "monthly_cost",
         Float
     ),
     mysql_engine="InnoDB",
     mysql_charset="utf8mb4"
+)
+
+
+payment_table = Table(
+    "payment",
+    metadata,
+    Column(
+        "community_name",
+        String(length=32),
+        ForeignKey("community.community_name"),
+        primary_key=True
+    ),
+    Column(
+        "payment_id",
+        String(length=36),
+        primary_key=True
+    ),
+    Column(
+        "amount_paid",
+        Float
+    ),
+    Column(
+        "timestamp",
+        TIMESTAMP,
+        default=datetime.now
+    ),
+    PrimaryKeyConstraint(
+        "payment_id",
+        "community_name"
+    ),
 )
 
 

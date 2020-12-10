@@ -37,7 +37,7 @@ from ...responses import response
 
 from ...resources import WebsocketQueue
 
-from ...caches import CommunityCache
+from ...caches import CommunityCache, CommunitiesCache
 
 
 class CommunityOwnerAPI(HTTPEndpoint):
@@ -115,6 +115,12 @@ class CommunityOwnerAPI(HTTPEndpoint):
         })
 
 
+class CommunityOwnerUpdateAPI(HTTPEndpoint):
+    @requires("is_owner")
+    async def post(self, request: Request, parameters: dict) -> response:
+        return response()
+
+
 class CommunityOwnerMatchesAPI(HTTPEndpoint):
     @use_args({"matches": fields.List(fields.String(), required=True)})
     @requires("is_owner")
@@ -169,6 +175,7 @@ class CommunityCreateAPI(HTTPEndpoint):
         await CommunityCache(parameters["community_name"]).set(
             community.community_api_schema
         )
+        await CommunitiesCache().expire()
 
         return response(community.community_api_schema)
 

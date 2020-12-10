@@ -30,6 +30,8 @@ from sqlalchemy.sql import select, and_, or_, func
 
 from ..resources import Sessions, Config, DemoQueue
 
+from ..misc import monthly_cost_formula
+
 from ..tables import (
     community_table,
     scoreboard_total_table,
@@ -41,7 +43,9 @@ from ..tables import (
 
 from ..exceptions import (
     InvalidCommunity,
-    InvalidSteamID
+    InvalidSteamID,
+    InvalidCommunityType,
+    InvalidUploadSize
 )
 from .models import (
     CommunityModel,
@@ -63,6 +67,63 @@ class Community:
         """
 
         self.community_name = community_name
+
+    async def update(self, demos: bool = None,
+                     community_type: str = None,
+                     max_upload: float = None) -> CommunityModel:
+        """Used to update a community.
+
+        Parameters
+        ----------
+        demos : bool, optional
+            by default None
+        community_type : str, optional
+            by default None
+        max_upload : float, optional
+            by default None
+
+        Returns
+        -------
+        CommunityModel
+
+        Raises
+        ------
+        InvalidUploadSize
+        InvalidCommunityType
+        """
+
+        if (max_upload < Config.free_upload_size
+                or max_upload > Config.max_upload_size):
+            raise InvalidUploadSize()
+
+        if community_type not in Config.community_types:
+            raise InvalidCommunityType()
+
+        values = {}
+
+        if community_type is not None:
+            values["community_type_id"] = Config.community_types[
+                community_type
+            ]
+
+        if demos is not None:
+            values["demos"] = demos
+
+        if max_upload:
+            values["max_upload"] = max_upload
+            values["monthly_cost"] = monthly_cost_formula(
+                max_upload
+            )
+
+        query = community_table.update().values(
+            **values
+        ).where(
+            community_table.c.community_name == self.community_name
+        )
+
+        await Sessions.database.execute(query)
+
+        return await self.get()
 
     async def stats(self) -> CommunityStatsModel:
         """Gets basic stats about community.

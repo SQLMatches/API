@@ -43,7 +43,8 @@ from .api.misc import VersionAPI
 from .api.community import (
     CommunityOwnerAPI,
     CommunityCreateAPI,
-    CommunityOwnerMatchesAPI
+    CommunityOwnerMatchesAPI,
+    CommunityOwnerUpdateAPI
 )
 from .api.communities import (
     CommunitiesAPI,
@@ -98,6 +99,7 @@ ROUTES = [
             Mount("/owner", routes=[
                 Route("/", CommunityOwnerAPI),
                 Route("/matches/", CommunityOwnerMatchesAPI),
+                Route("/update/", CommunityOwnerUpdateAPI)
             ]),
             Route("/", CommunityCreateAPI),
         ]),

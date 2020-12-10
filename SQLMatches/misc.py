@@ -96,3 +96,10 @@ async def websocket_sleep(min_int: int = 1, max_int: int = 4) -> None:
     """
 
     await sleep(Config.ws_loop_time + randint(min_int, max_int))
+
+
+def monthly_cost_formula(max_upload: float) -> float:
+    return round(
+        (max_upload - Config.free_upload_size) * Config.cost_per_mb,
+        2
+    )

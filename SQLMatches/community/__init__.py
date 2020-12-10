@@ -37,7 +37,7 @@ from ..tables import (
     api_key_table
 )
 
-from ..caches import CommunitiesCache, CommunityCache
+from ..misc import monthly_cost_formula
 
 from ..user import create_user
 
@@ -211,11 +211,7 @@ async def create_community(steam_id: str, community_name: str,
         timestamp=now,
         community_type_id=community_type_id,
         max_upload=max_upload,
-        paid=max_upload == Config.free_upload_size,
-        monthly_cost=round(
-            (max_upload - Config.free_upload_size) * Config.cost_per_mb,
-            2
-        )
+        monthly_cost=monthly_cost_formula(max_upload)
     )
 
     try:
@@ -242,8 +238,5 @@ async def create_community(steam_id: str, community_name: str,
             "community_name": community_name,
             "timestamp": now
         }
-
-        await CommunityCache(community_name).set(data)
-        await CommunitiesCache().expire()
 
         return CommunityModel(**data), Community(community_name)
