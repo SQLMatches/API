@@ -51,18 +51,3 @@ def response(data: Any = None, **kwargs) -> JSONResponse:
     """
 
     return JSONResponse({"data": data, "error": False}, **kwargs)
-
-
-def websocket_response(data: Any) -> dict:
-    """Used to respond to websocket.
-
-    Parameters
-    ----------
-    data : Any
-
-    Returns
-    -------
-    dict
-    """
-
-    return {"data": data}

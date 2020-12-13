@@ -35,7 +35,7 @@ from ...exceptions import InvalidCommunity, NoOwnership
 
 from ...responses import response
 
-from ...resources import WebsocketQueue
+from ...resources import Sessions
 
 from ...caches import CommunityCache, CommunitiesCache
 
@@ -170,7 +170,11 @@ class CommunityCreateAPI(HTTPEndpoint):
             **parameters
         )
 
-        WebsocketQueue.communities.append(community.community_api_schema)
+        await Sessions.websocket.emit(
+            "community_updates",
+            community.community_api_schema,
+            room="ws_room"
+        )
 
         await CommunityCache(parameters["community_name"]).set(
             community.community_api_schema

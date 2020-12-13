@@ -25,14 +25,14 @@ from starlette.endpoints import HTTPEndpoint
 from starlette.authentication import requires
 from starlette.requests import Request
 
-from marshmallow import Schema
+from marshmallow import Schema, validate
 from webargs import fields
 from webargs_starlette import use_args
 
 from .rate_limiter import LIMITER
 
 from ...responses import response
-from ...resources import WebsocketQueue
+from ...resources import Sessions
 from ...demos import Demo
 from ...caches import CommunityCache, CommunitiesCache
 from ...exceptions import InvalidMatchID, DemoAlreadyUploaded
@@ -87,11 +87,15 @@ class MatchAPI(HTTPEndpoint):
 
             return response(data)
 
-    @use_args({"team_1_score": fields.Int(required=True),
-               "team_2_score": fields.Int(required=True),
-               "players": fields.List(fields.Nested(PlayersSchema)),
-               "team_1_side": fields.Int(),
-               "team_2_side": fields.Int(),
+    @use_args({"team_1_score": fields.Int(required=True,
+                                          validates=validate.Range(0)),
+               "team_2_score": fields.Int(required=True,
+                                          validates=validate.Range(0)),
+               "players": fields.List(fields.Nested(PlayersSchema),
+                                      validates=validate.Length(2, 30)
+                                      ),
+               "team_1_side": fields.Int(validates=validate.Range(0, 1)),
+               "team_2_side": fields.Int(validates=validate.Range(0, 1)),
                "end": fields.Bool()})
     @requires("master")
     @LIMITER.limit("30/minute")
@@ -124,8 +128,17 @@ class MatchAPI(HTTPEndpoint):
                 data
             )
 
-            WebsocketQueue.scoreboards[scoreboard.match_id] = data
-            WebsocketQueue.matches.append(scoreboard.match_api_schema)
+            await Sessions.websocket.emit(
+                "match_update",
+                scoreboard.match_api_schema,
+                room="ws_room"
+            )
+
+            await Sessions.websocket.emit(
+                request.path_params["match_id"],
+                data,
+                room="ws_room"
+            )
 
             return response()
 
@@ -163,8 +176,17 @@ class MatchAPI(HTTPEndpoint):
                     data
                 )
 
-                WebsocketQueue.scoreboards[scoreboard.match_id] = data
-                WebsocketQueue.matches.append(scoreboard.match_api_schema)
+                await Sessions.websocket.emit(
+                    "match_update",
+                    scoreboard.match_api_schema,
+                    room="ws_room"
+                )
+
+                await Sessions.websocket.emit(
+                    request.path_params["match_id"],
+                    data,
+                    room="ws_room"
+                )
 
             return response()
 
@@ -210,10 +232,14 @@ class MatchesAPI(HTTPEndpoint):
 class CreateMatchAPI(HTTPEndpoint):
     @use_args({"team_1_name": fields.Str(min=1, max=64, required=True),
                "team_2_name": fields.Str(min=1, max=64, required=True),
-               "team_1_side": fields.Int(required=True),
-               "team_2_side": fields.Int(required=True),
-               "team_1_score": fields.Int(required=True),
-               "team_2_score": fields.Int(required=True),
+               "team_1_side": fields.Int(required=True,
+                                         validates=validate.Range(0, 1)),
+               "team_2_side": fields.Int(required=True,
+                                         validates=validate.Range(0, 1)),
+               "team_1_score": fields.Int(required=True,
+                                          validates=validate.Range(0)),
+               "team_2_score": fields.Int(required=True,
+                                          validates=validate.Range(0)),
                "map_name": fields.Str(min=1, max=24, required=True)})
     @requires("master")
     @LIMITER.limit("30/minute")
@@ -236,7 +262,11 @@ class CreateMatchAPI(HTTPEndpoint):
 
         await cache.matches().expire()
 
-        WebsocketQueue.matches.append(data.match_api_schema)
+        await Sessions.websocket.emit(
+            "match_update",
+            data,
+            room="ws_room"
+        )
 
         return response({"match_id": match.match_id})
 
@@ -280,8 +310,17 @@ class DemoUploadAPI(HTTPEndpoint):
                     data
                 )
 
-                WebsocketQueue.scoreboards[scoreboard.match_id] = data
-                WebsocketQueue.matches.append(scoreboard.match_api_schema)
+                await Sessions.websocket.emit(
+                    "match_update",
+                    scoreboard.match_api_schema,
+                    room="ws_room"
+                )
+
+                await Sessions.websocket.emit(
+                    request.path_params["match_id"],
+                    data,
+                    room="ws_room"
+                )
 
                 return response()
             else:

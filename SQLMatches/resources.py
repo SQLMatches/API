@@ -22,6 +22,8 @@ DEALINGS IN THE SOFTWARE.
 
 
 import os
+import socketio
+
 from typing import Any, Dict
 
 from backblaze.bucket.awaiting import AwaitingBucket
@@ -35,6 +37,10 @@ class Sessions:
     aiohttp: ClientSession
     bucket: AwaitingBucket
     cache: Cache
+    websocket = socketio.AsyncServer(
+        async_mode="asgi",
+        cors_allowed_origins=[]
+    )
 
 
 class Config:
@@ -59,12 +65,6 @@ class Config:
     root_steam_id_hashed: str
     # Type string, type ID
     community_types: Dict[str, int] = {}
-
-
-class WebsocketQueue:
-    scoreboards: dict = {}
-    matches: list = []
-    communities: list = []
 
 
 class DemoQueue:

@@ -20,80 +20,27 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
+from starlette.authentication import AuthenticationError
 
-from starlette.endpoints import WebSocketEndpoint
-from starlette.websockets import WebSocket
-
-from websockets.exceptions import WebSocketException
-
-from ...resources import WebsocketQueue
-from ...responses import websocket_response
-from ...misc import websocket_sleep
+from ...resources import Sessions
 
 
-class CommunityWebsocketAPI(WebSocketEndpoint):
-    encoding = "json"
+@Sessions.websocket.event
+async def connect(sid, environ: dict):
+    if ("asgi.scope" in environ and "auth" in environ["asgi.scope"]
+            and "steam_login" in environ["asgi.scope"]["auth"].scopes):
 
-    async def on_connect(self, websocket: WebSocket) -> None:
-        await websocket.accept()
-
-        if "steam_login" in websocket.auth.scopes:
-            while True:
-                if WebsocketQueue.communities:
-                    try:
-                        await websocket.send_json(
-                            websocket_response(WebsocketQueue.communities)
-                        )
-                    except WebSocketException:
-                        break
-
-                await websocket_sleep()
-
-        await websocket.close()
+        Sessions.websocket.enter_room(
+            sid,
+            "ws_room"
+        )
+    else:
+        raise AuthenticationError("steam_login scope required")
 
 
-class MatchesWebsocketAPI(WebSocketEndpoint):
-    encoding = "json"
-
-    async def on_connect(self, websocket: WebSocket) -> None:
-        await websocket.accept()
-
-        if "steam_login" in websocket.auth.scopes:
-            while True:
-                if WebsocketQueue.matches:
-                    try:
-                        await websocket.send_json(
-                            websocket_response(WebsocketQueue.matches)
-                        )
-                    except WebSocketException:
-                        break
-
-                await websocket_sleep()
-
-        await websocket.close()
-
-
-class ScoreboardWebsocketAPI(WebSocketEndpoint):
-    encoding = "json"
-
-    async def on_connect(self, websocket: WebSocket) -> None:
-        await websocket.accept()
-
-        if "steam_login" in websocket.auth.scopes:
-            while True:
-                if (websocket.path_params["match_id"] in
-                        WebsocketQueue.scoreboards):
-                    try:
-                        await websocket.send_json(
-                            websocket_response(
-                                WebsocketQueue.scoreboards[
-                                    websocket.path_params["match_id"]
-                                ]
-                            )
-                        )
-                    except WebSocketException:
-                        break
-
-                await websocket_sleep()
-
-        await websocket.close()
+@Sessions.websocket.event
+async def disconnect(sid):
+    Sessions.websocket.leave_room(
+        sid,
+        "ws_room"
+    )

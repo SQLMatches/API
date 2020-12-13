@@ -22,38 +22,7 @@ DEALINGS IN THE SOFTWARE.
 
 from asyncio import sleep
 
-from .resources import WebsocketQueue, Config, DemoQueue
-
-
-async def handle_queue():
-    """Handles cleaning up WS queue.
-    """
-
-    while True:
-        old_scoreboards = dict(WebsocketQueue.scoreboards)
-        old_matches = list(WebsocketQueue.matches)
-        old_communities = list(WebsocketQueue.communities)
-
-        # Giving the websocket a extra 5 seconds.
-        await sleep(Config.ws_loop_time + 5)
-
-        # Speed isn't really a concern here.
-        # This process will only be ran once every X amount of seconds.
-
-        for community in old_communities:
-            if community in WebsocketQueue.communities:
-                WebsocketQueue.communities.remove(community)
-
-        for matches in old_matches:
-            if matches in WebsocketQueue.matches:
-                WebsocketQueue.matches.remove(matches)
-
-        for scoreboard in old_scoreboards:
-            for new_scoreboard in dict(WebsocketQueue.scoreboards):
-                if scoreboard == new_scoreboard:
-                    WebsocketQueue.scoreboards.pop(
-                        scoreboard
-                    )
+from .resources import DemoQueue
 
 
 async def demo_delete():
@@ -68,6 +37,5 @@ async def demo_delete():
 
 
 GRABAGE_HANDLERS_TO_SPAWN = [
-    handle_queue,
     demo_delete
 ]

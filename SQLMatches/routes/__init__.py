@@ -21,7 +21,9 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-from starlette.routing import Route, Mount, WebSocketRoute
+import socketio
+
+from starlette.routing import Route, Mount
 from starlette.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException
 
@@ -30,9 +32,9 @@ from slowapi.errors import RateLimitExceeded
 from webargs_starlette import WebargsHTTPException
 
 from ..exceptions import SQLMatchesException
+from ..resources import Config, Sessions
 
 # Routes
-from .download import DownloadPage
 from .api.matches import (
     MatchAPI,
     CreateMatchAPI,
@@ -52,11 +54,12 @@ from .api.communities import (
     MatchesCommunitiesAPI
 )
 from .api.profile import ProfileAPI
-from .api.websockets import (
-    CommunityWebsocketAPI,
-    ScoreboardWebsocketAPI,
-    MatchesWebsocketAPI
-)
+
+# A bit gross, but because socketio uses singletons, we
+# need to do this.
+from .api.websockets import *  # noqa: F403, F401
+
+from .download import DownloadPage
 from .steam import SteamValidate, SteamLogin, SteamLogout
 from .errors import (
     server_error,
@@ -64,8 +67,6 @@ from .errors import (
     rate_limted_error,
     internal_error
 )
-
-from ..resources import Config
 
 
 ERROR_HANDLERS = {
@@ -108,12 +109,6 @@ ROUTES = [
             Route("/matches/", CommunityMatchesAPI),
             Route("/all/", MatchesCommunitiesAPI)
         ]),
-        Mount("/ws", routes=[
-            Mount("/communities/", routes=[
-                WebSocketRoute("/", CommunityWebsocketAPI),
-                WebSocketRoute("/matches/", MatchesWebsocketAPI)
-            ]),
-            WebSocketRoute("/scoreboard/{match_id}", ScoreboardWebsocketAPI)
-        ])
     ]),
+    Mount("/ws/", socketio.ASGIApp(Sessions.websocket))
 ]
