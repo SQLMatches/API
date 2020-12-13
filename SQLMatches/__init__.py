@@ -86,7 +86,6 @@ class SQLMatches(Starlette):
                  max_upload_size: float = 100.0,
                  cost_per_mb: float = 0.15,
                  timestamp_format: str = "%m/%d/%Y-%H:%M:%S",
-                 ws_loop_time: float = 8.0,
                  community_types: List[str] = COMMUNITY_TYPES,
                  **kwargs) -> None:
         """SQLMatches API.
@@ -110,8 +109,6 @@ class SQLMatches(Starlette):
         max_upload_size: float
             by default 100.0
         timestamp_format: str
-        ws_loop_time: int
-            How often to check ws connection, by default 8.0
         community_types: list
             List of community types.
         kwargs
@@ -165,7 +162,6 @@ class SQLMatches(Starlette):
         Config.max_upload_size = max_upload_size
         Config.cost_per_mb = cost_per_mb
         Config.timestamp_format = timestamp_format
-        Config.ws_loop_time = ws_loop_time
         Config.root_steam_id_hashed = bcrypt.hashpw(
             root_steam_id.encode(), bcrypt.gensalt()
         )
