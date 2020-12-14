@@ -60,7 +60,7 @@ class VersionAPI(HTTPEndpoint):
             select([update_table.c.message]).select_form(
                 update_table
             ).where(
-                update_table.c.version >= request.path_params["version"]
+                update_table.c.version == request.path_params["version"]
             )
         )
 
