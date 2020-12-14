@@ -65,7 +65,7 @@ class VersionAPI(HTTPEndpoint):
         )
 
         if message:
-            data = {"message": cache_get}
+            data = {"message": message}
 
             await cache.set(data)
 
