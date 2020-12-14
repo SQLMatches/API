@@ -41,7 +41,7 @@ from .api.matches import (
     DemoUploadAPI,
     MatchesAPI
 )
-from .api.misc import VersionAPI
+from .api.misc import VersionAPI, SchemaAPI
 from .api.community import (
     CommunityOwnerAPI,
     CommunityCreateAPI,
@@ -109,6 +109,7 @@ ROUTES = [
             Route("/matches/", CommunityMatchesAPI),
             Route("/all/", MatchesCommunitiesAPI)
         ]),
+        Route("/schema/", SchemaAPI, include_in_schema=False)
     ]),
     Mount("/ws/", socketio.ASGIApp(Sessions.websocket))
 ]

@@ -21,6 +21,12 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
+from apispec import APISpec
+from apispec.ext.marshmallow import MarshmallowPlugin
+
+from starlette_apispec import APISpecSchemaGenerator
+
+
 MAP_IMAGES = {
     "de_austria": "austria.jpg",
     "de_cache": "cache.jpg",
@@ -42,3 +48,24 @@ COMMUNITY_TYPES = [
     "team",
     "organization"
 ]
+
+
+SCHEMAS = APISpecSchemaGenerator(
+    APISpec(
+        title="SQLMatches API",
+        version="0.1.0",
+        openapi_version="3.0.0",
+        contact={
+            "name": "WardPearce",
+            "url": "https://github.com/SQLMatches",
+            "email": "wardpearce@protonmail.com"
+        },
+        info={
+            "description": """
+SQLMatches is a free & open source software built around
+giving players & communities easy access to match records & demos.
+"""
+        },
+        plugins=[MarshmallowPlugin()],
+    )
+)

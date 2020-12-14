@@ -30,8 +30,14 @@ from ...resources import Sessions
 from ...tables import update_table
 from ...responses import error_response, response
 from ...caches import VersionCache
+from ...constants import SCHEMAS
 
 from .rate_limiter import LIMITER
+
+
+class SchemaAPI(HTTPEndpoint):
+    async def get(self, request: Request):
+        return SCHEMAS.OpenAPIResponse(request)
 
 
 class VersionAPI(HTTPEndpoint):
