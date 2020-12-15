@@ -21,7 +21,6 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-from marshmallow.fields import Bool
 from starlette.endpoints import HTTPEndpoint
 from starlette.authentication import requires
 from starlette.requests import Request
