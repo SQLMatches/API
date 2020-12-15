@@ -203,6 +203,8 @@ async def create_community(steam_id: str, community_name: str,
 
     now = datetime.now()
 
+    monthly_cost = monthly_cost_formula(max_upload)
+
     query = community_table.insert().values(
         community_name=community_name,
         owner_id=steam_id,
@@ -211,7 +213,7 @@ async def create_community(steam_id: str, community_name: str,
         timestamp=now,
         community_type_id=community_type_id,
         max_upload=max_upload,
-        monthly_cost=monthly_cost_formula(max_upload)
+        monthly_cost=monthly_cost
     )
 
     try:
@@ -236,7 +238,9 @@ async def create_community(steam_id: str, community_name: str,
             "owner_id": steam_id,
             "disabled": disabled,
             "community_name": community_name,
-            "timestamp": now
+            "timestamp": now,
+            "monthly_cost": monthly_cost,
+            "max_upload": max_upload
         }
 
         return CommunityModel(**data), Community(community_name)

@@ -488,7 +488,9 @@ class Community:
             api_key_table.c.owner_id,
             community_table.c.disabled,
             community_table.c.community_name,
-            community_table.c.timestamp
+            community_table.c.timestamp,
+            community_table.c.max_upload,
+            community_table.c.monthly_cost
         ]).select_from(
             community_table.join(
                 api_key_table,
