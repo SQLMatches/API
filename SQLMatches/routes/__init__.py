@@ -46,7 +46,8 @@ from .api.community import (
     CommunityOwnerAPI,
     CommunityCreateAPI,
     CommunityOwnerMatchesAPI,
-    CommunityOwnerUpdateAPI
+    CommunityOwnerUpdateAPI,
+    CommunityChangeAPIAccessAPI
 )
 from .api.communities import (
     CommunitiesAPI,
@@ -100,7 +101,8 @@ ROUTES = [
             Mount("/owner", routes=[
                 Route("/", CommunityOwnerAPI),
                 Route("/matches/", CommunityOwnerMatchesAPI),
-                Route("/update/", CommunityOwnerUpdateAPI)
+                Route("/update/", CommunityOwnerUpdateAPI),
+                Route("/access/", CommunityChangeAPIAccessAPI)
             ]),
             Route("/", CommunityCreateAPI),
         ]),

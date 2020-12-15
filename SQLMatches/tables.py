@@ -138,6 +138,10 @@ community_table = Table(
         "monthly_cost",
         Float
     ),
+    Column(
+        "allow_api_access",
+        Boolean
+    ),
     mysql_engine="InnoDB",
     mysql_charset="utf8mb4"
 )

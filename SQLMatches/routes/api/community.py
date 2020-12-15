@@ -21,6 +21,7 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
+from marshmallow.fields import Bool
 from starlette.endpoints import HTTPEndpoint
 from starlette.authentication import requires
 from starlette.requests import Request
@@ -121,6 +122,16 @@ class CommunityOwnerUpdateAPI(HTTPEndpoint):
         return response()
 
 
+class CommunityChangeAPIAccessAPI(HTTPEndpoint):
+    @use_args({"enabled": fields.Bool(required=True)})
+    @requires("is_owner")
+    async def post(self, request: Request, parameters: dict) -> response:
+        await request.state.community.api_access(**parameters)
+        await (CommunityCache(request.state.community.community_name)).expire()
+
+        return response()
+
+
 class CommunityOwnerMatchesAPI(HTTPEndpoint):
     @use_args({"matches": fields.List(fields.String(), required=True)})
     @requires("is_owner")
@@ -153,7 +164,8 @@ class CommunityCreateAPI(HTTPEndpoint):
     @use_args({"community_name": fields.Str(required=True, max=32, min=4),
                "community_type": fields.Str(),
                "max_upload": fields.Float(),
-               "demos": fields.Bool()})
+               "demos": fields.Bool(),
+               "allow_api_access": fields.Bool()})
     @requires("steam_login")
     @LIMITER.limit("60/minute")
     async def post(self, request: Request, parameters: dict) -> response:

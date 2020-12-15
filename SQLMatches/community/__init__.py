@@ -140,7 +140,8 @@ async def owner_exists(steam_id: str) -> bool:
 async def create_community(steam_id: str, community_name: str,
                            disabled: bool = False, demos: bool = True,
                            community_type: str = None,
-                           max_upload: float = 50.0
+                           max_upload: float = 50.0,
+                           allow_api_access: bool = False
                            ) -> Tuple[CommunityModel, Community]:
     """Creates a community.
 
@@ -157,6 +158,8 @@ async def create_community(steam_id: str, community_name: str,
         ["personal", "community", "team", "organization"]
     max_upload: float
         Defaults to 50.0
+    allow_api_access: bool
+        Defaults to False
 
     Returns
     -------
@@ -213,7 +216,8 @@ async def create_community(steam_id: str, community_name: str,
         timestamp=now,
         community_type_id=community_type_id,
         max_upload=max_upload,
-        monthly_cost=monthly_cost
+        monthly_cost=monthly_cost,
+        allow_api_access=allow_api_access
     )
 
     try:
@@ -240,7 +244,8 @@ async def create_community(steam_id: str, community_name: str,
             "community_name": community_name,
             "timestamp": now,
             "monthly_cost": monthly_cost,
-            "max_upload": max_upload
+            "max_upload": max_upload,
+            "allow_api_access": allow_api_access
         }
 
         return CommunityModel(**data), Community(community_name)

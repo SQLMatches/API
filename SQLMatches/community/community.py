@@ -490,7 +490,8 @@ class Community:
             community_table.c.community_name,
             community_table.c.timestamp,
             community_table.c.max_upload,
-            community_table.c.monthly_cost
+            community_table.c.monthly_cost,
+            community_table.c.allow_api_access
         ]).select_from(
             community_table.join(
                 api_key_table,
@@ -519,3 +520,19 @@ class Community:
         ).values(disabled=True)
 
         await Sessions.database.execute(query=query)
+
+    async def api_access(self, enabled: bool) -> None:
+        """Enables / Disables API access.
+
+        Parameters
+        ----------
+        enabled : bool
+        """
+
+        await Sessions.database.execute(
+            community_table.update().where(
+                community_table.c.community_name == self.community_name
+            ).values(
+                allow_api_access=enabled
+            )
+        )

@@ -61,7 +61,7 @@ class _DepthStatsModel:
 class CommunityModel:
     def __init__(self, owner_id: str, disabled: bool, community_name: str,
                  timestamp: datetime, max_upload: float, monthly_cost: float,
-                 api_key: str = None) -> None:
+                 allow_api_access: bool, api_key: str = None) -> None:
         self.master_api_key = api_key
         self.owner_id = owner_id
         self.disabled = disabled
@@ -69,6 +69,7 @@ class CommunityModel:
         self.timestamp = timestamp
         self.max_upload = max_upload
         self.monthly_cost = monthly_cost
+        self.allow_api_access = allow_api_access
 
     @property
     def community_api_schema(self) -> dict:
@@ -79,7 +80,8 @@ class CommunityModel:
             "disabled": self.disabled,
             "timestamp": self.timestamp.strftime(Config.timestamp_format),
             "max_upload": self.max_upload,
-            "monthly_cost": self.monthly_cost
+            "monthly_cost": self.monthly_cost,
+            "allow_api_access": self.allow_api_access
         }
 
 
