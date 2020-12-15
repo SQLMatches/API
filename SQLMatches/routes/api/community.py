@@ -124,6 +124,7 @@ class CommunityOwnerUpdateAPI(HTTPEndpoint):
 class CommunityChangeAPIAccessAPI(HTTPEndpoint):
     @use_args({"enabled": fields.Bool(required=True)})
     @requires("is_owner")
+    @LIMITER.limit("30/minute")
     async def post(self, request: Request, parameters: dict) -> response:
         await request.state.community.api_access(**parameters)
         await (CommunityCache(request.state.community.community_name)).expire()
