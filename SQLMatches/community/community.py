@@ -38,7 +38,8 @@ from ..tables import (
     scoreboard_table,
     user_table,
     api_key_table,
-    statistic_table
+    statistic_table,
+    payment_table
 )
 
 from ..exceptions import (
@@ -50,6 +51,7 @@ from ..exceptions import (
 from .models import (
     CommunityModel,
     MatchModel,
+    PaymentModel,
     ProfileModel,
     CommunityStatsModel
 )
@@ -536,3 +538,22 @@ class Community:
                 allow_api_access=enabled
             )
         )
+
+    async def payments(self) -> AsyncGenerator[PaymentModel, None]:
+        """Used to get payments for a community.
+
+        Yields
+        ------
+        PaymentModel
+        """
+
+        query = select([
+            payment_table.c.payment_id,
+            payment_table.c.amount_paid,
+            payment_table.c.timestamp
+        ]).select_from(payment_table).where(
+            payment_table.c.community_name == self.community_name
+        )
+
+        async for row in Sessions.database.iterate(query):
+            yield PaymentModel(**row)

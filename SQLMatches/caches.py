@@ -62,6 +62,9 @@ class CommunityCache(CacheBase, __MatchesCache, __ScoreboardCache,
     def stats(self, key: str = "-stats") -> CacheBase:
         return CacheBase(self.key + key)
 
+    def payments(self, key: str = "-payments") -> CacheBase:
+        return CacheBase(self.key + key)
+
 
 class CommunitiesCache(CacheBase, __MatchesCache):
     def __init__(self, key: str = "communities") -> None:

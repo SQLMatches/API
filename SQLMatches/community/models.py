@@ -144,6 +144,22 @@ class MatchModel:
         }
 
 
+class PaymentModel:
+    def __init__(self, payment_id: str, amount_paid: float,
+                 timestamp: datetime.now) -> None:
+        self.payment_id = payment_id
+        self.amount_paid = amount_paid
+        self.timestamp = timestamp
+
+    @property
+    def payment_api_schema(self) -> dict:
+        return {
+            "payment_id": self.payment_id,
+            "amount_paid": self.amount_paid,
+            "timestamp": self.timestamp.strftime(Config.timestamp_format)
+        }
+
+
 class ProfileModel(_DepthStatsModel):
     def __init__(self, name: str, steam_id: str, kills: int, headshots: int,
                  assists: int, deaths: int, shots_fired: int, shots_hit: int,

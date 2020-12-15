@@ -132,6 +132,28 @@ class CommunityChangeAPIAccessAPI(HTTPEndpoint):
         return response()
 
 
+class CommunityPaymentAPI(HTTPEndpoint):
+    @requires("is_owner")
+    @LIMITER.limit("30/minute")
+    async def get(self, request: Request) -> response:
+        cache = CommunityCache(
+            request.state.community.community_name
+        ).payments()
+        cache_get = await cache.get()
+
+        if cache_get:
+            return response(cache_get)
+
+        data = [
+            payment.payment_api_schema async for payment in
+            request.state.community.payments()
+        ]
+
+        await cache.set(data)
+
+        return response(data)
+
+
 class CommunityOwnerMatchesAPI(HTTPEndpoint):
     @use_args({"matches": fields.List(fields.String(), required=True)})
     @requires("is_owner")
