@@ -21,6 +21,7 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
+from operator import or_
 import re
 
 from typing import Tuple
@@ -83,7 +84,12 @@ async def api_key_to_community(api_key: str) -> Tuple[Community, bool]:
     ).where(
         and_(
             api_key_table.c.api_key == api_key,
-            community_table.c.disabled == 0
+            community_table.c.disabled == False,  # noqa: E712
+        )
+    ).where(
+        or_(
+            api_key_table.c.master == True,  # noqa: E712
+            community_table.c.allow_api_access == True,  # noqa: E712
         )
     )
 
