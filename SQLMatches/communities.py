@@ -35,12 +35,12 @@ from .tables import (
 
 from .community import Community
 from .community.match import Match
-from .community.models import CommunityModel, MatchModel
+from .community.models import PublicCommunityModel, MatchModel
 
 
 async def communities(search: str = None, page: int = 1,
                       limit: int = 10, desc: bool = True
-                      ) -> AsyncGenerator[CommunityModel, Community]:
+                      ) -> AsyncGenerator[PublicCommunityModel, Community]:
     """Used to list communities.
 
     Parameters
@@ -56,7 +56,7 @@ async def communities(search: str = None, page: int = 1,
 
     Yields
     ------
-    CommunityModel
+    PublicCommunityModel
     Community
     """
 
@@ -86,7 +86,8 @@ async def communities(search: str = None, page: int = 1,
 
     async for community in Sessions.database.iterate(query=query):
         yield (
-            CommunityModel(**community), Community(community["community_name"])
+            PublicCommunityModel(**community),
+            Community(community["community_name"])
         )
 
 
