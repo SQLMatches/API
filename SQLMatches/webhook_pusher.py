@@ -38,6 +38,14 @@ class WebhookPusher:
         self.data = data
 
     async def __send(self, col: Any) -> None:
+        """Sends webhook request.
+
+        Parameters
+        ----------
+        col : Any
+            Column to select.
+        """
+
         query = select([
             col, api_key_table.c.api_key
         ]).select_from(
