@@ -34,7 +34,6 @@ async def connect(sid, environ: dict):
         )
 
 
-
 @Sessions.websocket.event
 async def disconnect(sid):
     Sessions.websocket.leave_room(
