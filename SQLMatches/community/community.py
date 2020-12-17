@@ -30,6 +30,8 @@ from sqlalchemy.sql import select, and_, or_, func
 
 from ..resources import Sessions, Config, DemoQueue
 
+from ..decorators import validate_community_type, validate_max_upload, validate_webhooks
+
 from ..misc import monthly_cost_formula
 
 from ..tables import (
@@ -44,9 +46,7 @@ from ..tables import (
 
 from ..exceptions import (
     InvalidCommunity,
-    InvalidSteamID,
-    InvalidCommunityType,
-    InvalidUploadSize
+    InvalidSteamID
 )
 from .models import (
     CommunityModel,
@@ -70,9 +70,16 @@ class Community:
 
         self.community_name = community_name
 
+    @validate_webhooks
+    @validate_community_type
+    @validate_max_upload
     async def update(self, demos: bool = None,
                      community_type: str = None,
-                     max_upload: float = None) -> CommunityModel:
+                     max_upload: float = None,
+                     match_start_webhook: str = None,
+                     round_end_webhook: str = None,
+                     match_end_webhook: str = None,
+                     allow_api_access: bool = None) -> CommunityModel:
         """Used to update a community.
 
         Parameters
@@ -83,23 +90,19 @@ class Community:
             by default None
         max_upload : float, optional
             by default None
+        match_start_webhook : str, optional
+            by default None
+        round_end_webhook : str, optional
+            by default None
+        match_end_webhook : str, optional
+            by default None
+        allow_api_access : bool, optional
+            by default None
 
         Returns
         -------
         CommunityModel
-
-        Raises
-        ------
-        InvalidUploadSize
-        InvalidCommunityType
         """
-
-        if (max_upload < Config.free_upload_size
-                or max_upload > Config.max_upload_size):
-            raise InvalidUploadSize()
-
-        if community_type not in Config.community_types:
-            raise InvalidCommunityType()
 
         values = {}
 
@@ -111,19 +114,32 @@ class Community:
         if demos is not None:
             values["demos"] = demos
 
+        if allow_api_access is not None:
+            values["allow_api_access"] = allow_api_access
+
         if max_upload:
             values["max_upload"] = max_upload
             values["monthly_cost"] = monthly_cost_formula(
                 max_upload
             )
 
-        query = community_table.update().values(
-            **values
-        ).where(
-            community_table.c.community_name == self.community_name
-        )
+        if match_start_webhook:
+            values["match_start_webhook"] = match_start_webhook
 
-        await Sessions.database.execute(query)
+        if round_end_webhook:
+            values["round_end_webhook"] = round_end_webhook
+
+        if match_end_webhook:
+            values["match_end_webhook"] = match_end_webhook
+
+        if values:
+            query = community_table.update().values(
+                **values
+            ).where(
+                community_table.c.community_name == self.community_name
+            )
+
+            await Sessions.database.execute(query)
 
         return await self.get()
 
@@ -522,22 +538,6 @@ class Community:
         ).values(disabled=True)
 
         await Sessions.database.execute(query=query)
-
-    async def api_access(self, enabled: bool) -> None:
-        """Enables / Disables API access.
-
-        Parameters
-        ----------
-        enabled : bool
-        """
-
-        await Sessions.database.execute(
-            community_table.update().where(
-                community_table.c.community_name == self.community_name
-            ).values(
-                allow_api_access=enabled
-            )
-        )
 
     async def payments(self) -> AsyncGenerator[PaymentModel, None]:
         """Used to get payments for a community.

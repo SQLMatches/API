@@ -132,3 +132,11 @@ class InvalidUploadSize(SQLMatchesException):
 
     def __init__(self, msg="Must be between 50 & 100 MB", *args, **kwargs):
         super().__init__(msg, *args, **kwargs)
+
+
+class InvalidWebhook(SQLMatchesException):
+    """Raised when webhook URL is invalid.
+    """
+
+    def __init__(self, msg="Invalid webhook url", *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)

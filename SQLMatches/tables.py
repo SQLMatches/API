@@ -131,6 +131,21 @@ community_table = Table(
         default=False
     ),
     Column(
+        "match_start_webhook",
+        String(length=255),
+        default=False
+    ),
+    Column(
+        "round_end_webhook",
+        String(length=255),
+        default=False
+    ),
+    Column(
+        "match_end_webhook",
+        String(length=255),
+        default=False
+    ),
+    Column(
         "max_upload",
         Float
     ),

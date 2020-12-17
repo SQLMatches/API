@@ -115,17 +115,6 @@ class CommunityOwnerAPI(HTTPEndpoint):
         })
 
 
-class CommunityChangeAPIAccessAPI(HTTPEndpoint):
-    @use_args({"enabled": fields.Bool(required=True)})
-    @requires("is_owner")
-    @LIMITER.limit("30/minute")
-    async def post(self, request: Request, parameters: dict) -> response:
-        await request.state.community.api_access(**parameters)
-        await (CommunityCache(request.state.community.community_name)).expire()
-
-        return response()
-
-
 class CommunityPaymentAPI(HTTPEndpoint):
     @requires("is_owner")
     @LIMITER.limit("30/minute")
@@ -146,6 +135,23 @@ class CommunityPaymentAPI(HTTPEndpoint):
         await cache.set(data)
 
         return response(data)
+
+
+class CommunityUpdateAPI(HTTPEndpoint):
+    @use_args({"demos": fields.Bool(), "community_type": fields.Str(),
+               "max_upload": fields.Float(),
+               "match_start_webhook": fields.Str(min=5, max=255),
+               "round_end_webhook": fields.Str(min=5, max=255),
+               "match_end_webhook": fields.Str(min=5, max=255),
+               "allow_api_access": fields.Bool()})
+    @requires("is_owner")
+    @LIMITER.limit("30/minute")
+    async def post(self, request: Request, parameters: dict) -> response:
+        await request.state.community.update(**parameters)
+
+        await (CommunityCache(request.state.community.community_name)).expire()
+
+        return response()
 
 
 class CommunityOwnerMatchesAPI(HTTPEndpoint):

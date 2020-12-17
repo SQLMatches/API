@@ -22,7 +22,6 @@ DEALINGS IN THE SOFTWARE.
 
 
 from operator import or_
-import re
 
 from typing import Tuple
 
@@ -38,6 +37,11 @@ from ..tables import (
     api_key_table
 )
 
+from ..decorators import (
+    validate_community_type, validate_max_upload, validate_webhooks,
+    validate_community_name
+)
+
 from ..misc import monthly_cost_formula
 
 from ..user import create_user
@@ -45,9 +49,6 @@ from ..user import create_user
 from ..exceptions import (
     CommunityTaken,
     AlreadyCommunity,
-    InvalidCommunityName,
-    InvalidCommunityType,
-    InvalidUploadSize,
     NoOwnership,
     InvalidAPIKey,
     UserExists
@@ -143,11 +144,18 @@ async def owner_exists(steam_id: str) -> bool:
     return await Sessions.database.fetch_val(query=query) > 0
 
 
+@validate_webhooks
+@validate_community_name
+@validate_community_type
+@validate_max_upload
 async def create_community(steam_id: str, community_name: str,
                            disabled: bool = False, demos: bool = True,
                            community_type: str = None,
                            max_upload: float = 50.0,
-                           allow_api_access: bool = False
+                           allow_api_access: bool = False,
+                           match_start_webhook: str = None,
+                           round_end_webhook: str = None,
+                           match_end_webhook: str = None
                            ) -> Tuple[CommunityModel, Community]:
     """Creates a community.
 
@@ -188,19 +196,9 @@ async def create_community(steam_id: str, community_name: str,
     """
 
     if community_type:
-        if community_type in Config.community_types:
-            community_type_id = Config.community_types[community_type]
-        else:
-            raise InvalidCommunityType()
+        community_type_id = Config.community_types[community_type]
     else:
         community_type_id = None
-
-    if not re.match("^[a-zA-Z0-9]{4,32}$", community_name):
-        raise InvalidCommunityName()
-
-    if (max_upload < Config.free_upload_size
-            or max_upload > Config.max_upload_size):
-        raise InvalidUploadSize()
 
     if await owner_exists(steam_id):
         raise AlreadyCommunity()
@@ -223,7 +221,10 @@ async def create_community(steam_id: str, community_name: str,
         community_type_id=community_type_id,
         max_upload=max_upload,
         monthly_cost=monthly_cost,
-        allow_api_access=allow_api_access
+        allow_api_access=allow_api_access,
+        match_start_webhook=match_start_webhook,
+        round_end_webhook=round_end_webhook,
+        match_end_webhook=match_end_webhook
     )
 
     try:
