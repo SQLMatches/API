@@ -101,7 +101,7 @@ class WebhookPusher:
         self.community_name = community_name
         self.data = data
 
-    async def __get_url_key(self, col: Any) -> Any:
+    async def __send(self, col: Any) -> Any:
         query = select([
             col, api_key_table.c.api_key
         ]).select_from(
@@ -113,24 +113,24 @@ class WebhookPusher:
         ).where(
             and_(
                 community_table.c.community_name == self.community_name,
-                api_key_table.c.master == True,  # noqa: E712
-                col != None
+                api_key_table.c.master == True  # noqa: E712
             )
         )
 
         row = await Sessions.database.fetch_one(query)
-        if row:
-            return row[0], row[1]
-
-        return None, None
+        if row and row[0]:
+            await self.__post(
+                row[0], row[1]
+            )
 
     async def __post(self, url: str, api_key: str) -> None:
         try:
-            async with Sessions.aiohttp.post(url,
-                                             timeout=Config.webhook_timeout,
-                                             json=self.data,
-                                             auth=BasicAuth("", api_key)) as _:
-                pass
+            (await Sessions.aiohttp.post(
+                url,
+                timeout=Config.webhook_timeout,
+                json=self.data,
+                auth=BasicAuth("", api_key)
+            )).close()
         except ClientConnectionError:
             pass
 
@@ -138,37 +138,22 @@ class WebhookPusher:
         """Used to push round end webhook.
         """
 
-        url, key = await self.__get_url_key(
+        await self.__send(
             community_table.c.round_end_webhook
         )
-
-        if url:
-            await self.__post(
-                url, key
-            )
 
     async def match_end(self) -> None:
         """Used to push match end webhook.
         """
 
-        url, key = await self.__get_url_key(
+        await self.__send(
             community_table.c.match_end_webhook
         )
-
-        if url:
-            await self.__post(
-                url, key
-            )
 
     async def match_start(self) -> None:
         """Used to push match start webhook.
         """
 
-        url, key = await self.__get_url_key(
+        await self.__send(
             community_table.c.match_start_webhook
         )
-
-        if url:
-            await self.__post(
-                url, key
-            )
