@@ -25,7 +25,7 @@ from typing import Any, List
 from os import path
 from secrets import token_urlsafe
 from sqlalchemy.sql import select, and_
-from aiohttp import BasicAuth
+from aiohttp import BasicAuth, ClientConnectionError
 
 from .tables import (
     community_type_table,
@@ -125,12 +125,14 @@ class WebhookPusher:
         return None, None
 
     async def __post(self, url: str, api_key: str) -> None:
-        (await Sessions.aiohttp.post(
-            url,
-            timeout=Config.webhook_timeout,
-            json=self.data,
-            auth=BasicAuth("", api_key)
-        )).close()
+        try:
+            async with Sessions.aiohttp.post(url,
+                                             timeout=Config.webhook_timeout,
+                                             json=self.data,
+                                             auth=BasicAuth("", api_key)) as _:
+                pass
+        except ClientConnectionError:
+            pass
 
     async def round_end(self) -> None:
         """Used to push round end webhook.
