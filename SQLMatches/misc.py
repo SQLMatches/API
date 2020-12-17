@@ -24,9 +24,14 @@ DEALINGS IN THE SOFTWARE.
 from typing import Any, List
 from os import path
 from secrets import token_urlsafe
-from sqlalchemy.sql import select
+from sqlalchemy.sql import select, and_
+from aiohttp import BasicAuth
 
-from .tables import community_type_table, community_table
+from .tables import (
+    community_type_table,
+    community_table,
+    api_key_table
+)
 from .resources import Sessions, Config
 
 
@@ -96,46 +101,72 @@ class WebhookPusher:
         self.community_name = community_name
         self.data = data
 
-    def __get_col(self, col: Any) -> Any:
-        return select([
-            col
-        ]).select_from(community_table).where(
-            community_table.c.community_name == self.community_name
+    async def __get_url_key(self, col: Any) -> Any:
+        query = select([
+            col, api_key_table.c.api_key
+        ]).select_from(
+            community_table.join(
+                api_key_table,
+                api_key_table.c.community_name ==
+                community_table.c.community_name
+            )
+        ).where(
+            and_(
+                community_table.c.community_name == self.community_name,
+                api_key_table.c.master == True,  # noqa: E712
+                col != None
+            )
         )
 
-    async def __post(self, url: str) -> None:
+        row = await Sessions.database.fetch_one(query)
+        if row:
+            return row[0], row[1]
+
+        return None, None
+
+    async def __post(self, url: str, api_key: str) -> None:
         (await Sessions.aiohttp.post(
             url,
             timeout=Config.webhook_timeout,
-            json=self.data
+            json=self.data,
+            auth=BasicAuth("", api_key)
         )).close()
 
     async def round_end(self) -> None:
         """Used to push round end webhook.
         """
 
-        url = await Sessions.database.fetch_val(self.__get_col(
+        url, key = await self.__get_url_key(
             community_table.c.round_end_webhook
-        ))
+        )
+
         if url:
-            await self.__post(url)
+            await self.__post(
+                url, key
+            )
 
     async def match_end(self) -> None:
         """Used to push match end webhook.
         """
 
-        url = await Sessions.database.fetch_val(self.__get_col(
+        url, key = await self.__get_url_key(
             community_table.c.match_end_webhook
-        ))
+        )
+
         if url:
-            await self.__post(url)
+            await self.__post(
+                url, key
+            )
 
     async def match_start(self) -> None:
         """Used to push match start webhook.
         """
 
-        url = await Sessions.database.fetch_val(self.__get_col(
+        url, key = await self.__get_url_key(
             community_table.c.match_start_webhook
-        ))
+        )
+
         if url:
-            await self.__post(url)
+            await self.__post(
+                url, key
+            )
