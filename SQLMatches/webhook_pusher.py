@@ -37,7 +37,7 @@ class WebhookPusher:
         self.community_name = community_name
         self.data = data
 
-    async def __send(self, col: Any) -> Any:
+    async def __send(self, col: Any) -> None:
         query = select([
             col, api_key_table.c.api_key
         ]).select_from(
@@ -55,20 +55,15 @@ class WebhookPusher:
 
         row = await Sessions.database.fetch_one(query)
         if row and row[0]:
-            await self.__post(
-                row[0], row[1]
-            )
-
-    async def __post(self, url: str, api_key: str) -> None:
-        try:
-            (await Sessions.aiohttp.post(
-                url,
-                timeout=Config.webhook_timeout,
-                json=self.data,
-                auth=BasicAuth("", api_key)
-            )).close()
-        except ClientConnectionError:
-            pass
+            try:
+                (await Sessions.aiohttp.post(
+                    row[0],
+                    timeout=Config.webhook_timeout,
+                    json=self.data,
+                    auth=BasicAuth("", row[1])
+                )).close()
+            except ClientConnectionError:
+                pass
 
     async def round_end(self) -> None:
         """Used to push round end webhook.
