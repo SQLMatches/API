@@ -115,12 +115,6 @@ class CommunityOwnerAPI(HTTPEndpoint):
         })
 
 
-class CommunityOwnerUpdateAPI(HTTPEndpoint):
-    @requires("is_owner")
-    async def post(self, request: Request, parameters: dict) -> response:
-        return response()
-
-
 class CommunityChangeAPIAccessAPI(HTTPEndpoint):
     @use_args({"enabled": fields.Bool(required=True)})
     @requires("is_owner")

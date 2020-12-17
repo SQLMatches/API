@@ -20,8 +20,6 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
-from starlette.authentication import AuthenticationError
-
 from ...resources import Sessions
 
 
@@ -34,8 +32,7 @@ async def connect(sid, environ: dict):
             sid,
             "ws_room"
         )
-    else:
-        raise AuthenticationError("steam_login scope required")
+
 
 
 @Sessions.websocket.event
