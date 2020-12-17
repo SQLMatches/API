@@ -20,11 +20,13 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
-from typing import List
+
+from typing import Any, List
 from os import path
 from secrets import token_urlsafe
+from sqlalchemy.sql import select
 
-from .tables import community_type_table
+from .tables import community_type_table, community_table
 from .resources import Sessions, Config
 
 
@@ -87,3 +89,53 @@ def monthly_cost_formula(max_upload: float) -> float:
         (max_upload - Config.free_upload_size) * Config.cost_per_mb,
         2
     )
+
+
+class WebhookPusher:
+    def __init__(self, community_name: str, data: dict) -> None:
+        self.community_name = community_name
+        self.data = data
+
+    def __get_col(self, col: Any) -> Any:
+        return select([
+            col
+        ]).select_from(community_table).where(
+            community_table.c.community_name == self.community_name
+        )
+
+    async def __post(self, url: str) -> None:
+        (await Sessions.aiohttp.post(
+            url,
+            timeout=Config.webhook_timeout,
+            json=self.data
+        )).close()
+
+    async def round_end(self) -> None:
+        """Used to push round end webhook.
+        """
+
+        url = await Sessions.database.fetch_val(self.__get_col(
+            community_table.c.round_end_webhook
+        ))
+        if url:
+            await self.__post(url)
+
+    async def match_end(self) -> None:
+        """Used to push match end webhook.
+        """
+
+        url = await Sessions.database.fetch_val(self.__get_col(
+            community_table.c.match_end_webhook
+        ))
+        if url:
+            await self.__post(url)
+
+    async def match_start(self) -> None:
+        """Used to push match start webhook.
+        """
+
+        url = await Sessions.database.fetch_val(self.__get_col(
+            community_table.c.match_start_webhook
+        ))
+        if url:
+            await self.__post(url)

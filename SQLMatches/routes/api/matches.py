@@ -24,6 +24,7 @@ DEALINGS IN THE SOFTWARE.
 from starlette.endpoints import HTTPEndpoint
 from starlette.authentication import requires
 from starlette.requests import Request
+from starlette.background import BackgroundTask
 
 from marshmallow import Schema, validate
 from webargs import fields
@@ -31,6 +32,7 @@ from webargs_starlette import use_args
 
 from .rate_limiter import LIMITER
 
+from ...misc import WebhookPusher
 from ...responses import response
 from ...resources import Sessions
 from ...demos import Demo
@@ -140,7 +142,17 @@ class MatchAPI(HTTPEndpoint):
                 room="ws_room"
             )
 
-            return response()
+            pusher = WebhookPusher(
+                request.state.community.community_name,
+                data
+            )
+
+            return response(
+                background=BackgroundTask(
+                    pusher.match_end if "end" in parameters
+                    else pusher.round_end
+                )
+            )
 
     @requires("master")
     @LIMITER.limit("30/minute")
@@ -186,6 +198,15 @@ class MatchAPI(HTTPEndpoint):
                     request.path_params["match_id"],
                     data,
                     room="ws_room"
+                )
+
+                return response(
+                    background=BackgroundTask(
+                        WebhookPusher(
+                            request.state.community.community_name,
+                            data
+                        ).match_end
+                    )
                 )
 
             return response()
@@ -264,11 +285,19 @@ class CreateMatchAPI(HTTPEndpoint):
 
         await Sessions.websocket.emit(
             "match_update",
-            data,
+            data.match_api_schema,
             room="ws_room"
         )
 
-        return response({"match_id": match.match_id})
+        return response(
+            {"match_id": match.match_id},
+            background=BackgroundTask(
+                WebhookPusher(
+                    request.state.community.community_name,
+                    data.match_api_schema
+                ).match_start
+            )
+        )
 
 
 class DemoUploadAPI(HTTPEndpoint):

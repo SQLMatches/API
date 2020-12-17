@@ -87,6 +87,7 @@ class SQLMatches(Starlette):
                  cost_per_mb: float = 0.15,
                  timestamp_format: str = "%m/%d/%Y-%H:%M:%S",
                  community_types: List[str] = COMMUNITY_TYPES,
+                 webhook_timeout: float = 3.0,
                  **kwargs) -> None:
         """SQLMatches API.
 
@@ -165,6 +166,7 @@ class SQLMatches(Starlette):
         Config.root_steam_id_hashed = bcrypt.hashpw(
             root_steam_id.encode(), bcrypt.gensalt()
         )
+        Config.webhook_timeout = webhook_timeout
 
         self.community_types = community_types
 

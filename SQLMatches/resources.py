@@ -64,6 +64,7 @@ class Config:
     root_steam_id_hashed: str
     # Type string, type ID
     community_types: Dict[str, int] = {}
+    webhook_timeout: int
 
 
 class DemoQueue:
