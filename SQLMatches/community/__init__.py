@@ -246,15 +246,16 @@ async def create_community(steam_id: str, community_name: str,
 
         await Sessions.database.execute(query=query)
 
-        data = {
-            "api_key": api_key,
-            "owner_id": steam_id,
-            "disabled": disabled,
-            "community_name": community_name,
-            "timestamp": now,
-            "monthly_cost": monthly_cost,
-            "max_upload": max_upload,
-            "allow_api_access": allow_api_access
-        }
-
-        return CommunityModel(**data), Community(community_name)
+        return CommunityModel(
+            api_key=api_key,
+            owner_id=steam_id,
+            disabled=disabled,
+            community_name=community_name,
+            timestamp=now,
+            monthly_cost=monthly_cost,
+            max_upload=max_upload,
+            allow_api_access=allow_api_access,
+            match_start_webhook=match_start_webhook,
+            match_end_webhook=match_end_webhook,
+            round_end_webhook=round_end_webhook,
+        ), Community(community_name)

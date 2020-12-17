@@ -78,7 +78,10 @@ class PublicCommunityModel:
 
 class CommunityModel(PublicCommunityModel):
     def __init__(self, max_upload: float, monthly_cost: float,
-                 allow_api_access: bool, api_key: str = None,
+                 allow_api_access: bool, api_key: str,
+                 match_start_webhook: str,
+                 round_end_webhook: str,
+                 match_end_webhook: str,
                  **kwargs) -> None:
         super().__init__(**kwargs)
 
@@ -86,6 +89,9 @@ class CommunityModel(PublicCommunityModel):
         self.max_upload = max_upload
         self.monthly_cost = monthly_cost
         self.allow_api_access = allow_api_access
+        self.match_start_webhook = match_start_webhook
+        self.round_end_webhook = round_end_webhook
+        self.match_end_webhook = match_end_webhook
 
     @property
     def community_api_schema(self) -> dict:
@@ -97,7 +103,10 @@ class CommunityModel(PublicCommunityModel):
             "timestamp": self.timestamp.strftime(Config.timestamp_format),
             "max_upload": self.max_upload,
             "monthly_cost": self.monthly_cost,
-            "allow_api_access": self.allow_api_access
+            "allow_api_access": self.allow_api_access,
+            "match_start_webhook": self.match_start_webhook,
+            "round_end_webhook": self.round_end_webhook,
+            "match_end_webhook": self.match_end_webhook
         }
 
 

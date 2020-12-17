@@ -513,7 +513,10 @@ class Community:
             community_table.c.timestamp,
             community_table.c.max_upload,
             community_table.c.monthly_cost,
-            community_table.c.allow_api_access
+            community_table.c.allow_api_access,
+            community_table.c.match_start_webhook,
+            community_table.c.round_end_webhook,
+            community_table.c.match_end_webhook
         ]).select_from(
             community_table.join(
                 api_key_table,
