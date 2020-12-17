@@ -30,7 +30,11 @@ from sqlalchemy.sql import select, and_, or_, func
 
 from ..resources import Sessions, Config, DemoQueue
 
-from ..decorators import validate_community_type, validate_max_upload, validate_webhooks
+from ..decorators import (
+    validate_community_type,
+    validate_max_upload,
+    validate_webhooks
+)
 
 from ..misc import monthly_cost_formula
 

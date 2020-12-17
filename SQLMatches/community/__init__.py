@@ -38,7 +38,9 @@ from ..tables import (
 )
 
 from ..decorators import (
-    validate_community_type, validate_max_upload, validate_webhooks,
+    validate_community_type,
+    validate_max_upload,
+    validate_webhooks,
     validate_community_name
 )
 
