@@ -32,7 +32,7 @@ from webargs_starlette import use_args
 
 from .rate_limiter import LIMITER
 
-from ...misc import WebhookPusher
+from ...webhook_pusher import WebhookPusher
 from ...responses import response
 from ...resources import Sessions
 from ...demos import Demo

@@ -21,16 +21,12 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-from typing import Any, List
+from typing import List
 from os import path
 from secrets import token_urlsafe
-from sqlalchemy.sql import select, and_
-from aiohttp import BasicAuth, ClientConnectionError
 
 from .tables import (
-    community_type_table,
-    community_table,
-    api_key_table
+    community_type_table
 )
 from .resources import Sessions, Config
 
@@ -94,66 +90,3 @@ def monthly_cost_formula(max_upload: float) -> float:
         (max_upload - Config.free_upload_size) * Config.cost_per_mb,
         2
     )
-
-
-class WebhookPusher:
-    def __init__(self, community_name: str, data: dict) -> None:
-        self.community_name = community_name
-        self.data = data
-
-    async def __send(self, col: Any) -> Any:
-        query = select([
-            col, api_key_table.c.api_key
-        ]).select_from(
-            community_table.join(
-                api_key_table,
-                api_key_table.c.community_name ==
-                community_table.c.community_name
-            )
-        ).where(
-            and_(
-                community_table.c.community_name == self.community_name,
-                api_key_table.c.master == True  # noqa: E712
-            )
-        )
-
-        row = await Sessions.database.fetch_one(query)
-        if row and row[0]:
-            await self.__post(
-                row[0], row[1]
-            )
-
-    async def __post(self, url: str, api_key: str) -> None:
-        try:
-            (await Sessions.aiohttp.post(
-                url,
-                timeout=Config.webhook_timeout,
-                json=self.data,
-                auth=BasicAuth("", api_key)
-            )).close()
-        except ClientConnectionError:
-            pass
-
-    async def round_end(self) -> None:
-        """Used to push round end webhook.
-        """
-
-        await self.__send(
-            community_table.c.round_end_webhook
-        )
-
-    async def match_end(self) -> None:
-        """Used to push match end webhook.
-        """
-
-        await self.__send(
-            community_table.c.match_end_webhook
-        )
-
-    async def match_start(self) -> None:
-        """Used to push match start webhook.
-        """
-
-        await self.__send(
-            community_table.c.match_start_webhook
-        )
