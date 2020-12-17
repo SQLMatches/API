@@ -21,6 +21,7 @@ DEALINGS IN THE SOFTWARE.
 """
 
 import validators
+
 import re
 
 from .resources import Config
@@ -37,9 +38,7 @@ def validate_webhooks(func):
         for param in ["match_start_webhook", "round_end_webhook",
                       "match_end_webhook"]:
             if param in kwargs and kwargs[param]:
-                try:
-                    validators.url(kwargs[param])
-                except OSError:
+                if validators.url(kwargs[param]) is not True:
                     raise InvalidWebhook()
 
         return func(*args, **kwargs)
