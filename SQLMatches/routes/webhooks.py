@@ -63,7 +63,16 @@ WEBHOOK_ARGS = {
 class PaymentFailed(HTTPEndpoint):
     @use_args(WEBHOOK_ARGS)
     @requires("valid_webhook")
-    async def post(self, request: Request) -> response:
+    async def post(self, request: Request, parameters: dict) -> response:
+        if parameters["type"] != "charge.failed":
+            return error_response("charge.failed expected")
+
+        await Sessions.websocket.emit(
+            parameters["data"]["object"]["id"],
+            {"paid": False},
+            room="ws_room"
+        )
+
         return response()
 
 
