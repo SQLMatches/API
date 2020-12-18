@@ -55,7 +55,7 @@ from .routes.errors import auth_error
 
 from .garbage import GRABAGE_HANDLERS_TO_SPAWN
 
-from .misc import cache_community_types, SessionKey
+from .misc import cache_community_types, KeyLoader
 
 from .constants import MAP_IMAGES, COMMUNITY_TYPES
 
@@ -124,13 +124,9 @@ class SQLMatches(Starlette):
         if "on_shutdown" in kwargs:
             shutdown_tasks = shutdown_tasks + kwargs["on_shutdown"]
 
-        session_key = SessionKey()
-        secret_key = session_key.load()
-        if not secret_key:
-            secret_key = session_key.save()
-
         middlewares = [
-            Middleware(SessionMiddleware, secret_key=secret_key),
+            Middleware(SessionMiddleware,
+                       secret_key=KeyLoader(name="session").load()),
             Middleware(AuthenticationMiddleware, backend=APIAuthentication(),
                        on_error=auth_error),
             Middleware(
@@ -165,6 +161,9 @@ class SQLMatches(Starlette):
         Config.timestamp_format = timestamp_format
         Config.root_steam_id_hashed = bcrypt.hashpw(
             root_steam_id.encode(), bcrypt.gensalt()
+        )
+        Config.root_webhook_key_hashed = bcrypt.hashpw(
+            (KeyLoader("webhook").load()).encode(), bcrypt.gensalt()
         )
         Config.webhook_timeout = webhook_timeout
 

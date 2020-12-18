@@ -21,7 +21,6 @@ DEALINGS IN THE SOFTWARE.
 """
 
 import validators
-
 import re
 
 from .resources import Config

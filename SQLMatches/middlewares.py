@@ -109,17 +109,25 @@ class APIAuthentication(AuthenticationBackend):
                                 request.query_params["community_name"]):
                             scopes.append("is_owner")
 
-                        if (Config.root_steam_id_hashed ==
-                                bcrypt.hashpw(
-                                    request.session["steam_id"].encode(),
-                                    Config.root_steam_id_hashed)):
-                            scopes.append("root_login")
-
                 request.state.community = Community(
                     request.query_params["community_name"]
                 )
+
+            if("check_root" in request.query_params and
+                    request.query_params["check_root"].lower() == "true"):
+                if bcrypt.checkpw(request.session["steam_id"].encode(),
+                                  Config.root_steam_id_hashed):
+                    scopes.append("root_login")
 
             return (
                 AuthCredentials(scopes),
                 SimpleUser(request.session["steam_id"])
             )
+
+        elif "webhook_key" in request.query_params:
+            if bcrypt.checkpw(request.query_params["webhook_key"].encode(),
+                              Config.root_webhook_key_hashed):
+                return (
+                    AuthCredentials(["valid_webhook"]),
+                    SimpleUser("")
+                )

@@ -61,7 +61,8 @@ class Config:
     max_upload_size: float
     cost_per_mb: float
     timestamp_format: str
-    root_steam_id_hashed: str
+    root_steam_id_hashed: Any
+    root_webhook_key_hashed: Any
     # Type string, type ID
     community_types: Dict[str, int] = {}
     webhook_timeout: int

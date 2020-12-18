@@ -24,6 +24,7 @@ DEALINGS IN THE SOFTWARE.
 from typing import List
 from os import path
 from secrets import token_urlsafe
+from dotenv import load_dotenv, get_key, set_key
 
 from .tables import (
     community_type_table
@@ -64,24 +65,26 @@ async def cache_community_types(community_types: List[str]):
             Config.community_types[community_type] = last_id
 
 
-class SessionKey:
-    def __init__(self, pathway: str = None) -> None:
+class KeyLoader:
+    def __init__(self, name: str, pathway: str = None) -> None:
+        self.name = name
         self.pathway = path.join(
             path.dirname(path.realpath(__file__)) if not pathway else pathway,
-            ".session_key_secret"
+            ".env"
         )
 
+        load_dotenv(self.pathway)
+
     def load(self) -> str:
-        try:
-            with open(self.pathway, "r") as f:
-                return f.read()
-        except FileNotFoundError:
-            return
+        key = get_key(self.pathway, self.name)
+        if key:
+            return key
 
-    def save(self, key: str = token_urlsafe()) -> str:
-        with open(self.pathway, "w") as f:
-            f.write(key)
+        return self.save()
 
+    def save(self) -> str:
+        key = token_urlsafe()
+        set_key(self.pathway, self.name, key)
         return key
 
 

@@ -23,17 +23,18 @@ DEALINGS IN THE SOFTWARE.
 
 from starlette.endpoints import HTTPEndpoint
 from starlette.requests import Request
+from starlette.authentication import requires
 
 from ..responses import response
 
 
 class PaymentFailed(HTTPEndpoint):
+    @requires("valid_webhook")
     async def post(self, request: Request) -> response:
-        print(request.json())
         return response()
 
 
 class PaymentSuccess(HTTPEndpoint):
+    @requires("valid_webhook")
     async def post(self, request: Request) -> response:
-        print(request.json())
         return response()
