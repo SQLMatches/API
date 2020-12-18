@@ -25,16 +25,59 @@ from starlette.endpoints import HTTPEndpoint
 from starlette.requests import Request
 from starlette.authentication import requires
 
-from ..responses import response
+from marshmallow import Schema, EXCLUDE
+from webargs import fields
+from webargs_starlette import use_args
+
+from ..resources import Sessions
+from ..responses import error_response, response
+
+
+class BaseSchema(Schema):
+    class Meta:
+        unknown = EXCLUDE
+
+
+class ObjectSchema(BaseSchema):
+    id = fields.Str(required=True)
+    status = fields.Str(required=True)
+
+
+class DataSchema(BaseSchema):
+    object = fields.Nested(ObjectSchema, required=True)
+
+
+WEBHOOK_ARGS = {
+    "type": fields.Str(required=True),
+    "data": fields.Nested(DataSchema, required=True),
+    "created": fields.Int(allow_none=True),
+    "livemode": fields.Bool(allow_none=True),
+    "id": fields.Str(allow_none=True),
+    "object": fields.Str(allow_none=True),
+    "request": fields.Dict(allow_none=True),
+    "pending_webhooks": fields.Int(allow_none=True),
+    "api_version": fields.Str(allow_none=True)
+}
 
 
 class PaymentFailed(HTTPEndpoint):
+    @use_args(WEBHOOK_ARGS)
     @requires("valid_webhook")
     async def post(self, request: Request) -> response:
         return response()
 
 
 class PaymentSuccess(HTTPEndpoint):
+    @use_args(WEBHOOK_ARGS)
     @requires("valid_webhook")
-    async def post(self, request: Request) -> response:
+    async def post(self, request: Request, parameters: dict) -> response:
+        if parameters["type"] != "charge.succeeded":
+            return error_response("charge.succeeded expected")
+
+        await Sessions.websocket.emit(
+            parameters["data"]["object"]["id"],
+            {"paid": True},
+            room="ws_room"
+        )
+
         return response()
