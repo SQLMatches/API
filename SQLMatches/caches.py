@@ -32,7 +32,7 @@ class CacheBase:
     async def expire(self) -> None:
         await Sessions.cache.delete(self.key)
 
-    async def set(self, value: Any, ttl=0) -> None:
+    async def set(self, value: Any, ttl=None) -> None:
         await Sessions.cache.set(self.key, value, ttl=ttl)
 
     async def get(self) -> Any:

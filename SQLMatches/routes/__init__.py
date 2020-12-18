@@ -58,7 +58,12 @@ from .api.profile import ProfileAPI
 
 # A bit gross, but because socketio uses singletons, we
 # need to do this.
-from .api.websockets import *  # noqa: F403, F401
+from .websockets import *  # noqa: F403, F401
+
+from .webhooks import (
+    PaymentFailed,
+    PaymentSuccess
+)
 
 from .download import DownloadPage
 from .steam import SteamValidate, SteamLogin, SteamLogout
@@ -113,5 +118,11 @@ ROUTES = [
         ]),
         Route("/schema/", SchemaAPI, include_in_schema=False)
     ]),
-    Mount("/ws/", socketio.ASGIApp(Sessions.websocket))
+    Mount("/ws/", socketio.ASGIApp(Sessions.websocket)),
+    Mount("/webhook", routes=[
+        Mount("/payment", routes=[
+            Route("/fail/", PaymentFailed),
+            Route("/success/", PaymentSuccess)
+        ])
+    ])
 ]

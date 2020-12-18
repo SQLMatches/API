@@ -150,6 +150,7 @@ class MatchAPI(HTTPEndpoint):
             return response(
                 background=BackgroundTask(
                     pusher.match_end if "end" in parameters
+                    and parameters["end"]
                     else pusher.round_end
                 )
             )
