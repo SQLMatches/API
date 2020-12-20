@@ -53,7 +53,7 @@ from .middlewares import APIAuthentication
 from .routes import ROUTES, ERROR_HANDLERS
 from .routes.errors import auth_error
 
-from .garbage import GRABAGE_HANDLERS_TO_SPAWN
+from .background_tasks import TASKS_TO_SPAWN
 
 from .misc import cache_community_types, KeyLoader
 
@@ -252,7 +252,7 @@ class SQLMatches(Starlette):
             await self.b2.authorize()
 
         self.grabage = await create_scheduler()
-        for to_spawn in GRABAGE_HANDLERS_TO_SPAWN:
+        for to_spawn in TASKS_TO_SPAWN:
             await self.grabage.spawn(to_spawn())
 
         await cache_community_types(self.community_types)

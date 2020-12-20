@@ -36,6 +36,6 @@ async def demo_delete():
         await sleep(10.0)
 
 
-GRABAGE_HANDLERS_TO_SPAWN = [
+TASKS_TO_SPAWN = [
     demo_delete
 ]
