@@ -101,7 +101,7 @@ ROUTES = [
             ])
         ]),
         Route("/profile/{steam_id}/", ProfileAPI),
-        Route("/version/{version}", VersionAPI),
+        Route("/version/{version}/", VersionAPI),
         Mount("/community", routes=[
             Mount("/owner", routes=[
                 Route("/", CommunityOwnerAPI),

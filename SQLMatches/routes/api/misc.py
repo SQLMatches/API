@@ -57,7 +57,7 @@ class VersionAPI(HTTPEndpoint):
             return response(cache_get)
 
         message = await Sessions.database.fetch_val(
-            select([update_table.c.message]).select_form(
+            select([update_table.c.message]).select_from(
                 update_table
             ).where(
                 update_table.c.version == request.path_params["version"]
@@ -71,4 +71,4 @@ class VersionAPI(HTTPEndpoint):
 
             return response(data)
         else:
-            return error_response("InvalidVersion")
+            return error_response("InvalidVersion", status_code=404)

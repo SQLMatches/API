@@ -280,16 +280,6 @@ class CreateMatchAPI(HTTPEndpoint):
             request.state.community.community_name
         ).matches()).expire()
 
-        cache = CommunitiesCache()
-
-        await cache.matches().expire()
-
-        await Sessions.websocket.emit(
-            "match_update",
-            data.match_api_schema,
-            room="ws_room"
-        )
-
         return response(
             {"match_id": match.match_id},
             background=BackgroundTask(

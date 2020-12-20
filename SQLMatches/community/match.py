@@ -143,6 +143,9 @@ class Match:
             Raised when match ID is invalid.
         """
 
+        if not await self.exists():
+            raise InvalidMatchID()
+
         team_sides = {}
 
         if team_1_side is not None:
@@ -163,75 +166,72 @@ class Match:
             )
         )
 
-        try:
-            await Sessions.database.execute(query=query)
-        except Exception:
-            raise InvalidMatchID()
-        else:
-            if players:
-                scoreboard_players = []
-                scoreboard_players_append = scoreboard_players.append
+        await Sessions.database.execute(query=query)
 
-                users = []
-                users_append = users.append
+        if players:
+            scoreboard = []
+            scoreboard_append = scoreboard.append
 
-                statistics = []
-                statistics_append = statistics.append
+            users = []
+            users_append = users.append
 
-                now = datetime.now()
+            statistics = []
+            statistics_append = statistics.append
 
-                for player in players:
-                    scoreboard_players_append({
-                        "match_id": self.match_id,
-                        "steam_id": player["steam_id"],
-                        "team": player["team"],
-                        "alive": player["alive"],
-                        "ping": player["ping"],
-                        "kills": player["kills"],
-                        "headshots": player["headshots"],
-                        "assists": player["assists"],
-                        "deaths": player["deaths"],
-                        "shots_fired": player["shots_fired"],
-                        "shots_hit": player["shots_hit"],
-                        "mvps": player["mvps"],
-                        "score": player["score"],
-                        "disconnected": player["disconnected"]
-                    })
+            now = datetime.now()
 
-                    users_append({
-                        "steam_id": player["steam_id"],
-                        "name": player["name"],
-                        "timestamp": now
-                    })
+            for player in players:
+                scoreboard_append({
+                    "match_id": self.match_id,
+                    "steam_id": player["steam_id"],
+                    "team": player["team"],
+                    "alive": player["alive"],
+                    "ping": player["ping"],
+                    "kills": player["kills"],
+                    "headshots": player["headshots"],
+                    "assists": player["assists"],
+                    "deaths": player["deaths"],
+                    "shots_fired": player["shots_fired"],
+                    "shots_hit": player["shots_hit"],
+                    "mvps": player["mvps"],
+                    "score": player["score"],
+                    "disconnected": player["disconnected"]
+                })
 
-                    statistics_append({
-                        "community_name": self.community_name,
-                        "steam_id": player["steam_id"],
-                        "kills": player["kills"],
-                        "headshots": player["headshots"],
-                        "assists": player["assists"],
-                        "deaths": player["deaths"],
-                        "shots_fired": player["shots_fired"],
-                        "shots_hit": player["shots_hit"],
-                        "mvps": player["mvps"]
-                    })
+                users_append({
+                    "steam_id": player["steam_id"],
+                    "name": player["name"],
+                    "timestamp": now
+                })
 
-                    await sleep(0.000001)
+                statistics_append({
+                    "community_name": self.community_name,
+                    "steam_id": player["steam_id"],
+                    "kills": player["kills"],
+                    "headshots": player["headshots"],
+                    "assists": player["assists"],
+                    "deaths": player["deaths"],
+                    "shots_fired": player["shots_fired"],
+                    "shots_hit": player["shots_hit"],
+                    "mvps": player["mvps"]
+                })
 
-                await Sessions.database.execute_many(
-                    query=on_user_conflict(),
-                    values=users
-                )
+                await sleep(0.000001)
 
-                await Sessions.database.execute_many(
-                    query=on_scoreboard_conflict(),
-                    values=scoreboard_players
-                )
+            await Sessions.database.execute_many(
+                query=on_user_conflict(),
+                values=users
+            )
 
-                await Sessions.database.execute_many(
-                    query=on_statistic_conflict(),
-                    values=statistics
-                )
+            await Sessions.database.execute_many(
+                query=on_scoreboard_conflict(),
+                values=scoreboard
+            )
+
+            await Sessions.database.execute_many(
+                query=on_statistic_conflict(),
+                values=statistics
+            )
 
     async def end(self) -> None:
         """Sets match status to 0
