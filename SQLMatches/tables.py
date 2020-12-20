@@ -299,6 +299,7 @@ api_key_table = Table(
 # 1 - Processing
 # 2 - Ready for Download
 # 3 - Too large
+# 4 - Expired
 
 # Team Sides
 # 0 - CT
