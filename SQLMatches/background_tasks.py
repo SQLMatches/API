@@ -34,7 +34,6 @@ async def demo_delete() -> None:
     """Handles deleting demos in background off local storage or B2.
     """
 
-    # I'm sorry David, please forgive me. Maybe just turn the big telly on.
     while True:
         for community_matches in list(DemoQueue.matches):
             for match in community_matches["matches"]:
@@ -45,6 +44,8 @@ async def demo_delete() -> None:
 
                 if demo.delete:
                     await demo.delete()
+                else:
+                    break
 
                 await sleep(1.0)
 
