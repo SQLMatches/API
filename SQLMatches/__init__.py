@@ -33,6 +33,8 @@ from starlette.middleware.cors import CORSMiddleware
 
 from typing import Dict, List, Tuple
 
+from datetime import timedelta
+
 from databases import Database
 from aiohttp import ClientSession
 from aiojobs import create_scheduler
@@ -88,31 +90,35 @@ class SQLMatches(Starlette):
                  timestamp_format: str = "%m/%d/%Y-%H:%M:%S",
                  community_types: List[str] = COMMUNITY_TYPES,
                  webhook_timeout: float = 3.0,
+                 match_max_length: timedelta = timedelta(hours=3),
                  **kwargs) -> None:
         """SQLMatches API.
 
         Parameters
         ----------
-        database_settings: DatabaseSettings
-            Holds settings for database.
-        upload_settings: (B2UploadSettings, LocalUploadSettings)
+        database_settings : DatabaseSettings
+        friendly_url : str
+        root_steam_id : str
+        upload_settings : [B2UploadSettings, LocalUploadSettings], optional
             by default None
-        friendly_url: str
-            URL to project.
-        root_steam_id: str
-            Steam ID 64 to give root access.
-        map_images: dict
-            Key as actual map name, value as image name.
-        upload_delay: float
-            by default 0.1
-        free_upload_size: float
+        map_images : Dict[str, str], optional
+            by default MAP_IMAGES
+        upload_delay : float, optional
+            by default 0.00001
+        free_upload_size : float, optional
             by default 50.0
-        max_upload_size: float
+        max_upload_size : float, optional
             by default 100.0
-        timestamp_format: str
-        community_types: list
-            List of community types.
-        kwargs
+        cost_per_mb : float, optional
+            by default 0.15
+        timestamp_format : str, optional
+            by default "%m/%d/%Y-%H:%M:%S"
+        community_types : List[str], optional
+            by default COMMUNITY_TYPES
+        webhook_timeout : float, optional
+            by default 3.0
+        match_max_length : timedelta, optional
+            by default timedelta(hours=3)
         """
 
         startup_tasks = [self._startup]
@@ -166,6 +172,7 @@ class SQLMatches(Starlette):
             (KeyLoader("webhook").load()).encode(), bcrypt.gensalt()
         )
         Config.webhook_timeout = webhook_timeout
+        Config.match_max_length = match_max_length
 
         self.community_types = community_types
 
@@ -258,9 +265,9 @@ class SQLMatches(Starlette):
         if Config.upload_type == B2UploadSettings:
             await self.b2.authorize()
 
-        self.grabage = await create_scheduler()
+        self.background_tasks = await create_scheduler()
         for to_spawn in TASKS_TO_SPAWN:
-            await self.grabage.spawn(to_spawn())
+            await self.background_tasks.spawn(to_spawn())
 
         await cache_community_types(self.community_types)
 
@@ -275,4 +282,4 @@ class SQLMatches(Starlette):
         if Config.upload_type == B2UploadSettings:
             await self.b2.close()
 
-        await self.grabage.close()
+        await self.background_tasks.close()

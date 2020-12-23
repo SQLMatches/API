@@ -286,7 +286,10 @@ class Community:
         )
 
         if Config.upload_type is not None:
-            DemoQueue.matches.append(matches)
+            DemoQueue.matches.append({
+                "matches": matches,
+                "community_name": self.community_name
+            })
 
     async def create_match(self, team_1_name: str, team_2_name: str,
                            team_1_side: int, team_2_side: int,

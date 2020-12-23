@@ -319,6 +319,11 @@ scoreboard_total_table = Table(
         primary_key=True
     ),
     Column(
+        "b2_id",
+        String(length=200),
+        nullable=True
+    ),
+    Column(
         "timestamp",
         TIMESTAMP,
         default=datetime.now

@@ -30,6 +30,7 @@ from backblaze.bucket.awaiting import AwaitingBucket
 from aiohttp import ClientSession
 from databases import Database
 from aiocache import Cache
+from datetime import timedelta
 
 
 class Sessions:
@@ -66,6 +67,7 @@ class Config:
     # Type string, type ID
     community_types: Dict[str, int] = {}
     webhook_timeout: int
+    match_max_length: timedelta
 
 
 class DemoQueue:
