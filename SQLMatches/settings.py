@@ -22,6 +22,8 @@ DEALINGS IN THE SOFTWARE.
 
 from os import path, mkdir
 
+import os
+
 from .exceptions import UnSupportedEngine
 from .resources import Config
 
@@ -126,8 +128,8 @@ class LocalUploadSettings(__Extension):
             self.pathway = pathway
         else:
             self.pathway = path.join(
-                path.dirname(path.realpath(__file__)),
-                "/demos"
+                path.abspath(path.dirname(__file__)),
+                "demos"
             )
 
         if not path.exists(self.pathway):

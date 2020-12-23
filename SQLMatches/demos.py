@@ -84,7 +84,7 @@ class Demo:
     async def __invalid_upload(self, total_size: float) -> bool:
         # will be async later
 
-        return total_size == 0 or total_size * 1000000 > Config.max_upload_size
+        return total_size == 0 or total_size / 1000000 > Config.max_upload_size
 
     async def __update_value(self, **kwargs) -> None:
         await Sessions.database.execute(
