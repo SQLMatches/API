@@ -26,6 +26,7 @@ import aiofiles
 
 from starlette.requests import Request
 from sqlalchemy.sql import and_, select
+from typing import Any
 
 from backblaze.exceptions import BackblazeException
 
@@ -62,10 +63,31 @@ class Demo:
             self.delete = None
 
     @property
-    def __local_pathway(self) -> str:
+    def __file_name(self) -> str:
+        return self.match.match_id + Config.demo_extension
+
+    @property
+    def __demo_pathway(self) -> str:
         return path.join(
             Config.demo_pathway,
-            "{}.dem".format(self.match.match_id)
+            self.__file_name
+        )
+
+    @property
+    def __where_statement(self) -> Any:
+        return and_(
+            scoreboard_total_table.c.match_id == self.match.match_id,
+            scoreboard_total_table.c.community_name ==
+            self.match.community_name
+        )
+
+    async def __update_value(self, **kwargs) -> None:
+        await Sessions.database.execute(
+            scoreboard_total_table.update().values(
+                **kwargs
+            ).where(
+                self.__where_statement
+            )
         )
 
     async def __local_delete(self) -> bool:
@@ -78,33 +100,30 @@ class Demo:
         """
 
         try:
-            async with aiofiles.open(self.__local_pathway, "wb+") as f:
+            async with aiofiles.open(self.__demo_pathway, "wb+") as f:
                 await f.truncate()
-                return True
         except IOError:
             return False
+        else:
+            await self.__update_value(demo_status=4)
+            return True
 
     async def __b2_delete(self) -> bool:
-        b2_id = await Sessions.database.fetch_val(select([
-            scoreboard_total_table.c.b2_id
-        ]).select_from(scoreboard_total_table).where(
-            and_(
-                scoreboard_total_table.c.match_id == self.match.match_id,
-                scoreboard_total_table.c.community_name ==
-                self.match.community_name
-            )
-        ))
+        b2_id = await Sessions.database.fetch_val(
+            select([scoreboard_total_table.c.b2_id]).select_from(
+                scoreboard_total_table
+            ).where(self.__where_statement)
+        )
 
         if not b2_id:
             return False
 
         try:
-            await (Sessions.bucket.file(b2_id)).delete(
-                "{}.dem".format(self.match.match_id)
-            )
+            await (Sessions.bucket.file(b2_id)).delete(self.__file_name)
         except BackblazeException:
             return False
         else:
+            await self.__update_value(demo_status=4)
             return True
 
     async def __local_upload(self) -> bool:
@@ -118,7 +137,7 @@ class Demo:
 
         assert self.request
 
-        async with aiofiles.open(self.__local_pathway, "wb+") as f:
+        async with aiofiles.open(self.__demo_pathway, "wb+") as f:
             total_size = 0
             async for chunk in self.request.stream():
                 await f.write(chunk)
@@ -146,10 +165,7 @@ class Demo:
         assert self.request
 
         model, file = await Sessions.bucket.create_part(PartSettings(
-            path.join(
-                Config.demo_pathway,
-                "{}.dem".format(self.match.match_id)
-            ),
+            self.__demo_pathway,
             content_type="application/octet-stream"
         ))
 
@@ -179,17 +195,6 @@ class Demo:
         else:
             await parts.finish()
 
-            await Sessions.database.execute(
-                scoreboard_total_table.update().values(
-                    b2_id=model.file_id
-                ).where(
-                    and_(
-                        scoreboard_total_table.c.match_id ==
-                        self.match.match_id,
-                        scoreboard_total_table.c.community_name ==
-                        self.match.community_name
-                    )
-                )
-            )
+            await self.__update_value(b2_id=model.file_id)
 
             return True

@@ -55,6 +55,7 @@ class Config:
     url: str
     map_images: str
     db_engine: str
+    demo_extension: str
     cdn_url: str
     demo_pathway: str
     upload_delay: float

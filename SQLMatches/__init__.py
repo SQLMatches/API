@@ -198,8 +198,10 @@ class SQLMatches(Starlette):
 
         # Needs to be ran after the Starlette class is initialized.
         if upload_settings:
+            Config.demo_pathway = upload_settings.pathway
+            Config.demo_extension = upload_settings.extension
+
             if isinstance(upload_settings, B2UploadSettings):
-                Config.demo_pathway = upload_settings.pathway
                 Config.cdn_url = upload_settings.cdn_url
                 Config.upload_type = B2UploadSettings
 
@@ -213,7 +215,6 @@ class SQLMatches(Starlette):
                 )
 
             elif isinstance(upload_settings, LocalUploadSettings):
-                Config.demo_pathway = upload_settings.pathway
                 Config.cdn_url = None
                 Config.upload_type = LocalUploadSettings
 

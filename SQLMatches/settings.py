@@ -72,9 +72,15 @@ class DatabaseSettings:
         Config.db_engine = engine
 
 
-class B2UploadSettings:
+class __Extension:
+    def __init__(self, extension: str = ".dem.bz2") -> None:
+        self.extension = extension
+
+
+class B2UploadSettings(__Extension):
     def __init__(self, key_id: str, application_key: str,
-                 bucket_id: str, pathway: str, cdn_url: str) -> None:
+                 bucket_id: str, pathway: str, cdn_url: str,
+                 *args, **kwargs) -> None:
         """B2 Settings
 
         Parameters
@@ -89,7 +95,11 @@ class B2UploadSettings:
             Pathway to store demos to.
         cdn_url: str
             URL to access files.
+        extension: str,
+            by default ".dem.bz2"
         """
+
+        super().__init__(*args, **kwargs)
 
         self.key_id = key_id
         self.application_key = application_key
@@ -98,15 +108,19 @@ class B2UploadSettings:
         self.pathway = pathway if pathway[-1:] == "/" else pathway + "/"
 
 
-class LocalUploadSettings:
-    def __init__(self, pathway: str = None) -> None:
+class LocalUploadSettings(__Extension):
+    def __init__(self, pathway: str = None, *args, **kwargs) -> None:
         """Used to upload demos locally, not recommend!
 
         Parameters
         ----------
         pathway : str
             Pathway to upload to from package location, by default None
+        extension: str,
+            by default ".dem.bz2"
         """
+
+        super().__init__(*args, **kwargs)
 
         if pathway:
             self.pathway = pathway

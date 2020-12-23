@@ -47,7 +47,7 @@ async def demo_delete() -> None:
 
                 await sleep(2.0)
 
-            DemoQueue.matches.remove(match["match_id"])
+            DemoQueue.matches.remove(community_matches)
 
         await sleep(10.0)
 
@@ -81,7 +81,7 @@ async def match_ender() -> None:
             matches_to_end
         )
 
-        await sleep(3600.0)
+        await sleep(400.0)
 
 
 TASKS_TO_SPAWN = [
