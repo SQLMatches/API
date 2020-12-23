@@ -91,6 +91,7 @@ class SQLMatches(Starlette):
                  community_types: List[str] = COMMUNITY_TYPES,
                  webhook_timeout: float = 3.0,
                  match_max_length: timedelta = timedelta(hours=3),
+                 clear_cache: bool = False,
                  **kwargs) -> None:
         """SQLMatches API.
 
@@ -175,6 +176,7 @@ class SQLMatches(Starlette):
         Config.match_max_length = match_max_length
 
         self.community_types = community_types
+        self.clear_cache = clear_cache
 
         database_url = "://{}:{}@{}:{}/{}?charset=utf8mb4".format(
             database_settings.username,
@@ -262,6 +264,9 @@ class SQLMatches(Starlette):
             logger.warning(
                 "Memory cache being used, use redis for production."
             )
+
+        if self.clear_cache:
+            await Sessions.cache.clear()
 
         if Config.upload_type == B2UploadSettings:
             await self.b2.authorize()
