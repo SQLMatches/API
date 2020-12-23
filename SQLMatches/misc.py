@@ -30,6 +30,7 @@ from .tables import (
     community_type_table
 )
 from .resources import Sessions, Config
+from .caches import CommunityCache
 
 
 async def cache_community_types(community_types: List[str]):
@@ -93,3 +94,19 @@ def monthly_cost_formula(max_upload: float) -> float:
         (max_upload - Config.free_upload_size) * Config.cost_per_mb,
         2
     )
+
+
+async def bulk_scoreboard_expire(community_name: str,
+                                 matches: List[str]) -> None:
+    """Used to expire multiple scoreboards.
+
+    Parameters
+    ----------
+    community_name : str
+    matches : List[str]
+    """
+
+    cache = CommunityCache(community_name)
+
+    for match in matches:
+        await (cache.scoreboard(match)).expire()

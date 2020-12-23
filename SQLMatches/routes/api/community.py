@@ -24,11 +24,14 @@ DEALINGS IN THE SOFTWARE.
 from starlette.endpoints import HTTPEndpoint
 from starlette.authentication import requires
 from starlette.requests import Request
+from starlette.background import BackgroundTask
 
 from webargs import fields
 from webargs_starlette import use_args
 
 from .rate_limiter import LIMITER
+
+from ...misc import bulk_scoreboard_expire
 
 from ...community import create_community, get_community_from_owner
 from ...exceptions import InvalidCommunity, NoOwnership
@@ -179,7 +182,11 @@ class CommunityOwnerMatchesAPI(HTTPEndpoint):
         await cache.expire()
         await cache_matches.expire()
 
-        return response()
+        return response(background=BackgroundTask(
+            bulk_scoreboard_expire,
+            community_name=request.state.community.community_name,
+            matches=parameters["matches"]
+        ))
 
 
 class CommunityCreateAPI(HTTPEndpoint):

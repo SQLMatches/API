@@ -36,9 +36,9 @@ async def demo_delete() -> None:
 
     while True:
         for community_matches in list(DemoQueue.matches):
-            for match in community_matches["matches"]:
+            for match_id in community_matches["matches"]:
                 demo = Demo(Match(
-                    match["match_id"],
+                    match_id,
                     community_matches["community_name"]
                 ))
 
@@ -47,7 +47,7 @@ async def demo_delete() -> None:
                 else:
                     break
 
-                await sleep(1.0)
+                await sleep(5.0)
 
             DemoQueue.matches.remove(community_matches)
 
