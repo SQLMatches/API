@@ -23,6 +23,8 @@ DEALINGS IN THE SOFTWARE.
 import validators
 import re
 
+from functools import wraps
+
 from .resources import Config
 from .exceptions import (
     InvalidWebhook,
@@ -33,6 +35,7 @@ from .exceptions import (
 
 
 def validate_webhooks(func):
+    @wraps(func)
     def _validate(*args, **kwargs):
         for param in ["match_start_webhook", "round_end_webhook",
                       "match_end_webhook"]:
@@ -46,6 +49,7 @@ def validate_webhooks(func):
 
 
 def validate_community_name(func):
+    @wraps(func)
     def _validate(*args, **kwargs):
         if not re.match("^[a-zA-Z0-9]{4,32}$", kwargs["community_name"]):
             raise InvalidCommunityName()
@@ -56,6 +60,7 @@ def validate_community_name(func):
 
 
 def validate_community_type(func):
+    @wraps(func)
     def _validate(*args, **kwargs):
         if ("community_type" in kwargs and
             (kwargs["community_type"] and kwargs["community_type"] not in
@@ -68,6 +73,7 @@ def validate_community_type(func):
 
 
 def validate_max_upload(func):
+    @wraps(func)
     def _validate(*args, **kwargs):
         if "max_upload" in kwargs and kwargs["max_upload"] and (
             kwargs["max_upload"] < Config.free_upload_size or
