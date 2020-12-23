@@ -21,7 +21,7 @@ DEALINGS IN THE SOFTWARE.
 """
 
 from asyncio import sleep
-from sqlalchemy.sql import select, and_
+from sqlalchemy.sql import select, and_, or_
 from datetime import datetime
 
 from .demos import Demo
@@ -34,6 +34,7 @@ async def demo_delete() -> None:
     """Handles deleting demos in background off local storage or B2.
     """
 
+    # I'm sorry David, please forgive me. Maybe just turn the big telly on.
     while True:
         for community_matches in list(DemoQueue.matches):
             for match in community_matches["matches"]:
@@ -45,7 +46,7 @@ async def demo_delete() -> None:
                 if demo.delete:
                     await demo.delete()
 
-                await sleep(2.0)
+                await sleep(1.0)
 
             DemoQueue.matches.remove(community_matches)
 
@@ -57,29 +58,42 @@ async def match_ender() -> None:
     close it after X amount of time.
     """
 
+    # I'm sorry David, please forgive me. Maybe just turn the big telly on.
     while True:
-        query = select([scoreboard_total_table.c.match_id]).select_from(
+        query = select([
+            scoreboard_total_table.c.match_id,
+            scoreboard_total_table.c.community_name
+        ]).select_from(
             scoreboard_total_table
         ).where(
             and_(
                 scoreboard_total_table.c.status == 1,
-                scoreboard_total_table.c.timestamp + Config.match_max_length
-                <= datetime.now()
+                datetime.now() + Config.match_max_length >=
+                scoreboard_total_table.c.timestamp
             )
         )
 
-        matches_to_end = []
-        matches_to_end_append = matches_to_end.append
+        statements = []
+        statements_append = statements.append
         async for match in Sessions.database.iterate(query):
-            matches_to_end_append({
-                "match_id": match["match_id"],
-                "status": 0
-            })
+            statements_append(
+                and_(
+                    scoreboard_total_table.c.match_id == match["match_id"],
+                    scoreboard_total_table.c.community_name ==
+                    match["community_name"]
+                )
+            )
 
-        await Sessions.database.execute_many(
-            scoreboard_total_table.update(),
-            matches_to_end
-        )
+        if statements:
+            await Sessions.database.execute(
+                scoreboard_total_table.update().values(
+                    status=0
+                ).where(
+                    or_(
+                        *statements
+                    )
+                )
+            )
 
         await sleep(400.0)
 

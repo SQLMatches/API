@@ -91,7 +91,7 @@ class SQLMatches(Starlette):
                  community_types: List[str] = COMMUNITY_TYPES,
                  webhook_timeout: float = 3.0,
                  match_max_length: timedelta = timedelta(hours=3),
-                 clear_cache: bool = False,
+                 clear_cache: bool = True,
                  **kwargs) -> None:
         """SQLMatches API.
 
