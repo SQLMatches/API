@@ -31,7 +31,7 @@ from typing import Any
 from backblaze.exceptions import BackblazeException
 
 from os import path
-from backblaze.settings import PartSettings
+from backblaze.settings import PartSettings, UploadSettings
 
 from .community.match import Match
 from .resources import Config, Sessions
@@ -80,6 +80,11 @@ class Demo:
             scoreboard_total_table.c.community_name ==
             self.match.community_name
         )
+
+    async def __invalid_upload(self, total_size: float) -> bool:
+        # will be async later
+
+        return total_size == 0 or total_size * 1000000 > Config.max_upload_size
 
     async def __update_value(self, **kwargs) -> None:
         await Sessions.database.execute(
@@ -145,12 +150,10 @@ class Demo:
 
                 await asyncio.sleep(Config.upload_delay)
 
-            if (total_size == 0 or
-                    total_size * 1000000 > Config.max_upload_size):
+            if await self.__invalid_upload(total_size):
                 await f.truncate()
                 return False
             else:
-                await f.close()
                 return True
 
     async def __b2_upload(self) -> bool:
@@ -165,8 +168,7 @@ class Demo:
         assert self.request
 
         model, file = await Sessions.bucket.create_part(PartSettings(
-            self.__demo_pathway,
-            content_type="application/octet-stream"
+            self.__demo_pathway
         ))
 
         parts = file.parts()
@@ -184,12 +186,23 @@ class Demo:
 
             await asyncio.sleep(Config.upload_delay)
 
-        if chunked and parts.part_number != 0:
-            await parts.data(chunked)
-            total_size += len(chunked)
+        if chunked:
+            if parts.part_number == 0:
+                await file.cancel()
 
-        if (total_size == 0 or
-                total_size * 1000000 > Config.max_upload_size):
+                model, _ = await Sessions.bucket.upload(UploadSettings(
+                    self.__demo_pathway,
+                    chunked
+                ))
+
+                await self.__update_value(b2_id=model.file_id)
+
+                return True
+            else:
+                await parts.data(chunked)
+                total_size += len(chunked)
+
+        if await self.__invalid_upload(total_size):
             await file.cancel()
             return False
         else:
