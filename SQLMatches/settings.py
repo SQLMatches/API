@@ -22,8 +22,6 @@ DEALINGS IN THE SOFTWARE.
 
 from os import path, mkdir
 
-import os
-
 from .exceptions import UnSupportedEngine
 from .resources import Config
 
