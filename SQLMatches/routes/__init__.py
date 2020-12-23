@@ -84,7 +84,7 @@ ERROR_HANDLERS = {
 
 
 ROUTES = [
-    Mount("/api", routes=[
+    Mount("/api", name="api", routes=[
         Mount("/steam", routes=[
             Route("/login", SteamLogin),
             Route("/validate", SteamValidate),

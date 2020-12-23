@@ -37,8 +37,8 @@ from databases import Database
 from aiohttp import ClientSession
 from aiojobs import create_scheduler
 from aiocache import Cache
-
 from starlette.routing import Mount
+
 from starlette.staticfiles import StaticFiles
 
 from .tables import create_tables
@@ -181,6 +181,15 @@ class SQLMatches(Starlette):
             database_settings.engine + database_url
         )
 
+        create_tables(
+            "{}+{}{}".format(
+                database_settings.engine,
+                database_settings.alchemy_engine,
+                database_url
+            )
+        )
+
+        # Needs to be ran after the Starlette class is initialized.
         if upload_settings:
             if isinstance(upload_settings, B2UploadSettings):
                 Config.demo_pathway = upload_settings.pathway
@@ -201,27 +210,25 @@ class SQLMatches(Starlette):
                 Config.cdn_url = None
                 Config.upload_type = LocalUploadSettings
 
-                routes.append(
-                    Mount(
-                        "/demos",
-                        StaticFiles(directory=upload_settings.pathway),
-                        name="demos"
-                    )
-                )
+                # Dynamically adding mount if local storage.
+
+                # Name attribute for Mount isn't working correctly here,
+                # so please don't change '/demos/'.
+                for mount in routes:
+                    if type(mount) == Mount and mount.name == "api":
+                        mount.app.routes.append(
+                            Mount(
+                                "/demos/",
+                                StaticFiles(directory=Config.demo_pathway)
+                            )
+                        )
+                        break
 
                 logger.warning(
                     "Using local storage for demos, use b2 for production."
                 )
         else:
             Config.upload_type = None
-
-        create_tables(
-            "{}+{}{}".format(
-                database_settings.engine,
-                database_settings.alchemy_engine,
-                database_url
-            )
-        )
 
         super().__init__(
             routes=routes,

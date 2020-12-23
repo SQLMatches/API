@@ -23,7 +23,11 @@ DEALINGS IN THE SOFTWARE.
 
 from starlette.endpoints import HTTPEndpoint
 from starlette.requests import Request
-from starlette.responses import RedirectResponse, PlainTextResponse
+from starlette.responses import (
+    RedirectResponse,
+    PlainTextResponse,
+)
+
 
 from ..settings import B2UploadSettings, LocalUploadSettings
 from ..resources import Config
@@ -48,8 +52,7 @@ class DownloadPage(HTTPEndpoint):
             )
         elif Config.upload_type == LocalUploadSettings:
             return RedirectResponse(
-                "{}/{}".format(
-                    request.url_for("demos"),
+                "/api/demos/{}.dem".format(
                     request.path_params["match_id"]
                 )
             )
