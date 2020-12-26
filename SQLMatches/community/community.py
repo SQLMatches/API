@@ -32,11 +32,10 @@ from ..resources import Sessions, Config, DemoQueue
 
 from ..decorators import (
     validate_community_type,
-    validate_max_upload,
     validate_webhooks
 )
 
-from ..misc import monthly_cost_formula
+from ..misc import amount_to_upload_size
 
 from ..tables import (
     community_table,
@@ -45,13 +44,16 @@ from ..tables import (
     user_table,
     api_key_table,
     statistic_table,
-    payment_table
+    payment_table,
+    stripe_table
 )
 
 from ..exceptions import (
     InvalidCommunity,
-    InvalidSteamID
+    InvalidSteamID,
+    InvalidStripeID
 )
+
 from .models import (
     CommunityModel,
     MatchModel,
@@ -59,6 +61,7 @@ from .models import (
     ProfileModel,
     CommunityStatsModel
 )
+
 from .match import Match
 
 
@@ -76,10 +79,8 @@ class Community:
 
     @validate_webhooks
     @validate_community_type
-    @validate_max_upload
     async def update(self, demos: bool = None,
                      community_type: str = None,
-                     max_upload: float = None,
                      match_start_webhook: str = None,
                      round_end_webhook: str = None,
                      match_end_webhook: str = None,
@@ -91,8 +92,6 @@ class Community:
         demos : bool, optional
             by default None
         community_type : str, optional
-            by default None
-        max_upload : float, optional
             by default None
         match_start_webhook : str, optional
             by default None
@@ -120,12 +119,6 @@ class Community:
 
         if allow_api_access is not None:
             values["allow_api_access"] = allow_api_access
-
-        if max_upload:
-            values["max_upload"] = max_upload
-            values["monthly_cost"] = monthly_cost_formula(
-                max_upload
-            )
 
         if match_start_webhook:
             values["match_start_webhook"] = match_start_webhook
@@ -549,6 +542,27 @@ class Community:
 
         await Sessions.database.execute(query=query)
 
+    async def create_stripe_subscription(self, amount: float) -> str:
+        """Used to create a stripe subscription.
+
+        Parameters
+        ----------
+        amount : float
+
+        Returns
+        -------
+        str
+            Stripe ID
+        """
+
+        query = stripe_table.insert().values(
+            stripe_id=None,
+            amount=amount,
+            community_name=self.community_name
+        )
+
+        await Sessions.database.execute(query)
+
     async def payments(self) -> AsyncGenerator[PaymentModel, None]:
         """Used to get payments for a community.
 
@@ -559,11 +573,78 @@ class Community:
 
         query = select([
             payment_table.c.payment_id,
-            payment_table.c.amount_paid,
-            payment_table.c.timestamp
-        ]).select_from(payment_table).where(
+            payment_table.c.timestamp,
+            payment_table.c.stripe_id,
+            payment_table.c.max_upload,
+            payment_table.c.expires,
+            stripe_table.c.amount
+        ]).select_from(
+            payment_table.join(
+                stripe_table,
+                stripe_table.c.stripe_id == payment_table.c.stripe_id
+            )
+        ).where(
             payment_table.c.community_name == self.community_name
         )
 
         async for row in Sessions.database.iterate(query):
             yield PaymentModel(**row)
+
+    async def add_payment(self, stripe_id: str) -> PaymentModel:
+        """Used to add a payment.
+
+        Parameters
+        ----------
+        stripe_id : str
+
+        Returns
+        -------
+        PaymentModel
+
+        Raises
+        ------
+        InvalidCommunity
+        """
+
+        query = select([
+            stripe_table.c.amount
+        ]).select_from(
+            stripe_table
+        ).where(
+            stripe_table.c.stripe_id == stripe_id
+        )
+
+        amount = await Sessions.database.fetch_val(query)
+        if amount:
+            raise InvalidStripeID()
+
+        upload_size = amount_to_upload_size(amount)
+
+        payment_id = str(uuid4())
+
+        now = datetime.now()
+        expires = now + Config.payment_expires
+
+        query = payment_table.insert().values(
+            community_name=self.community_name,
+            payment_id=payment_id,
+            stripe_id=stripe_id,
+            amount=amount,
+            max_upload=upload_size,
+            timestamp=now,
+            expires=expires
+        )
+
+        try:
+            await Sessions.database.execute(query)
+        except Exception:
+            raise InvalidCommunity()
+        else:
+            return PaymentModel(
+                payment_id,
+                amount,
+                now,
+                stripe_id,
+                upload_size,
+                expires
+            )

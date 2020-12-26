@@ -30,7 +30,6 @@ from .exceptions import (
     InvalidWebhook,
     InvalidCommunityName,
     InvalidCommunityType,
-    InvalidUploadSize
 )
 
 
@@ -66,20 +65,6 @@ def validate_community_type(func):
             (kwargs["community_type"] and kwargs["community_type"] not in
                 Config.community_types)):
             raise InvalidCommunityType()
-
-        return func(*args, **kwargs)
-
-    return _validate
-
-
-def validate_max_upload(func):
-    @wraps(func)
-    def _validate(*args, **kwargs):
-        if "max_upload" in kwargs and kwargs["max_upload"] and (
-            kwargs["max_upload"] < Config.free_upload_size or
-                kwargs["max_upload"] > Config.max_upload_size):
-
-            raise InvalidUploadSize()
 
         return func(*args, **kwargs)
 

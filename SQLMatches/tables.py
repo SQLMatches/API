@@ -105,6 +105,10 @@ community_table = Table(
         primary_key=True
     ),
     Column(
+        "customer_id",
+        String(length=27)
+    ),
+    Column(
         "owner_id",
         String(length=64),
         ForeignKey("user.steam_id")
@@ -133,25 +137,17 @@ community_table = Table(
     Column(
         "match_start_webhook",
         String(length=255),
-        default=False
+        default=None
     ),
     Column(
         "round_end_webhook",
         String(length=255),
-        default=False
+        default=None
     ),
     Column(
         "match_end_webhook",
         String(length=255),
-        default=False
-    ),
-    Column(
-        "max_upload",
-        Float
-    ),
-    Column(
-        "monthly_cost",
-        Float
+        default=None
     ),
     Column(
         "allow_api_access",
@@ -159,6 +155,27 @@ community_table = Table(
     ),
     mysql_engine="InnoDB",
     mysql_charset="utf8mb4"
+)
+
+
+stripe_table = Table(
+    "stripe",
+    metadata,
+    Column(
+        "stripe_id",
+        String(length=27),
+        primary_key=True
+    ),
+    Column(
+        "amount",
+        Float
+    ),
+    Column(
+        "community_name",
+        String(length=32),
+        ForeignKey("community.community_name"),
+        primary_key=True
+    )
 )
 
 
@@ -172,18 +189,28 @@ payment_table = Table(
         primary_key=True
     ),
     Column(
+        "stripe_id",
+        String(length=27),
+        ForeignKey("stripe.stripe_id"),
+        primary_key=True
+    ),
+    Column(
         "payment_id",
         String(length=36),
         primary_key=True
     ),
     Column(
-        "amount_paid",
+        "max_upload",
         Float
     ),
     Column(
         "timestamp",
         TIMESTAMP,
         default=datetime.now
+    ),
+    Column(
+        "expires",
+        TIMESTAMP,
     ),
     PrimaryKeyConstraint(
         "payment_id",

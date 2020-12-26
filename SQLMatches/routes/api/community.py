@@ -142,7 +142,6 @@ class CommunityPaymentAPI(HTTPEndpoint):
 
 class CommunityUpdateAPI(HTTPEndpoint):
     @use_args({"demos": fields.Bool(), "community_type": fields.Str(),
-               "max_upload": fields.Float(),
                "match_start_webhook": fields.Str(min=5, max=255),
                "round_end_webhook": fields.Str(min=5, max=255),
                "match_end_webhook": fields.Str(min=5, max=255),
@@ -189,10 +188,17 @@ class CommunityOwnerMatchesAPI(HTTPEndpoint):
         ))
 
 
+class CommunityCreatePayment(HTTPEndpoint):
+    @use_args({"amount": fields.Float(required=True)})
+    @requires("is_owner")
+    @LIMITER.limit("60/minute")
+    async def post(self, request: Request) -> response:
+        return response()
+
+
 class CommunityCreateAPI(HTTPEndpoint):
     @use_args({"community_name": fields.Str(required=True, max=32, min=4),
                "community_type": fields.Str(),
-               "max_upload": fields.Float(),
                "demos": fields.Bool(),
                "allow_api_access": fields.Bool()})
     @requires("steam_login")

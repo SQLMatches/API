@@ -140,3 +140,11 @@ class InvalidWebhook(SQLMatchesException):
 
     def __init__(self, msg="Invalid webhook url", *args, **kwargs):
         super().__init__(msg, *args, **kwargs)
+
+
+class InvalidStripeID(SQLMatchesException):
+    """Raised when Stripe ID is incorrect.
+    """
+
+    def __init__(self, msg="Invalid stripe ID", *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)

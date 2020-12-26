@@ -91,6 +91,7 @@ class SQLMatches(Starlette):
                  community_types: List[str] = COMMUNITY_TYPES,
                  webhook_timeout: float = 3.0,
                  match_max_length: timedelta = timedelta(hours=3),
+                 payment_expires: timedelta = timedelta(days=31),
                  clear_cache: bool = True,
                  **kwargs) -> None:
         """SQLMatches API.
@@ -120,6 +121,8 @@ class SQLMatches(Starlette):
             by default 3.0
         match_max_length : timedelta, optional
             by default timedelta(hours=3)
+        payment_expires : timedelta, optional
+            by default timedelta(days=31)
         """
 
         startup_tasks = [self._startup]
@@ -174,6 +177,7 @@ class SQLMatches(Starlette):
         )
         Config.webhook_timeout = webhook_timeout
         Config.match_max_length = match_max_length
+        Config.payment_expires = payment_expires
 
         self.community_types = community_types
         self.clear_cache = clear_cache

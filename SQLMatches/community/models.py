@@ -77,11 +77,13 @@ class PublicCommunityModel:
 
 
 class CommunityModel(PublicCommunityModel):
-    def __init__(self, max_upload: float, monthly_cost: float,
-                 allow_api_access: bool, api_key: str,
+    def __init__(self, allow_api_access: bool,
+                 api_key: str,
                  match_start_webhook: str,
                  round_end_webhook: str,
                  match_end_webhook: str,
+                 max_upload: float = None,
+                 monthly_cost: float = None,
                  **kwargs) -> None:
         super().__init__(**kwargs)
 
@@ -154,18 +156,25 @@ class MatchModel:
 
 
 class PaymentModel:
-    def __init__(self, payment_id: str, amount_paid: float,
-                 timestamp: datetime.now) -> None:
+    def __init__(self, payment_id: str, amount: float,
+                 timestamp: datetime.now, stripe_id: str,
+                 max_upload: float, expires: datetime.now) -> None:
         self.payment_id = payment_id
-        self.amount_paid = amount_paid
+        self.amount = amount
         self.timestamp = timestamp
+        self.stripe_id = stripe_id
+        self.max_upload = max_upload
+        self.expires = expires
 
     @property
     def payment_api_schema(self) -> dict:
         return {
             "payment_id": self.payment_id,
-            "amount_paid": self.amount_paid,
-            "timestamp": self.timestamp.strftime(Config.timestamp_format)
+            "amount": self.amount,
+            "timestamp": self.timestamp.strftime(Config.timestamp_format),
+            "max_upload": self.max_upload,
+            "expires": self.expires.strftime(Config.timestamp_format),
+            "stripe_id": self.stripe_id
         }
 
 

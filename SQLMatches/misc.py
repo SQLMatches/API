@@ -29,6 +29,7 @@ from dotenv import load_dotenv, get_key, set_key
 from .tables import (
     community_type_table
 )
+from .exceptions import InvalidUploadSize
 from .resources import Sessions, Config
 from .caches import CommunityCache
 
@@ -89,11 +90,31 @@ class KeyLoader:
         return key
 
 
-def monthly_cost_formula(max_upload: float) -> float:
-    return round(
-        (max_upload - Config.free_upload_size) * Config.cost_per_mb,
+def amount_to_upload_size(amount: float) -> float:
+    """Used to calculate amount paid to upload size.
+
+    Parameters
+    ----------
+    amount : float
+
+    Returns
+    -------
+    float
+
+    Raises
+    ------
+    InvalidUploadSize
+    """
+
+    upload_size = round(
+        (amount * Config.cost_per_mb) + Config.free_upload_size,
         2
     )
+
+    if upload_size > Config.max_upload_size or upload_size < 1:
+        raise InvalidUploadSize()
+
+    return upload_size
 
 
 async def bulk_scoreboard_expire(community_name: str,

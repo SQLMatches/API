@@ -69,6 +69,7 @@ class Config:
     community_types: Dict[str, int] = {}
     webhook_timeout: int
     match_max_length: timedelta
+    payment_expires: timedelta
 
 
 class DemoQueue:
