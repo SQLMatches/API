@@ -158,7 +158,7 @@ community_table = Table(
 )
 
 
-stripe_table = Table(
+subscription_table = Table(
     "subscription",
     metadata,
     Column(
@@ -212,7 +212,7 @@ payment_table = Table(
     ),
     PrimaryKeyConstraint(
         "payment_id",
-        "stripe_id"
+        "subscription_id"
     ),
 )
 

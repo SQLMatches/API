@@ -45,7 +45,7 @@ from ..tables import (
     api_key_table,
     statistic_table,
     payment_table,
-    stripe_table
+    subscription_table
 )
 
 from ..exceptions import (
@@ -566,7 +566,7 @@ class Community:
                 {"price": amount}
             )
 
-            query = stripe_table.insert().values(
+            query = subscription_table.insert().values(
                 subscription_id=subscription.id,
                 amount=amount,
                 community_name=self.community_name
@@ -588,11 +588,11 @@ class Community:
             payment_table.c.stripe_id,
             payment_table.c.max_upload,
             payment_table.c.expires,
-            stripe_table.c.amount
+            subscription_table.c.amount
         ]).select_from(
             payment_table.join(
-                stripe_table,
-                stripe_table.c.stripe_id == payment_table.c.stripe_id
+                subscription_table,
+                subscription_table.c.stripe_id == payment_table.c.stripe_id
             )
         ).where(
             payment_table.c.community_name == self.community_name
@@ -618,11 +618,11 @@ class Community:
         """
 
         query = select([
-            stripe_table.c.amount
+            subscription_table.c.amount
         ]).select_from(
-            stripe_table
+            subscription_table
         ).where(
-            stripe_table.c.stripe_id == stripe_id
+            subscription_table.c.stripe_id == stripe_id
         )
 
         amount = await Sessions.database.fetch_val(query)
