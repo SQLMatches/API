@@ -173,8 +173,7 @@ stripe_table = Table(
     Column(
         "community_name",
         String(length=32),
-        ForeignKey("community.community_name"),
-        primary_key=True
+        ForeignKey("community.community_name")
     )
 )
 
@@ -185,8 +184,7 @@ payment_table = Table(
     Column(
         "community_name",
         String(length=32),
-        ForeignKey("community.community_name"),
-        primary_key=True
+        ForeignKey("community.community_name")
     ),
     Column(
         "stripe_id",
@@ -214,7 +212,7 @@ payment_table = Table(
     ),
     PrimaryKeyConstraint(
         "payment_id",
-        "community_name"
+        "stripe_id"
     ),
 )
 
