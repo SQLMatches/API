@@ -23,7 +23,7 @@ DEALINGS IN THE SOFTWARE.
 
 from functools import wraps
 
-from .resources import Sessions
+from ..resources import Sessions
 
 
 def add_auth(func):
@@ -99,3 +99,8 @@ class Stripe:
                                         *args, **kwargs) as resp:
             resp.raise_for_status()
             return await resp.json()
+
+    async def create_subscription(self):
+        await self.__post(
+            "subscriptions"
+        )
