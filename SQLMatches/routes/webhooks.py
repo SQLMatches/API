@@ -52,7 +52,7 @@ WEBHOOK_ARGS = {
     "data": fields.Nested(DataSchema, required=True),
     "created": fields.Int(allow_none=True),
     "livemode": fields.Bool(allow_none=True),
-    "id": fields.Str(allow_none=True),
+    "id": fields.Str(),
     "object": fields.Str(allow_none=True),
     "request": fields.Dict(allow_none=True),
     "pending_webhooks": fields.Int(allow_none=True),
@@ -68,8 +68,8 @@ class PaymentFailed(HTTPEndpoint):
             return error_response("charge.failed expected")
 
         await Sessions.websocket.emit(
-            parameters["data"]["object"]["id"],
-            {"paid": False},
+            parameters["id"],
+            {"succeeded": False},
             room="ws_room"
         )
 
@@ -84,8 +84,8 @@ class PaymentSuccess(HTTPEndpoint):
             return error_response("charge.succeeded expected")
 
         await Sessions.websocket.emit(
-            parameters["data"]["object"]["id"],
-            {"paid": True},
+            parameters["id"],
+            {"succeeded": True},
             room="ws_room"
         )
 

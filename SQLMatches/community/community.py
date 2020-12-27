@@ -512,7 +512,8 @@ class Community:
             community_table.c.allow_api_access,
             community_table.c.match_start_webhook,
             community_table.c.round_end_webhook,
-            community_table.c.match_end_webhook
+            community_table.c.match_end_webhook,
+            community_table.c.customer_id
         ]).select_from(
             community_table.join(
                 api_key_table,
@@ -542,7 +543,7 @@ class Community:
 
         await Sessions.database.execute(query=query)
 
-    async def create_stripe_subscription(self, amount: float) -> str:
+    async def create_subscription(self, amount: float) -> str:
         """Used to create a stripe subscription.
 
         Parameters
@@ -555,13 +556,23 @@ class Community:
             Stripe ID
         """
 
-        query = stripe_table.insert().values(
-            stripe_id=None,
-            amount=amount,
-            community_name=self.community_name
-        )
+        try:
+            community = await self.get()
+        except InvalidCommunity:
+            raise
+        else:
+            subscription, _ = await Sessions.stripe.create_subscription(
+                community.customer_id,
+                {"price": amount}
+            )
 
-        await Sessions.database.execute(query)
+            query = stripe_table.insert().values(
+                subscription_id=subscription.id,
+                amount=amount,
+                community_name=self.community_name
+            )
+
+            await Sessions.database.execute(query)
 
     async def payments(self) -> AsyncGenerator[PaymentModel, None]:
         """Used to get payments for a community.

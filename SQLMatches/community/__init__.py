@@ -203,6 +203,10 @@ async def create_community(steam_id: str, community_name: str,
     except UserExists:
         pass
 
+    customer = await Sessions.stripe.create_customer(
+        name=community_name
+    )
+
     now = datetime.now()
 
     query = community_table.insert().values(
@@ -215,7 +219,8 @@ async def create_community(steam_id: str, community_name: str,
         allow_api_access=allow_api_access,
         match_start_webhook=match_start_webhook,
         round_end_webhook=round_end_webhook,
-        match_end_webhook=match_end_webhook
+        match_end_webhook=match_end_webhook,
+        customer_id=customer.id
     )
 
     try:

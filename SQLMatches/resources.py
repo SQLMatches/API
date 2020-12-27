@@ -32,6 +32,8 @@ from databases import Database
 from aiocache import Cache
 from datetime import timedelta
 
+from .stripe import Stripe
+
 
 class Sessions:
     database: Database
@@ -42,6 +44,7 @@ class Sessions:
         async_mode="asgi",
         cors_allowed_origins=[]
     )
+    stripe: Stripe
 
 
 class Config:

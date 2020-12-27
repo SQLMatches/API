@@ -21,33 +21,29 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-from SQLMatches import SQLMatches
-from SQLMatches.settings import (
-    DatabaseSettings,
-    LocalUploadSettings,
-    StripeSettings
-)
-
-import uvicorn
+from .models import SubscriptionModel
 
 
-app = SQLMatches(
-    database_settings=DatabaseSettings(
-        username="sqlmatches",
-        password="Y2ZRSsje9qZHsxDu",
-        server="localhost",
-        port=3306,
-        database="sqlmatches"
-    ),
-    stripe_settings=StripeSettings(
-        api_key="...",
-        testing=False
-    ),
-    upload_settings=LocalUploadSettings(),
-    friendly_url="http://localhost/api",
-    root_steam_id="76561198077228213"
-)
+class Subscription:
+    def __init__(self, id: str, context: object) -> None:
+        self.id = id
+        self._context = context
 
+    async def cancel(self, invoice_now: bool = True,
+                     prorate: bool = False) -> SubscriptionModel:
+        """Used to cancel a subscription.
 
-if __name__ == "__main__":
-    uvicorn.run(app)
+        Returns
+        -------
+        SubscriptionModel
+        """
+
+        return SubscriptionModel(**(
+            await self._context.__delete(
+                "subscriptions/" + self.id,
+                json={
+                    "invoice_now": invoice_now,
+                    "prorate": prorate
+                }
+            )
+        ))

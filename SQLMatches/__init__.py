@@ -30,6 +30,8 @@ from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.cors import CORSMiddleware
+from starlette.routing import Mount
+from starlette.staticfiles import StaticFiles
 
 from typing import Dict, List, Tuple
 
@@ -39,16 +41,16 @@ from databases import Database
 from aiohttp import ClientSession
 from aiojobs import create_scheduler
 from aiocache import Cache
-from starlette.routing import Mount
 
-from starlette.staticfiles import StaticFiles
+from .stripe import Stripe
 
 from .tables import create_tables
 from .resources import Sessions, Config
 from .settings import (
     DatabaseSettings,
     B2UploadSettings,
-    LocalUploadSettings
+    LocalUploadSettings,
+    StripeSettings
 )
 from .middlewares import APIAuthentication
 
@@ -77,7 +79,9 @@ logger = logging.getLogger("SQLMatches")
 
 
 class SQLMatches(Starlette):
-    def __init__(self, database_settings: DatabaseSettings,
+    def __init__(self,
+                 database_settings: DatabaseSettings,
+                 stripe_settings: StripeSettings,
                  friendly_url: str,
                  root_steam_id: str,
                  upload_settings: Tuple[
@@ -99,6 +103,7 @@ class SQLMatches(Starlette):
         Parameters
         ----------
         database_settings : DatabaseSettings
+        stripe_settings : StripeSettings
         friendly_url : str
         root_steam_id : str
         upload_settings : [B2UploadSettings, LocalUploadSettings], optional
@@ -202,7 +207,11 @@ class SQLMatches(Starlette):
             )
         )
 
-        # Needs to be ran after the Starlette class is initialized.
+        Sessions.stripe = Stripe(
+            stripe_settings.api_key,
+            stripe_settings.testing
+        )
+
         if upload_settings:
             Config.demo_pathway = upload_settings.pathway
             Config.demo_extension = upload_settings.extension

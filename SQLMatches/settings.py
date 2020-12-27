@@ -132,3 +132,18 @@ class LocalUploadSettings(__Extension):
 
         if not path.exists(self.pathway):
             mkdir(self.pathway)
+
+
+class StripeSettings:
+    def __init__(self, api_key: str, testing: bool = False) -> None:
+        """Used to set stripe settings.
+
+        Parameters
+        ----------
+        api_key : str
+        testing : bool, optional
+            by default False
+        """
+
+        self.api_key = api_key
+        self.testing = testing

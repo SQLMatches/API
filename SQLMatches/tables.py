@@ -159,10 +159,10 @@ community_table = Table(
 
 
 stripe_table = Table(
-    "stripe",
+    "subscription",
     metadata,
     Column(
-        "stripe_id",
+        "subscription_id",
         String(length=27),
         primary_key=True
     ),
@@ -187,9 +187,9 @@ payment_table = Table(
         ForeignKey("community.community_name")
     ),
     Column(
-        "stripe_id",
+        "subscription_id",
         String(length=27),
-        ForeignKey("stripe.stripe_id"),
+        ForeignKey("subscription.subscription_id"),
         primary_key=True
     ),
     Column(

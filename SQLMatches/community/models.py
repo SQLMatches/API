@@ -84,6 +84,7 @@ class CommunityModel(PublicCommunityModel):
                  match_end_webhook: str,
                  max_upload: float = None,
                  monthly_cost: float = None,
+                 customer_id: str = None,
                  **kwargs) -> None:
         super().__init__(**kwargs)
 
@@ -94,6 +95,7 @@ class CommunityModel(PublicCommunityModel):
         self.match_start_webhook = match_start_webhook
         self.round_end_webhook = round_end_webhook
         self.match_end_webhook = match_end_webhook
+        self.customer_id = customer_id
 
     @property
     def community_api_schema(self) -> dict:
@@ -108,7 +110,8 @@ class CommunityModel(PublicCommunityModel):
             "allow_api_access": self.allow_api_access,
             "match_start_webhook": self.match_start_webhook,
             "round_end_webhook": self.round_end_webhook,
-            "match_end_webhook": self.match_end_webhook
+            "match_end_webhook": self.match_end_webhook,
+            "customer_id": self.customer_id
         }
 
 
