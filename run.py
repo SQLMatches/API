@@ -20,6 +20,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
+import uvicorn
 
 from SQLMatches import SQLMatches
 from SQLMatches.settings import (
@@ -27,8 +28,6 @@ from SQLMatches.settings import (
     LocalUploadSettings,
     StripeSettings
 )
-
-import uvicorn
 
 
 app = SQLMatches(
