@@ -30,9 +30,7 @@ from ..settings import (
 )
 
 from ..community import create_community, Community
-from ..exceptions import AlreadyCommunity, CommunityTaken, UserExists
-
-from ..user import create_user
+from ..exceptions import AlreadyCommunity, CommunityTaken
 
 from starlette.testclient import TestClient
 
