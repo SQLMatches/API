@@ -31,16 +31,19 @@ from .models import SubscriptionModel, CustomerModel
 from .subscription import Subscription
 
 
-def add_auth(func):
+def add_headers(func):
     @wraps(func)
     def _add(*args, **kwargs):
         auth = args[0].authorization
 
         if "headers" in kwargs:
             kwargs["headers"]["Authorization"] = auth
+            kwargs["headers"]["Content-Type"] = \
+                "application/x-www-form-urlencoded"
         else:
             kwargs["headers"] = {
-                "Authorization": auth
+                "Authorization": auth,
+                "Content-Type": "application/x-www-form-urlencoded"
             }
 
         return func(*args, **kwargs)
@@ -69,7 +72,7 @@ class Stripe:
         resp.raise_for_status()
         return await resp.json()
 
-    @add_auth
+    @add_headers
     async def __post(self, path: str, *args, **kwargs) -> dict:
         """Used to post to Stripe.
 
@@ -87,7 +90,7 @@ class Stripe:
                                          *args, **kwargs) as resp:
             return await self.__handle(resp)
 
-    @add_auth
+    @add_headers
     async def __delete(self, path: str, *args, **kwargs) -> dict:
         """Used to delete something from Stripe.
 
@@ -105,7 +108,7 @@ class Stripe:
                                            *args, **kwargs) as resp:
             return await self.__handle(resp)
 
-    @add_auth
+    @add_headers
     async def __get(self, path: str, *args, **kwargs) -> dict:
         """Used to get Stripe data.
 
@@ -157,7 +160,7 @@ class Stripe:
 
         data = await self.__post(
             "subscriptions",
-            json={
+            data={
                 "customer": customer,
                 "items": items,
                 "cancel_at_period_end": cancel_at_period_end
@@ -175,5 +178,5 @@ class Stripe:
         """
 
         return CustomerModel(**(
-            await self.__post("customers", json=kwargs)
+            await self.__post("customers", data=kwargs)
         ))

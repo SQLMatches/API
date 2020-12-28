@@ -24,7 +24,9 @@ from aiohttp import BasicAuth
 
 from .. import SQLMatches, COMMUNITY_TYPES
 from ..settings import (
-    DatabaseSettings, LocalUploadSettings
+    DatabaseSettings,
+    LocalUploadSettings,
+    StripeSettings
 )
 
 from ..community import create_community, Community
@@ -43,8 +45,12 @@ sqlmatches = SQLMatches(
         port=3306,
         database="sqlmatches"
     ),
+    stripe_settings=StripeSettings(
+        api_key="npTQKVz6lrs4YjB2qy8oKgbp",
+        testing=True
+    ),
     upload_settings=LocalUploadSettings(),
-    friendly_url="http://127.0.0.1:8000",
+    friendly_url="http://localhost/api",
     root_steam_id="76561198077228213"
 )
 
@@ -59,11 +65,6 @@ class TestBase:
 
         STEAM_ID = "76561198077228213"
         COMMUNITY_NAME = "TestLeague"
-
-        try:
-            await create_user(STEAM_ID, "Ward")
-        except UserExists:
-            pass
 
         try:
             community, _ = await create_community(

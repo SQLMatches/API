@@ -507,18 +507,31 @@ class Community:
             community_table.c.disabled,
             community_table.c.community_name,
             community_table.c.timestamp,
-            community_table.c.max_upload,
-            community_table.c.monthly_cost,
             community_table.c.allow_api_access,
             community_table.c.match_start_webhook,
             community_table.c.round_end_webhook,
             community_table.c.match_end_webhook,
-            community_table.c.customer_id
+            community_table.c.customer_id,
+            payment_table.c.max_upload,
+            subscription_table.c.amount
         ]).select_from(
             community_table.join(
                 api_key_table,
                 community_table.c.community_name ==
                 api_key_table.c.community_name
+            ).join(
+                payment_table,
+                and_(
+                    community_table.c.community_name ==
+                    payment_table.c.community_name,
+                    payment_table.c.expires >= datetime.now()
+                ),
+                isouter=True
+            ).join(
+                subscription_table,
+                subscription_table.c.subscription_id ==
+                payment_table.c.subscription_id,
+                isouter=True
             )
         ).where(
             and_(

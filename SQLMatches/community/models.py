@@ -83,14 +83,14 @@ class CommunityModel(PublicCommunityModel):
                  round_end_webhook: str,
                  match_end_webhook: str,
                  max_upload: float = None,
-                 monthly_cost: float = None,
+                 amount: float = None,
                  customer_id: str = None,
                  **kwargs) -> None:
         super().__init__(**kwargs)
 
         self.master_api_key = api_key
         self.max_upload = max_upload
-        self.monthly_cost = monthly_cost
+        self.amount = amount
         self.allow_api_access = allow_api_access
         self.match_start_webhook = match_start_webhook
         self.round_end_webhook = round_end_webhook

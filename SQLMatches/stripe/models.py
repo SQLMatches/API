@@ -29,13 +29,16 @@ class RecurringModel:
     interval: str
     interval_count: int
     usage_type: str
+    metadata: Dict[str, Any]
 
     def __init__(self, aggregate_usage: None, interval: str,
-                 interval_count: int, usage_type: str) -> None:
+                 interval_count: int, usage_type: str,
+                 metadata: Dict[str, Any]) -> None:
         self.aggregate_usage = aggregate_usage
         self.interval = interval
         self.interval_count = interval_count
         self.usage_type = usage_type
+        self.metadata = metadata
 
 
 class PriceModel:
@@ -55,13 +58,14 @@ class PriceModel:
     type: str
     unit_amount: int
     unit_amount_decimal: int
+    metadata: Dict[str, Any]
 
     def __init__(self, id: str, object: str, active: bool, billing_scheme: str,
                  created: int, currency: str, livemode: bool, lookup_key: None,
                  nickname: None, product: str,
                  recurring: Dict[str, Any], tiers_mode: None,
                  transform_quantity: None, type: str, unit_amount: int,
-                 unit_amount_decimal: int) -> None:
+                 unit_amount_decimal: int, metadata: Dict[str, Any]) -> None:
         self.id = id
         self.object = object
         self.active = active
@@ -78,6 +82,7 @@ class PriceModel:
         self.type = type
         self.unit_amount = unit_amount
         self.unit_amount_decimal = unit_amount_decimal
+        self.metadata = metadata
 
 
 class DatumModel:
@@ -89,11 +94,12 @@ class DatumModel:
     quantity: int
     subscription: str
     tax_rates: List[Any]
+    metadata: Dict[str, Any]
 
     def __init__(self, id: str, object: str, billing_thresholds: None,
                  created: int, price: Dict[str, Any],
                  quantity: int, subscription: str,
-                 tax_rates: List[Any]) -> None:
+                 tax_rates: List[Any], metadata: Dict[str, Any]) -> None:
         self.id = id
         self.object = object
         self.billing_thresholds = billing_thresholds
@@ -102,6 +108,7 @@ class DatumModel:
         self.quantity = quantity
         self.subscription = subscription
         self.tax_rates = tax_rates
+        self.metadata = metadata
 
 
 class ItemsModel:
@@ -109,13 +116,15 @@ class ItemsModel:
     data: List[DatumModel]
     has_more: bool
     url: str
+    metadata: Dict[str, Any]
 
     def __init__(self, object: str, data: List[Dict[str, Any]], has_more: bool,
-                 url: str) -> None:
+                 url: str, metadata: Dict[str, Any]) -> None:
         self.object = object
         self.data = [DatumModel(**datum) for datum in data]
         self.has_more = has_more
         self.url = url
+        self.metadata = metadata
 
 
 class SubscriptionModel:
@@ -152,6 +161,7 @@ class SubscriptionModel:
     transfer_data: None
     trial_end: None
     trial_start: None
+    metadata: Dict[str, Any]
 
     def __init__(self, id: str, object: str, application_fee_percent: None,
                  billing_cycle_anchor: int, billing_thresholds: None,
@@ -169,7 +179,7 @@ class SubscriptionModel:
                  pending_setup_intent: None, pending_update: None,
                  schedule: None, start_date: int, status: str,
                  transfer_data: None, trial_end: None,
-                 trial_start: None) -> None:
+                 trial_start: None, metadata: Dict[str, Any]) -> None:
         self.id = id
         self.object = object
         self.application_fee_percent = application_fee_percent
@@ -204,18 +214,21 @@ class SubscriptionModel:
         self.transfer_data = transfer_data
         self.trial_end = trial_end
         self.trial_start = trial_start
+        self.metadata = metadata
 
 
 class InvoiceSettingsModel:
     custom_fields: None
     default_payment_method: None
     footer: None
+    metadata: Dict[str, Any]
 
     def __init__(self, custom_fields: str, default_payment_method: str,
-                 footer: str) -> None:
+                 footer: str, metadata: Dict[str, Any]) -> None:
         self.custom_fields = custom_fields
         self.default_payment_method = default_payment_method
         self.footer = footer
+        self.metadata = metadata
 
 
 class CustomerModel:
@@ -239,6 +252,7 @@ class CustomerModel:
     preferred_locales: List[Any]
     shipping: str
     tax_exempt: str
+    metadata: Dict[str, Any]
 
     def __init__(self, id: str, object: str, address: str, balance: int,
                  created: int, currency: str, default_source: str,
@@ -247,7 +261,7 @@ class CustomerModel:
                  invoice_settings: InvoiceSettingsModel, livemode: bool,
                  name: str, next_invoice_sequence: int, phone: str,
                  preferred_locales: List[Any], shipping: str,
-                 tax_exempt: str) -> None:
+                 tax_exempt: str, metadata: Dict[str, Any]) -> None:
         self.id = id
         self.object = object
         self.address = address
@@ -268,3 +282,4 @@ class CustomerModel:
         self.preferred_locales = preferred_locales
         self.shipping = shipping
         self.tax_exempt = tax_exempt
+        self.metadata = metadata

@@ -41,7 +41,7 @@ class Subscription:
         return SubscriptionModel(**(
             await self._context.__delete(
                 "subscriptions/" + self.id,
-                json={
+                data={
                     "invoice_now": invoice_now,
                     "prorate": prorate
                 }

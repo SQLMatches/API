@@ -169,11 +169,6 @@ subscription_table = Table(
     Column(
         "amount",
         Float
-    ),
-    Column(
-        "community_name",
-        String(length=32),
-        ForeignKey("community.community_name")
     )
 )
 
