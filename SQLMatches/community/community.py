@@ -536,7 +536,7 @@ class Community:
         ).where(
             and_(
                 community_table.c.community_name == self.community_name,
-                api_key_table.c.master == 1
+                api_key_table.c.master == True  # noqa: E712
             )
         )
 
@@ -598,14 +598,15 @@ class Community:
         query = select([
             payment_table.c.payment_id,
             payment_table.c.timestamp,
-            payment_table.c.stripe_id,
+            payment_table.c.subscription_id,
             payment_table.c.max_upload,
             payment_table.c.expires,
             subscription_table.c.amount
         ]).select_from(
             payment_table.join(
                 subscription_table,
-                subscription_table.c.stripe_id == payment_table.c.stripe_id
+                subscription_table.c.subscription_id ==
+                payment_table.c.subscription_id
             )
         ).where(
             payment_table.c.community_name == self.community_name

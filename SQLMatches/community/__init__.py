@@ -203,7 +203,7 @@ async def create_community(steam_id: str, community_name: str,
     except UserExists:
         pass
 
-    customer = await Sessions.stripe.create_customer(
+    customer, _ = await Sessions.stripe.create_customer(
         name=community_name
     )
 

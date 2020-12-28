@@ -283,3 +283,62 @@ class CustomerModel:
         self.shipping = shipping
         self.tax_exempt = tax_exempt
         self.metadata = metadata
+
+
+class CardModel:
+    id: str
+    object: str
+    address_city: str
+    address_country: str
+    address_line1: str
+    address_line1_check: str
+    address_line2: str
+    address_state: str
+    address_zip: int
+    address_zip_check: str
+    brand: str
+    country: str
+    customer: str
+    cvc_check: str
+    dynamic_last4: str
+    exp_month: int
+    exp_year: int
+    fingerprint: str
+    funding: str
+    last4: int
+    metadata: Dict[str, Any]
+    name: str
+    tokenization_method: str
+
+    def __init__(self, id: str, object: str, address_city: None,
+                 address_country: None, address_line1: None,
+                 address_line1_check: None, address_line2: None,
+                 address_state: None, address_zip: None,
+                 address_zip_check: None, brand: str, country: str,
+                 customer: str, cvc_check: str, dynamic_last4: None,
+                 exp_month: int, exp_year: int, fingerprint: str, funding: str,
+                 last4: int, metadata: Dict[str, Any], name: None,
+                 tokenization_method: None) -> None:
+        self.id = id
+        self.object = object
+        self.address_city = address_city
+        self.address_country = address_country
+        self.address_line1 = address_line1
+        self.address_line1_check = address_line1_check
+        self.address_line2 = address_line2
+        self.address_state = address_state
+        self.address_zip = address_zip
+        self.address_zip_check = address_zip_check
+        self.brand = brand
+        self.country = country
+        self.customer = customer
+        self.cvc_check = cvc_check
+        self.dynamic_last4 = dynamic_last4
+        self.exp_month = exp_month
+        self.exp_year = exp_year
+        self.fingerprint = fingerprint
+        self.funding = funding
+        self.last4 = last4
+        self.metadata = metadata
+        self.name = name
+        self.tokenization_method = tokenization_method

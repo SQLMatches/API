@@ -89,8 +89,9 @@ class CommunityModel(PublicCommunityModel):
         super().__init__(**kwargs)
 
         self.master_api_key = api_key
-        self.max_upload = max_upload
-        self.amount = amount
+        self.max_upload = (Config.free_upload_size if not
+                           max_upload else max_upload)
+        self.amount = amount if amount else 0.0
         self.allow_api_access = allow_api_access
         self.match_start_webhook = match_start_webhook
         self.round_end_webhook = round_end_webhook
@@ -106,7 +107,7 @@ class CommunityModel(PublicCommunityModel):
             "disabled": self.disabled,
             "timestamp": self.timestamp.strftime(Config.timestamp_format),
             "max_upload": self.max_upload,
-            "monthly_cost": self.monthly_cost,
+            "amount": self.amount,
             "allow_api_access": self.allow_api_access,
             "match_start_webhook": self.match_start_webhook,
             "round_end_webhook": self.round_end_webhook,
@@ -160,12 +161,12 @@ class MatchModel:
 
 class PaymentModel:
     def __init__(self, payment_id: str, amount: float,
-                 timestamp: datetime.now, stripe_id: str,
+                 timestamp: datetime.now, subscription_id: str,
                  max_upload: float, expires: datetime.now) -> None:
         self.payment_id = payment_id
         self.amount = amount
         self.timestamp = timestamp
-        self.stripe_id = stripe_id
+        self.subscription_id = subscription_id
         self.max_upload = max_upload
         self.expires = expires
 
@@ -177,7 +178,7 @@ class PaymentModel:
             "timestamp": self.timestamp.strftime(Config.timestamp_format),
             "max_upload": self.max_upload,
             "expires": self.expires.strftime(Config.timestamp_format),
-            "stripe_id": self.stripe_id
+            "subscription_id": self.subscription_id
         }
 
 

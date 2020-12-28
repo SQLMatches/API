@@ -29,6 +29,7 @@ from ..resources import Sessions
 
 from .models import SubscriptionModel, CustomerModel
 from .subscription import Subscription
+from .customer import Customer
 
 
 def add_headers(func):
@@ -169,7 +170,22 @@ class Stripe:
 
         return SubscriptionModel(**data), self.subscription(data["id"])
 
-    async def create_customer(self, **kwargs) -> CustomerModel:
+    def customer(self, id: str) -> Customer:
+        """Used to interact with customer.
+
+        Parameters
+        ----------
+        id : str
+
+        Returns
+        -------
+        Customer
+        """
+
+        return Customer(id, self)
+
+    async def create_customer(self, **kwargs
+                              ) -> Tuple[CustomerModel, Customer]:
         """Used to create a customer.
 
         Returns
@@ -177,6 +193,6 @@ class Stripe:
         CustomerModel
         """
 
-        return CustomerModel(**(
-            await self.__post("customers", data=kwargs)
-        ))
+        data = await self.__post("customers", data=kwargs)
+
+        return CustomerModel(**data), self.customer(data["id"])
