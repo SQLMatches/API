@@ -22,6 +22,20 @@ DEALINGS IN THE SOFTWARE.
 
 
 class Card:
-    def __init__(self, id: str, context: object) -> None:
+    def __init__(self, customer_id: str, id: str, context: object) -> None:
         self.id = id
+        self.customer_id = customer_id
         self._context = context
+
+    async def delete(self) -> bool:
+        """Used to delete a card.
+
+        Returns
+        -------
+        bool
+            If deleted or not.
+        """
+
+        return (await self._context.__delete("customers/{}/sources/{}".format(
+            self.customer_id, self.id
+        )))["deleted"]

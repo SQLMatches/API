@@ -38,7 +38,7 @@ from ...exceptions import InvalidCommunity, NoOwnership
 
 from ...responses import response
 
-from ...resources import Sessions
+from ...resources import Config, Sessions
 
 from ...caches import CommunityCache, CommunitiesCache
 
@@ -122,6 +122,17 @@ class CommunityPaymentAPI(HTTPEndpoint):
     @requires("is_owner")
     @LIMITER.limit("30/minute")
     async def get(self, request: Request) -> response:
+        """Used to get all made payments.
+
+        Parameters
+        ----------
+        request : Request
+
+        Returns
+        -------
+        response
+        """
+
         cache = CommunityCache(
             request.state.community.community_name
         ).payments()
@@ -138,6 +149,30 @@ class CommunityPaymentAPI(HTTPEndpoint):
         await cache.set(data)
 
         return response(data)
+
+    @use_args({"amount": fields.Float(required=True,
+                                      min=Config.free_upload_size,
+                                      max=Config.max_upload_size)})
+    @requires("is_owner")
+    @LIMITER.limit("60/minute")
+    async def post(self, request: Request, parameters: dict) -> response:
+        """Used to create a subscription.
+
+        Parameters
+        ----------
+        request : Request
+        parameters : dict
+
+        Returns
+        -------
+        response
+        """
+
+        payment_id = await request.state.community.create_subscription(
+            parameters["amount"]
+        )
+
+        return response({"payment_id": payment_id})
 
 
 class CommunityUpdateAPI(HTTPEndpoint):
@@ -186,14 +221,6 @@ class CommunityOwnerMatchesAPI(HTTPEndpoint):
             community_name=request.state.community.community_name,
             matches=parameters["matches"]
         ))
-
-
-class CommunityCreatePayment(HTTPEndpoint):
-    @use_args({"amount": fields.Float(required=True)})
-    @requires("is_owner")
-    @LIMITER.limit("60/minute")
-    async def post(self, request: Request) -> response:
-        return response()
 
 
 class CommunityCreateAPI(HTTPEndpoint):

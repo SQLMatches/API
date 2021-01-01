@@ -153,6 +153,11 @@ community_table = Table(
         "allow_api_access",
         Boolean
     ),
+    Column(
+        "added_card",
+        Boolean,
+        default=False
+    ),
     mysql_engine="InnoDB",
     mysql_charset="utf8mb4"
 )
@@ -167,9 +172,18 @@ subscription_table = Table(
         primary_key=True
     ),
     Column(
+        "payment_id",
+        String(length=36),
+        primary_key=True
+    ),
+    Column(
         "amount",
         Float
-    )
+    ),
+    PrimaryKeyConstraint(
+        "payment_id",
+        "subscription_id"
+    ),
 )
 
 
@@ -179,17 +193,13 @@ payment_table = Table(
     Column(
         "community_name",
         String(length=32),
-        ForeignKey("community.community_name")
-    ),
-    Column(
-        "subscription_id",
-        String(length=27),
-        ForeignKey("subscription.subscription_id"),
+        ForeignKey("community.community_name"),
         primary_key=True
     ),
     Column(
         "payment_id",
         String(length=36),
+        ForeignKey("subscription.subscription_id"),
         primary_key=True
     ),
     Column(
@@ -207,7 +217,7 @@ payment_table = Table(
     ),
     PrimaryKeyConstraint(
         "payment_id",
-        "subscription_id"
+        "community_name"
     ),
 )
 

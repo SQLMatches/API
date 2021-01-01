@@ -44,7 +44,7 @@ class Customer:
         Card
         """
 
-        return Card(id, self)
+        return Card(self.id, id, self)
 
     async def create_card(self, number: str, exp_month: int,
                           exp_year: int, cvc: int,

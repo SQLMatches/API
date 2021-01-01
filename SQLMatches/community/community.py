@@ -25,6 +25,7 @@ from typing import AsyncGenerator, List, Tuple
 from uuid import uuid4
 from datetime import datetime
 from secrets import token_urlsafe
+from httpx import HTTPError
 
 from sqlalchemy.sql import select, and_, or_, func
 
@@ -51,7 +52,8 @@ from ..tables import (
 from ..exceptions import (
     InvalidCommunity,
     InvalidSteamID,
-    InvalidStripeID
+    InvaldCard,
+    InvalidPaymentID
 )
 
 from .models import (
@@ -556,37 +558,6 @@ class Community:
 
         await Sessions.database.execute(query=query)
 
-    async def create_subscription(self, amount: float) -> str:
-        """Used to create a stripe subscription.
-
-        Parameters
-        ----------
-        amount : float
-
-        Returns
-        -------
-        str
-            Stripe ID
-        """
-
-        try:
-            community = await self.get()
-        except InvalidCommunity:
-            raise
-        else:
-            subscription, _ = await Sessions.stripe.create_subscription(
-                community.customer_id,
-                {"price": amount}
-            )
-
-            query = subscription_table.insert().values(
-                subscription_id=subscription.id,
-                amount=amount,
-                community_name=self.community_name
-            )
-
-            await Sessions.database.execute(query)
-
     async def payments(self) -> AsyncGenerator[PaymentModel, None]:
         """Used to get payments for a community.
 
@@ -615,12 +586,81 @@ class Community:
         async for row in Sessions.database.iterate(query):
             yield PaymentModel(**row)
 
-    async def add_payment(self, stripe_id: str) -> PaymentModel:
+    async def create_subscription(self, amount: float) -> str:
+        """Used to create a stripe subscription.
+
+        Parameters
+        ----------
+        amount : float
+
+        Returns
+        -------
+        str
+            Subscription ID
+        """
+
+        try:
+            community = await self.get()
+        except InvalidCommunity:
+            raise
+        else:
+            subscription, _ = await Sessions.stripe.create_subscription(
+                community.customer_id,
+                {"price": amount}
+            )
+
+            payment_id = str(uuid4())
+
+            query = subscription_table.insert().values(
+                subscription_id=subscription.id,
+                payment_id=payment_id,
+                amount=amount,
+                community_name=self.community_name
+            )
+
+            await Sessions.database.execute(query)
+
+            return payment_id
+
+    async def add_card(self, number: str, exp_month: int,
+                       exp_year: int, cvc: int,
+                       name: str) -> None:
+        """Used to create a card for a community.
+
+        Parameters
+        ----------
+        number : str
+        exp_month : int
+        exp_year : int
+        cvc : int
+        name : str
+        """
+
+        community = await self.get()
+
+        try:
+            await (Sessions.stripe.customer(
+                community.customer_id
+            )).create_card(
+                number, exp_month, exp_year, cvc, name
+            )
+        except HTTPError:
+            raise InvaldCard()
+        else:
+            await Sessions.database.execute(
+                community_table.update().values(
+                    added_card=True
+                ).where(
+                    community_table.c.community_name == self.community_name
+                )
+            )
+
+    async def add_payment(self, payment_id: str) -> PaymentModel:
         """Used to add a payment.
 
         Parameters
         ----------
-        stripe_id : str
+        payment_id : str
 
         Returns
         -------
@@ -632,20 +672,19 @@ class Community:
         """
 
         query = select([
-            subscription_table.c.amount
+            subscription_table.c.amount,
+            subscription_table.c.subscription_id
         ]).select_from(
             subscription_table
         ).where(
-            subscription_table.c.stripe_id == stripe_id
+            subscription_table.c.payment_id == payment_id
         )
 
-        amount = await Sessions.database.fetch_val(query)
-        if amount:
-            raise InvalidStripeID()
+        row = await Sessions.database.fetch_one(query)
+        if not row:
+            raise InvalidPaymentID()
 
-        upload_size = amount_to_upload_size(amount)
-
-        payment_id = str(uuid4())
+        upload_size = amount_to_upload_size(row["amount"])
 
         now = datetime.now()
         expires = now + Config.payment_expires
@@ -653,8 +692,7 @@ class Community:
         query = payment_table.insert().values(
             community_name=self.community_name,
             payment_id=payment_id,
-            stripe_id=stripe_id,
-            amount=amount,
+            amount=row["amount"],
             max_upload=upload_size,
             timestamp=now,
             expires=expires
@@ -667,9 +705,9 @@ class Community:
         else:
             return PaymentModel(
                 payment_id,
-                amount,
+                row["amount"],
                 now,
-                stripe_id,
+                row["subscription_id"],
                 upload_size,
                 expires
             )
