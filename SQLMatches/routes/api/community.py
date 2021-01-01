@@ -38,7 +38,7 @@ from ...exceptions import InvalidCommunity, NoOwnership
 
 from ...responses import response
 
-from ...resources import Config, Sessions
+from ...resources import Sessions
 
 from ...caches import CommunityCache, CommunitiesCache
 
@@ -150,9 +150,7 @@ class CommunityPaymentAPI(HTTPEndpoint):
 
         return response(data)
 
-    @use_args({"amount": fields.Float(required=True,
-                                      min=Config.free_upload_size,
-                                      max=Config.max_upload_size)})
+    @use_args({"amount": fields.Float(required=True)})
     @requires("is_owner")
     @LIMITER.limit("60/minute")
     async def post(self, request: Request, parameters: dict) -> response:
@@ -173,6 +171,50 @@ class CommunityPaymentAPI(HTTPEndpoint):
         )
 
         return response({"payment_id": payment_id})
+
+
+class CommunityCardAPI(HTTPEndpoint):
+    @use_args({"number": fields.Str(required=True),
+               "exp_month": fields.Int(required=True),
+               "exp_year": fields.Int(required=True),
+               "cvc": fields.Int(required=True),
+               "name": fields.Str(required=True)})
+    @requires("is_owner")
+    @LIMITER.limit("60/minute")
+    async def post(self, request: Request, parameters: dict) -> response:
+        """Used to add a card.
+
+        Parameters
+        ----------
+        request : Request
+        parameters : dict
+
+        Returns
+        -------
+        response
+        """
+
+        await request.state.community.add_card(**parameters)
+
+        return response()
+
+    @requires("is_owner")
+    @LIMITER.limit("60/minute")
+    async def delete(self, request: Request) -> response:
+        """Used to delete a card.
+
+        Parameters
+        ----------
+        request : Request
+
+        Returns
+        -------
+        response
+        """
+
+        await request.state.community.delete_card()
+
+        return response()
 
 
 class CommunityUpdateAPI(HTTPEndpoint):

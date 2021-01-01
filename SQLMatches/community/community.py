@@ -25,7 +25,7 @@ from typing import AsyncGenerator, List, Tuple
 from uuid import uuid4
 from datetime import datetime
 from secrets import token_urlsafe
-from httpx import HTTPError
+from aiohttp.client_exceptions import ClientError
 
 from sqlalchemy.sql import select, and_, or_, func
 
@@ -514,6 +514,7 @@ class Community:
             community_table.c.round_end_webhook,
             community_table.c.match_end_webhook,
             community_table.c.customer_id,
+            community_table.c.card_id,
             payment_table.c.max_upload,
             subscription_table.c.amount
         ]).select_from(
@@ -531,8 +532,8 @@ class Community:
                 isouter=True
             ).join(
                 subscription_table,
-                subscription_table.c.subscription_id ==
-                payment_table.c.subscription_id,
+                subscription_table.c.payment_id ==
+                payment_table.c.payment_id,
                 isouter=True
             )
         ).where(
@@ -569,15 +570,15 @@ class Community:
         query = select([
             payment_table.c.payment_id,
             payment_table.c.timestamp,
-            payment_table.c.subscription_id,
             payment_table.c.max_upload,
             payment_table.c.expires,
-            subscription_table.c.amount
+            subscription_table.c.amount,
+            subscription_table.c.subscription_id
         ]).select_from(
             payment_table.join(
                 subscription_table,
-                subscription_table.c.subscription_id ==
-                payment_table.c.subscription_id
+                subscription_table.c.payment_id ==
+                payment_table.c.payment_id
             )
         ).where(
             payment_table.c.community_name == self.community_name
@@ -639,21 +640,36 @@ class Community:
         community = await self.get()
 
         try:
-            await (Sessions.stripe.customer(
+            data, _ = await (Sessions.stripe.customer(
                 community.customer_id
             )).create_card(
                 number, exp_month, exp_year, cvc, name
             )
-        except HTTPError:
+        except ClientError:
             raise InvaldCard()
         else:
             await Sessions.database.execute(
                 community_table.update().values(
-                    added_card=True
+                    card_id=data.id
                 ).where(
                     community_table.c.community_name == self.community_name
                 )
             )
+
+    async def delete_card(self) -> None:
+        community = await self.get()
+
+        await ((Sessions.stripe.customer(community.customer_id)).card(
+            community.card_id
+        )).delete()
+
+        await Sessions.database.execute(
+            community_table.update().values(
+                card_id=None
+            ).where(
+                community_table.c.community_name == self.community_name
+            )
+        )
 
     async def add_payment(self, payment_id: str) -> PaymentModel:
         """Used to add a payment.

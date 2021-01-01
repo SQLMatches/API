@@ -47,7 +47,8 @@ from .api.community import (
     CommunityCreateAPI,
     CommunityOwnerMatchesAPI,
     CommunityUpdateAPI,
-    CommunityPaymentAPI
+    CommunityPaymentAPI,
+    CommunityCardAPI
 )
 from .api.communities import (
     CommunitiesAPI,
@@ -107,7 +108,10 @@ ROUTES = [
                 Route("/", CommunityOwnerAPI),
                 Route("/matches/", CommunityOwnerMatchesAPI),
                 Route("/update/", CommunityUpdateAPI),
-                Route("/payments/", CommunityPaymentAPI)
+                Mount("/payments", routes=[
+                    Route("/", CommunityPaymentAPI),
+                    Route("/card/", CommunityCardAPI)
+                ])
             ]),
             Route("/", CommunityCreateAPI),
         ]),

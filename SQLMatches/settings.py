@@ -141,6 +141,7 @@ class StripeSettings:
         Parameters
         ----------
         api_key : str
+            Don't include 'sk_test_' or 'sk_live_'
         testing : bool, optional
             by default False
         """

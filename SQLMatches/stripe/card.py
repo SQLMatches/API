@@ -36,6 +36,6 @@ class Card:
             If deleted or not.
         """
 
-        return (await self._context.__delete("customers/{}/sources/{}".format(
+        return (await self._context._delete("customers/{}/sources/{}".format(
             self.customer_id, self.id
         )))["deleted"]

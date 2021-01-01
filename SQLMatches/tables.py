@@ -109,6 +109,10 @@ community_table = Table(
         String(length=27)
     ),
     Column(
+        "card_id",
+        String(length=27)
+    ),
+    Column(
         "owner_id",
         String(length=64),
         ForeignKey("user.steam_id")
@@ -153,11 +157,6 @@ community_table = Table(
         "allow_api_access",
         Boolean
     ),
-    Column(
-        "added_card",
-        Boolean,
-        default=False
-    ),
     mysql_engine="InnoDB",
     mysql_charset="utf8mb4"
 )
@@ -199,7 +198,7 @@ payment_table = Table(
     Column(
         "payment_id",
         String(length=36),
-        ForeignKey("subscription.subscription_id"),
+        ForeignKey("subscription.payment_id"),
         primary_key=True
     ),
     Column(

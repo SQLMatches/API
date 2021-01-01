@@ -35,7 +35,8 @@ from .customer import Customer
 def add_headers(func):
     @wraps(func)
     def _add(*args, **kwargs):
-        auth = args[0].authorization
+        auth = (args[0]._context.authorization if hasattr(args[0], "_context")
+                else args[0].authorization)
 
         if "headers" in kwargs:
             kwargs["headers"]["Authorization"] = auth
@@ -74,7 +75,7 @@ class Stripe:
         return await resp.json()
 
     @add_headers
-    async def __post(self, path: str, *args, **kwargs) -> dict:
+    async def _post(self, path: str, *args, **kwargs) -> dict:
         """Used to post to Stripe.
 
         Parameters
@@ -92,7 +93,7 @@ class Stripe:
             return await self.__handle(resp)
 
     @add_headers
-    async def __delete(self, path: str, *args, **kwargs) -> dict:
+    async def _delete(self, path: str, *args, **kwargs) -> dict:
         """Used to delete something from Stripe.
 
         Parameters
@@ -110,7 +111,7 @@ class Stripe:
             return await self.__handle(resp)
 
     @add_headers
-    async def __get(self, path: str, *args, **kwargs) -> dict:
+    async def _get(self, path: str, *args, **kwargs) -> dict:
         """Used to get Stripe data.
 
         Parameters
@@ -159,7 +160,7 @@ class Stripe:
         SubscriptionModel
         """
 
-        data = await self.__post(
+        data = await self._post(
             "subscriptions",
             data={
                 "customer": customer,
@@ -193,6 +194,6 @@ class Stripe:
         CustomerModel
         """
 
-        data = await self.__post("customers", data=kwargs)
+        data = await self._post("customers", data=kwargs)
 
         return CustomerModel(**data), self.customer(data["id"])

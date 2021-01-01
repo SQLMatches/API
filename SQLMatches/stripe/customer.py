@@ -66,8 +66,8 @@ class Customer:
         Card
         """
 
-        data = await self._context.__post(
-            "/customers/{}/sources".format(self.id),
+        data = await self._context._post(
+            "customers/{}/sources".format(self.id),
             data={
                 "source": {
                     "object": "card",
