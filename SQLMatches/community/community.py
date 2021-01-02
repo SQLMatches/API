@@ -676,17 +676,18 @@ class Community:
     async def delete_card(self) -> None:
         community = await self.get()
 
-        await ((Sessions.stripe.customer(community.customer_id)).card(
-            community.card_id
-        )).delete()
+        if community.card_id:
+            await ((Sessions.stripe.customer(community.customer_id)).card(
+                community.card_id
+            )).delete()
 
-        await Sessions.database.execute(
-            community_table.update().values(
-                card_id=None
-            ).where(
-                community_table.c.community_name == self.community_name
+            await Sessions.database.execute(
+                community_table.update().values(
+                    card_id=None
+                ).where(
+                    community_table.c.community_name == self.community_name
+                )
             )
-        )
 
     async def add_payment(self, payment_id: str) -> PaymentModel:
         """Used to add a payment.

@@ -274,10 +274,10 @@ class CommunityOwnerMatchesAPI(HTTPEndpoint):
 
 class CommunityCreateAPI(HTTPEndpoint):
     @use_args({"community_name": fields.Str(required=True, max=32, min=4),
+               "email": fields.Str(required=True, max=255),
                "community_type": fields.Str(),
                "demos": fields.Bool(),
-               "allow_api_access": fields.Bool(),
-               "email": fields.Str(max=255)})
+               "allow_api_access": fields.Bool()})
     @requires("steam_login")
     @LIMITER.limit("60/minute")
     async def post(self, request: Request, parameters: dict) -> response:
