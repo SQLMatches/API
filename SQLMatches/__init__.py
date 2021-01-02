@@ -65,8 +65,6 @@ from .misc import cache_community_types, KeyLoader
 
 from .constants import MAP_IMAGES, COMMUNITY_TYPES
 
-from .community import Community
-
 
 __version__ = "0.1.0"
 __url__ = "https://github.com/WardPearce/SQLMatches"

@@ -1,1 +1,1 @@
-recursive-include SQLMatches *.jpg *.jpeg *.png
+recursive-include SQLMatches *.jpg *.jpeg *.png *.html
