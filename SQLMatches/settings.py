@@ -137,7 +137,9 @@ class LocalUploadSettings(__Extension):
 class StripeSettings:
     def __init__(self, api_key: str, testing: bool = False,
                  currency: str = "USD",
-                 product_name: str = "SQLMatches upload limit") -> None:
+                 product_name: str = "SQLMatches Increase Upload",
+                 receipt_url_base: str = "https://pay.stripe.com/receipts/"
+                 ) -> None:
         """Used to set stripe settings.
 
         Parameters
@@ -149,13 +151,16 @@ class StripeSettings:
         currency : str, optional
             https://stripe.com/docs/currencies, by default "USD"
         product_name : str, optional
-            by default "SQLMatches upload limit"
+            by default "SQLMatches Increase Upload"
+        receipt_url_base : str, optional
+            by default "https://pay.stripe.com/receipts/"
         """
 
         self.api_key = api_key
         self.testing = testing
         self.currency = currency
         self.product_name = product_name
+        self.receipt_url_base = receipt_url_base
 
 
 class SmtpSettings:

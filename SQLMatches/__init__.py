@@ -200,6 +200,7 @@ class SQLMatches(Starlette):
         Config.system_email = system_email
         Config.frontend_url = frontend_url
         Config.currency = stripe_settings.currency
+        Config.receipt_url_base = stripe_settings.receipt_url_base
 
         self.community_types = community_types
         self.clear_cache = clear_cache

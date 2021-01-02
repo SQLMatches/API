@@ -562,7 +562,8 @@ class Community:
             community_table.c.email,
             community_table.c.card_id,
             payment_table.c.max_upload,
-            payment_table.c.amount
+            payment_table.c.amount,
+            payment_table.c.payment_status
         ]).select_from(
             community_table.join(
                 api_key_table,
@@ -573,8 +574,7 @@ class Community:
                 and_(
                     community_table.c.community_name ==
                     payment_table.c.community_name,
-                    payment_table.c.expires >= datetime.now(),
-                    payment_table.c.paid == True  # noqa: E712
+                    payment_table.c.expires >= datetime.now()
                 ),
                 isouter=True
             )
@@ -615,20 +615,21 @@ class Community:
             payment_table.c.max_upload,
             payment_table.c.expires,
             payment_table.c.amount,
-            payment_table.c.subscription_id
+            payment_table.c.subscription_id,
+            payment_table.c.receipt_url,
+            payment_table.c.payment_status
         ]).select_from(
             payment_table
         ).where(
             and_(
-                payment_table.c.community_name == self.community_name,
-                payment_table.c.paid == True  # noqa: E712
+                payment_table.c.community_name == self.community_name
             )
         )
 
         async for row in Sessions.database.iterate(query):
             yield PaymentModel(**row)
 
-    async def create_subscription(self, amount: float) -> str:
+    async def create_payment(self, amount: float) -> str:
         """Used to create a stripe subscription.
 
         Parameters
@@ -638,7 +639,7 @@ class Community:
         Returns
         -------
         str
-            Subscription ID
+            Payment ID
         """
 
         try:
@@ -669,16 +670,71 @@ class Community:
                 max_upload=upload_size,
                 timestamp=now,
                 expires=expires,
-                paid=False
+                payment_status=0
             )
 
             await Sessions.database.execute(query)
 
             return payment_id
 
+    async def confirm_payment(self, payment_id: str,
+                              receipt_url: str) -> PaymentModel:
+        """Used to add a payment.
+
+        Parameters
+        ----------
+        payment_id : str
+        receipt_url : str
+            Receipt URl given by stripe.
+
+        Returns
+        -------
+        PaymentModel
+
+        Raises
+        ------
+        InvalidCommunity
+        """
+
+        row = await Sessions.database.fetch_one(
+            payment_table.select().where(
+                and_(
+                    payment_table.c.payment_id == payment_id,
+                    payment_table.c.community_name == self.community_name
+                )
+            )
+        )
+        if not row:
+            raise InvalidPaymentID()
+
+        payment_status = 1
+
+        query = payment_table.update().values(
+            payment_status=payment_status,
+            receipt_url=receipt_url.replace(Config.receipt_url_base, "")
+        ).where(
+            and_(
+                payment_table.c.payment_id == payment_id,
+                payment_table.c.community_name == self.community_name
+            )
+        )
+
+        await Sessions.database.execute(query)
+
+        return PaymentModel(
+            payment_id=row["payment_id"],
+            subscription_id=row["subscription_id"],
+            max_upload=row["max_upload"],
+            timestamp=row["timestamp"],
+            expires=row["expires"],
+            amount=row["amount"],
+            receipt_url=row["receipt_url"],
+            payment_status=payment_status
+        )
+
     async def add_card(self, number: str, exp_month: int,
                        exp_year: int, cvc: int,
-                       name: str) -> None:
+                       name: str) -> str:
         """Used to create / update a card for a community.
 
         Parameters
@@ -688,6 +744,11 @@ class Community:
         exp_year : int
         cvc : int
         name : str
+
+        Returns
+        -------
+        str
+            Stripe card ID.
         """
 
         community = await self.get()
@@ -717,6 +778,8 @@ class Community:
                 )
             )
 
+            return data.id
+
     async def delete_card(self) -> None:
         community = await self.get()
 
@@ -732,39 +795,3 @@ class Community:
                     community_table.c.community_name == self.community_name
                 )
             )
-
-    async def add_payment(self, payment_id: str) -> PaymentModel:
-        """Used to add a payment.
-
-        Parameters
-        ----------
-        payment_id : str
-
-        Returns
-        -------
-        PaymentModel
-
-        Raises
-        ------
-        InvalidCommunity
-        """
-
-        row = await Sessions.database.fetch_one(
-            payment_table.select().where(
-                payment_table.c.payment_id == payment_id
-            )
-        )
-        if not row:
-            raise InvalidPaymentID()
-
-        query = payment_table.update().values(
-            paid=True
-        ).where(
-            payment_table.c.payment_id == payment_id
-        )
-
-        await Sessions.database.execute(query)
-
-        return PaymentModel(
-            **row
-        )

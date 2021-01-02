@@ -78,6 +78,7 @@ class Config:
     frontend_url: str
     currency: str
     product_id: str
+    receipt_url_base: str
 
 
 class DemoQueue:

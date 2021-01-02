@@ -87,6 +87,7 @@ class CommunityModel(PublicCommunityModel):
                  amount: float = None,
                  customer_id: str = None,
                  card_id: str = None,
+                 payment_status: int = None,
                  **kwargs) -> None:
         super().__init__(**kwargs)
 
@@ -101,6 +102,7 @@ class CommunityModel(PublicCommunityModel):
         self.customer_id = customer_id
         self.card_id = card_id
         self.email = email
+        self.payment_status = payment_status
 
     @property
     def community_api_schema(self) -> dict:
@@ -118,7 +120,8 @@ class CommunityModel(PublicCommunityModel):
             "match_end_webhook": self.match_end_webhook,
             "customer_id": self.customer_id,
             "card_id": self.card_id,
-            "email": self.email
+            "email": self.email,
+            "payment_status": self.payment_status
         }
 
 
@@ -168,13 +171,17 @@ class MatchModel:
 class PaymentModel:
     def __init__(self, payment_id: str, amount: float,
                  timestamp: datetime.now, subscription_id: str,
-                 max_upload: float, expires: datetime.now) -> None:
+                 max_upload: float, expires: datetime.now,
+                 receipt_url: str, payment_status: int) -> None:
         self.payment_id = payment_id
         self.amount = amount
         self.timestamp = timestamp
         self.subscription_id = subscription_id
         self.max_upload = max_upload
         self.expires = expires
+        self.receipt_url = (Config.receipt_url_base + receipt_url if
+                            receipt_url else None)
+        self.payment_status = payment_status
 
     @property
     def payment_api_schema(self) -> dict:
@@ -184,7 +191,9 @@ class PaymentModel:
             "timestamp": self.timestamp.strftime(Config.timestamp_format),
             "max_upload": self.max_upload,
             "expires": self.expires.strftime(Config.timestamp_format),
-            "subscription_id": self.subscription_id
+            "subscription_id": self.subscription_id,
+            "receipt_url": self.receipt_url,
+            "payment_status": self.payment_status
         }
 
 

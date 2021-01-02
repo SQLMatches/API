@@ -186,7 +186,7 @@ class CommunityPaymentAPI(HTTPEndpoint):
         response
         """
 
-        payment_id = await request.state.community.create_subscription(
+        payment_id = await request.state.community.create_payment(
             parameters["amount"]
         )
 
@@ -216,11 +216,11 @@ class CommunityCardAPI(HTTPEndpoint):
         response
         """
 
-        await request.state.community.add_card(**parameters)
+        card_id = await request.state.community.add_card(**parameters)
 
         await (CommunityCache(request.state.community.community_name)).expire()
 
-        return response()
+        return response({"card_id": card_id})
 
     @requires("is_owner")
     @LIMITER.limit("60/minute")

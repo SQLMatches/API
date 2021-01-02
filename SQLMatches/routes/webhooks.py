@@ -69,7 +69,7 @@ class PaymentFailed(HTTPEndpoint):
 
         await Sessions.websocket.emit(
             parameters["id"],
-            {"succeeded": False},
+            {"paid": False},
             room="ws_room"
         )
 
@@ -85,7 +85,7 @@ class PaymentSuccess(HTTPEndpoint):
 
         await Sessions.websocket.emit(
             parameters["id"],
-            {"succeeded": True},
+            {"paid": True},
             room="ws_room"
         )
 

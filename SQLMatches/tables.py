@@ -180,6 +180,10 @@ community_table = Table(
     mysql_charset="utf8mb4"
 )
 
+# Payment status codes
+# 0 - Awaiting payment
+# 1 - Paid
+# 2 - Payment failed
 
 payment_table = Table(
     "payment",
@@ -191,14 +195,13 @@ payment_table = Table(
         primary_key=True
     ),
     Column(
-        "subscription_id",
-        String(length=27),
-        primary_key=True
-    ),
-    Column(
         "payment_id",
         String(length=36),
         primary_key=True
+    ),
+    Column(
+        "subscription_id",
+        String(length=27)
     ),
     Column(
         "max_upload",
@@ -218,11 +221,14 @@ payment_table = Table(
         Float
     ),
     Column(
-        "paid",
-        Boolean
+        "payment_status",
+        Integer
+    ),
+    Column(
+        "receipt_url",
+        String(length=150)
     ),
     PrimaryKeyConstraint(
-        "subscription_id",
         "payment_id",
         "community_name"
     ),
