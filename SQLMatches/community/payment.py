@@ -189,7 +189,8 @@ class CommunityPayment:
                 community_name=self.community_name,
                 max_upload=upload_size,
                 timestamp=now,
-                payment_status=0
+                payment_status=0,
+                expires=now + Config.payment_expires
             )
 
             await Sessions.database.execute(query)

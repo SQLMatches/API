@@ -190,7 +190,8 @@ class PaymentModel:
             "amount": self.amount,
             "timestamp": self.timestamp.strftime(Config.timestamp_format),
             "max_upload": self.max_upload,
-            "expires": self.expires.strftime(Config.timestamp_format),
+            "expires": self.expires.strftime(Config.timestamp_format)
+            if self.expires else None,
             "subscription_id": self.subscription_id,
             "receipt_url": self.receipt_url,
             "payment_status": self.payment_status
