@@ -65,6 +65,8 @@ from .misc import cache_community_types, KeyLoader
 
 from .constants import MAP_IMAGES, COMMUNITY_TYPES
 
+from .community import Community
+
 
 __version__ = "0.1.0"
 __url__ = "https://github.com/WardPearce/SQLMatches"
@@ -87,6 +89,7 @@ class SQLMatches(Starlette):
                  smtp_settings: SmtpSettings,
                  friendly_url: str,
                  root_steam_id: str,
+                 system_email: str,
                  upload_settings: Tuple[
                      B2UploadSettings, LocalUploadSettings] = None,
                  map_images: Dict[str, str] = MAP_IMAGES,
@@ -109,6 +112,7 @@ class SQLMatches(Starlette):
         stripe_settings : StripeSettings
         friendly_url : str
         root_steam_id : str
+        system_email : str
         upload_settings : [B2UploadSettings, LocalUploadSettings], optional
             by default None
         map_images : Dict[str, str], optional
@@ -186,6 +190,7 @@ class SQLMatches(Starlette):
         Config.webhook_timeout = webhook_timeout
         Config.match_max_length = match_max_length
         Config.payment_expires = payment_expires
+        Config.system_email = system_email
 
         self.community_types = community_types
         self.clear_cache = clear_cache

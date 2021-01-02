@@ -25,6 +25,7 @@ from typing import AsyncGenerator, List, Tuple
 from uuid import uuid4
 from datetime import datetime
 from secrets import token_urlsafe
+from email.mime.text import MIMEText
 from aiohttp.client_exceptions import ClientError
 
 from sqlalchemy.sql import select, and_, or_, func
@@ -38,6 +39,8 @@ from ..decorators import (
 )
 
 from ..misc import amount_to_upload_size
+
+from ..templates import render_html
 
 from ..tables import (
     community_table,
@@ -79,6 +82,41 @@ class Community:
         """
 
         self.community_name = community_name
+
+    async def email(self, title: str, content: str,
+                    link_href: str, link_text: str) -> None:
+        """Used to send email to community owner.
+
+        Parameters
+        ----------
+        title : str
+        content : str
+        link_href : str
+        link_text : str
+        """
+
+        community = await self.get()
+
+        message = MIMEText(render_html(
+            "email.html",
+            {
+                "title": title,
+                "content": content,
+                "link": {
+                    "href": link_href,
+                    "text": link_text
+                }
+            }
+        ), "html", "utf-8")
+
+        message["From"] = Config.system_email
+        message["To"] = community.email
+        message["Subject"] = "{} - {}".format(
+            title,
+            (datetime.now()).strftime(Config.timestamp_format)
+        )
+
+        await Sessions.smtp.send_message(message)
 
     @validate_webhooks
     @validate_community_type

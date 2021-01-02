@@ -106,7 +106,7 @@ community_table = Table(
     ),
     Column(
         "customer_id",
-        String(length=30)
+        String(length=27)
     ),
     Column(
         "email",
@@ -171,7 +171,7 @@ subscription_table = Table(
     metadata,
     Column(
         "subscription_id",
-        String(length=30),
+        String(length=27),
         primary_key=True
     ),
     Column(

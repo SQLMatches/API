@@ -55,7 +55,8 @@ sqlmatches = SQLMatches(
     ),
     upload_settings=LocalUploadSettings(),
     friendly_url="http://localhost/api",
-    root_steam_id="76561198077228213"
+    root_steam_id="76561198077228213",
+    system_email="noreply@127.0.0.1"
 )
 
 

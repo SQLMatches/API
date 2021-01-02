@@ -74,6 +74,7 @@ class Config:
     webhook_timeout: int
     match_max_length: timedelta
     payment_expires: timedelta
+    system_email: str
 
 
 class DemoQueue:
