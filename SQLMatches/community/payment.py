@@ -61,11 +61,18 @@ class CommunityPayment:
             payment_table.c.amount,
             payment_table.c.subscription_id,
             payment_table.c.receipt_url,
-            payment_table.c.payment_status
+            payment_table.c.payment_status,
+            payment_table.c.cancelled
         ]
 
-    async def active_payment(self) -> PaymentModel:
+    async def active_payment(self, ignore_cancelled: bool = False
+                             ) -> PaymentModel:
         """Gets active payment.
+
+        Parameters
+        ----------
+        ignore_cancelled : bool, optional
+            If True cancelled payments won't be returned, by default False
 
         Returns
         -------
@@ -87,6 +94,11 @@ class CommunityPayment:
                 payment_table.c.payment_status == 1
             )
         )
+
+        if ignore_cancelled:
+            query = query.where(
+                payment_table.c.cancelled == False  # noqa: E712
+            )
 
         row = await Sessions.database.fetch_one(query)
         if row:
@@ -143,6 +155,31 @@ class CommunityPayment:
         async for row in Sessions.database.iterate(query):
             yield PaymentModel(**row)
 
+    async def cancel_subscription(self) -> None:
+        """Used to cancel subscription, will still be active until
+        amount paid for expires.
+        """
+
+        try:
+            payment = await self.active_payment(ignore_cancelled=True)
+        except NoActivePayment:
+            raise
+        else:
+            await Sessions.database.execute(
+                payment_table.update().values(
+                    cancelled=True
+                ).where(
+                    and_(
+                        payment_table.c.payment_id == payment.payment_id,
+                        payment_table.c.community_name == self.community_name
+                    )
+                )
+            )
+
+            await (
+                Sessions.stripe.subscription(payment.subscription_id)
+            ).cancel()
+
     async def create_payment(self, amount: float) -> str:
         """Used to create a stripe subscription.
 
@@ -165,7 +202,7 @@ class CommunityPayment:
         except InvalidCommunity:
             raise
         else:
-            if community.payment_status not in (None, 2):
+            if community.payment_status is not None:
                 raise ActivePayment()
 
             subscription, _ = await (Sessions.stripe.customer(
@@ -190,7 +227,8 @@ class CommunityPayment:
                 max_upload=upload_size,
                 timestamp=now,
                 payment_status=0,
-                expires=now + Config.payment_expires
+                expires=now + Config.payment_expires,
+                cancelled=False
             )
 
             await Sessions.database.execute(query)

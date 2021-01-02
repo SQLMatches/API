@@ -559,7 +559,8 @@ class Community(CommunityPayment):
             community_table.c.card_id,
             payment_table.c.max_upload,
             payment_table.c.amount,
-            payment_table.c.payment_status
+            payment_table.c.payment_status,
+            payment_table.c.cancelled
         ]).select_from(
             community_table.join(
                 api_key_table,

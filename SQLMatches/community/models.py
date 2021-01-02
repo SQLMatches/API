@@ -88,6 +88,7 @@ class CommunityModel(PublicCommunityModel):
                  customer_id: str = None,
                  card_id: str = None,
                  payment_status: int = None,
+                 cancelled: bool = None,
                  **kwargs) -> None:
         super().__init__(**kwargs)
 
@@ -103,6 +104,7 @@ class CommunityModel(PublicCommunityModel):
         self.card_id = card_id
         self.email = email
         self.payment_status = payment_status
+        self.cancelled = cancelled
 
     @property
     def community_api_schema(self) -> dict:
@@ -121,7 +123,8 @@ class CommunityModel(PublicCommunityModel):
             "customer_id": self.customer_id,
             "card_id": self.card_id,
             "email": self.email,
-            "payment_status": self.payment_status
+            "payment_status": self.payment_status,
+            "cancelled": self.cancelled
         }
 
 
@@ -172,7 +175,8 @@ class PaymentModel:
     def __init__(self, payment_id: str, amount: float,
                  timestamp: datetime.now, subscription_id: str,
                  max_upload: float, expires: datetime.now,
-                 receipt_url: str, payment_status: int) -> None:
+                 receipt_url: str, payment_status: int,
+                 cancelled: bool) -> None:
         self.payment_id = payment_id
         self.amount = amount
         self.timestamp = timestamp
@@ -182,6 +186,7 @@ class PaymentModel:
         self.receipt_url = (Config.receipt_url_base + receipt_url if
                             receipt_url else None)
         self.payment_status = payment_status
+        self.cancelled = cancelled
 
     @property
     def payment_api_schema(self) -> dict:
@@ -194,7 +199,8 @@ class PaymentModel:
             if self.expires else None,
             "subscription_id": self.subscription_id,
             "receipt_url": self.receipt_url,
-            "payment_status": self.payment_status
+            "payment_status": self.payment_status,
+            "cancelled": self.cancelled
         }
 
 

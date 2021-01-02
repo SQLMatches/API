@@ -29,7 +29,7 @@ class Subscription:
         self.id = id
         self._context = context
 
-    async def cancel(self, invoice_now: bool = True,
+    async def cancel(self, invoice_now: bool = False,
                      prorate: bool = False) -> SubscriptionModel:
         """Used to cancel a subscription.
 

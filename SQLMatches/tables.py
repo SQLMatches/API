@@ -184,7 +184,6 @@ community_table = Table(
 # 0 - Awaiting payment
 # 1 - Paid
 # 2 - Payment failed
-
 payment_table = Table(
     "payment",
     metadata,
@@ -211,6 +210,10 @@ payment_table = Table(
         "timestamp",
         TIMESTAMP,
         default=datetime.now
+    ),
+    Column(
+        "cancelled",
+        Boolean
     ),
     Column(
         "expires",

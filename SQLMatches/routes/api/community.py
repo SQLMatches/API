@@ -194,6 +194,26 @@ class CommunityPaymentAPI(HTTPEndpoint):
 
         return response({"payment_id": payment_id})
 
+    @requires("is_owner")
+    async def delete(self, request: Request) -> response:
+        """Used to cancel a subscription, subscription will be active
+        until end of date.
+
+        Parameters
+        ----------
+        request : Request
+
+        Returns
+        -------
+        response
+        """
+
+        await request.state.community.cancel_subscription()
+
+        await (CommunityCache(request.state.community.community_name)).expire()
+
+        return response()
+
 
 class CommunityCardAPI(HTTPEndpoint):
     @use_args({"number": fields.Str(required=True),
