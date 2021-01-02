@@ -38,9 +38,29 @@ from ...exceptions import InvalidCommunity, NoOwnership
 
 from ...responses import response
 
-from ...resources import Sessions
+from ...resources import Config, Sessions
 
 from ...caches import CommunityCache, CommunitiesCache
+
+
+class CommunityExistsAPI(HTTPEndpoint):
+    @requires("community")
+    @LIMITER.limit("30/minute")
+    async def get(self, request: Request) -> response:
+        """Used to check if community already exists.
+
+        Parameters
+        ----------
+        request : Request
+
+        Returns
+        -------
+        response
+        """
+
+        return response({
+            "taken": await request.state.community.exists()
+        })
 
 
 class CommunityOwnerAPI(HTTPEndpoint):
@@ -289,23 +309,32 @@ class CommunityCreateAPI(HTTPEndpoint):
         parameters : dict
         """
 
-        community, _ = await create_community(
+        model, community = await create_community(
             steam_id=request.session["steam_id"],
             **parameters
         )
 
         await Sessions.websocket.emit(
             "community_updates",
-            community.community_api_schema,
+            model.community_api_schema,
             room="ws_room"
         )
 
         await CommunityCache(parameters["community_name"]).set(
-            community.community_api_schema
+            model.community_api_schema
         )
         await CommunitiesCache().expire()
 
-        return response(community.community_api_schema)
+        return response(model.community_api_schema, background=BackgroundTask(
+            community.email,
+            title=", Welcome!",
+            content=("""Thanks for creating a community.
+            Consider to pay for a larger max upload size on the owner panel."""),
+            link_href=Config.frontend_url + "c/{}/owner#tab2".format(
+                model.community_name
+            ),
+            link_text="{}'s owner panel.".format(model.community_name)
+        ))
 
     @requires("steam_login")
     @LIMITER.limit("60/minute")

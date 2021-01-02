@@ -86,6 +86,7 @@ class SQLMatches(Starlette):
                  stripe_settings: StripeSettings,
                  smtp_settings: SmtpSettings,
                  friendly_url: str,
+                 frontend_url: str,
                  root_steam_id: str,
                  system_email: str,
                  upload_settings: Tuple[
@@ -109,6 +110,7 @@ class SQLMatches(Starlette):
         database_settings : DatabaseSettings
         stripe_settings : StripeSettings
         friendly_url : str
+        frontend_url : str
         root_steam_id : str
         system_email : str
         upload_settings : [B2UploadSettings, LocalUploadSettings], optional
@@ -172,6 +174,9 @@ class SQLMatches(Starlette):
         if friendly_url[:1] != "/":
             friendly_url += "/"
 
+        if frontend_url[:1] != "/":
+            frontend_url += "/"
+
         Config.url = friendly_url
         Config.map_images = map_images
         Config.upload_delay = upload_delay
@@ -189,6 +194,7 @@ class SQLMatches(Starlette):
         Config.match_max_length = match_max_length
         Config.payment_expires = payment_expires
         Config.system_email = system_email
+        Config.frontend_url = frontend_url
 
         self.community_types = community_types
         self.clear_cache = clear_cache

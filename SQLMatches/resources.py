@@ -75,6 +75,7 @@ class Config:
     match_max_length: timedelta
     payment_expires: timedelta
     system_email: str
+    frontend_url: str
 
 
 class DemoQueue:

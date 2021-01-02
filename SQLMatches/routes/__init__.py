@@ -48,7 +48,8 @@ from .api.community import (
     CommunityOwnerMatchesAPI,
     CommunityUpdateAPI,
     CommunityPaymentAPI,
-    CommunityCardAPI
+    CommunityCardAPI,
+    CommunityExistsAPI
 )
 from .api.communities import (
     CommunitiesAPI,
@@ -104,6 +105,7 @@ ROUTES = [
         Route("/profile/{steam_id}/", ProfileAPI),
         Route("/version/{version}/", VersionAPI),
         Mount("/community", routes=[
+            Route("/exists/", CommunityExistsAPI),
             Mount("/owner", routes=[
                 Route("/", CommunityOwnerAPI),
                 Route("/matches/", CommunityOwnerMatchesAPI),
