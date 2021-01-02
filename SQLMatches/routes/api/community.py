@@ -329,7 +329,8 @@ class CommunityCreateAPI(HTTPEndpoint):
             community.email,
             title=", Welcome!",
             content=("""Thanks for creating a community.
-            Consider to pay for a larger max upload size on the owner panel."""),
+            Consider to pay for a larger max upload size on the owner panel.
+            """),
             link_href=Config.frontend_url + "c/{}/owner#tab2".format(
                 model.community_name
             ),
