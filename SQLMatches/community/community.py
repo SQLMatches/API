@@ -26,7 +26,6 @@ from uuid import uuid4
 from datetime import datetime
 from secrets import token_urlsafe
 from email.mime.text import MIMEText
-from aiohttp.client_exceptions import ClientError
 
 from sqlalchemy.sql import select, and_, or_, func
 
@@ -38,7 +37,6 @@ from ..decorators import (
     validate_email
 )
 
-from ..misc import amount_to_upload_size
 
 from ..templates import render_html
 
@@ -54,23 +52,21 @@ from ..tables import (
 
 from ..exceptions import (
     InvalidCommunity,
-    InvalidSteamID,
-    InvalidCard,
-    InvalidPaymentID
+    InvalidSteamID
 )
 
 from .models import (
     CommunityModel,
     MatchModel,
-    PaymentModel,
     ProfileModel,
     CommunityStatsModel
 )
 
 from .match import Match
+from .payment import CommunityPayment
 
 
-class Community:
+class Community(CommunityPayment):
     def __init__(self, community_name: str) -> str:
         """Handles community interactions.
 
@@ -574,7 +570,8 @@ class Community:
                 and_(
                     community_table.c.community_name ==
                     payment_table.c.community_name,
-                    payment_table.c.expires >= datetime.now()
+                    payment_table.c.expires >= datetime.now(),
+                    payment_table.c.payment_status != 2
                 ),
                 isouter=True
             )
@@ -600,198 +597,3 @@ class Community:
         ).values(disabled=True)
 
         await Sessions.database.execute(query=query)
-
-    async def payments(self) -> AsyncGenerator[PaymentModel, None]:
-        """Used to get payments for a community.
-
-        Yields
-        ------
-        PaymentModel
-        """
-
-        query = select([
-            payment_table.c.payment_id,
-            payment_table.c.timestamp,
-            payment_table.c.max_upload,
-            payment_table.c.expires,
-            payment_table.c.amount,
-            payment_table.c.subscription_id,
-            payment_table.c.receipt_url,
-            payment_table.c.payment_status
-        ]).select_from(
-            payment_table
-        ).where(
-            and_(
-                payment_table.c.community_name == self.community_name
-            )
-        )
-
-        async for row in Sessions.database.iterate(query):
-            yield PaymentModel(**row)
-
-    async def create_payment(self, amount: float) -> str:
-        """Used to create a stripe subscription.
-
-        Parameters
-        ----------
-        amount : float
-
-        Returns
-        -------
-        str
-            Payment ID
-        """
-
-        try:
-            community = await self.get()
-        except InvalidCommunity:
-            raise
-        else:
-            subscription, _ = await (Sessions.stripe.customer(
-                community.customer_id
-            )).create_subscription(
-                unit_amount_decimal=amount * 100,
-                currency=Config.currency,
-                product_id=Config.product_id,
-                interval_days=Config.payment_expires.days,
-                cancel_at_period_end=False
-            )
-
-            payment_id = str(uuid4())
-            upload_size = amount_to_upload_size(amount)
-            now = datetime.now()
-            expires = now + Config.payment_expires
-
-            query = payment_table.insert().values(
-                subscription_id=subscription.id,
-                payment_id=payment_id,
-                amount=amount,
-                community_name=self.community_name,
-                max_upload=upload_size,
-                timestamp=now,
-                expires=expires,
-                payment_status=0
-            )
-
-            await Sessions.database.execute(query)
-
-            return payment_id
-
-    async def confirm_payment(self, payment_id: str,
-                              receipt_url: str) -> PaymentModel:
-        """Used to add a payment.
-
-        Parameters
-        ----------
-        payment_id : str
-        receipt_url : str
-            Receipt URl given by stripe.
-
-        Returns
-        -------
-        PaymentModel
-
-        Raises
-        ------
-        InvalidCommunity
-        """
-
-        row = await Sessions.database.fetch_one(
-            payment_table.select().where(
-                and_(
-                    payment_table.c.payment_id == payment_id,
-                    payment_table.c.community_name == self.community_name
-                )
-            )
-        )
-        if not row:
-            raise InvalidPaymentID()
-
-        payment_status = 1
-
-        query = payment_table.update().values(
-            payment_status=payment_status,
-            receipt_url=receipt_url.replace(Config.receipt_url_base, "")
-        ).where(
-            and_(
-                payment_table.c.payment_id == payment_id,
-                payment_table.c.community_name == self.community_name
-            )
-        )
-
-        await Sessions.database.execute(query)
-
-        return PaymentModel(
-            payment_id=row["payment_id"],
-            subscription_id=row["subscription_id"],
-            max_upload=row["max_upload"],
-            timestamp=row["timestamp"],
-            expires=row["expires"],
-            amount=row["amount"],
-            receipt_url=row["receipt_url"],
-            payment_status=payment_status
-        )
-
-    async def add_card(self, number: str, exp_month: int,
-                       exp_year: int, cvc: int,
-                       name: str) -> str:
-        """Used to create / update a card for a community.
-
-        Parameters
-        ----------
-        number : str
-        exp_month : int
-        exp_year : int
-        cvc : int
-        name : str
-
-        Returns
-        -------
-        str
-            Stripe card ID.
-        """
-
-        community = await self.get()
-
-        customer = Sessions.stripe.customer(
-            community.customer_id
-        )
-
-        if community.card_id:
-            # We'll just delete the card if exists.
-            await (customer.card(
-                community.card_id
-            )).delete()
-
-        try:
-            data, _ = await customer.create_card(
-                number, exp_month, exp_year, cvc, name
-            )
-        except ClientError:
-            raise InvalidCard()
-        else:
-            await Sessions.database.execute(
-                community_table.update().values(
-                    card_id=data.id
-                ).where(
-                    community_table.c.community_name == self.community_name
-                )
-            )
-
-            return data.id
-
-    async def delete_card(self) -> None:
-        community = await self.get()
-
-        if community.card_id:
-            await ((Sessions.stripe.customer(community.customer_id)).card(
-                community.card_id
-            )).delete()
-
-            await Sessions.database.execute(
-                community_table.update().values(
-                    card_id=None
-                ).where(
-                    community_table.c.community_name == self.community_name
-                )
-            )

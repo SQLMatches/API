@@ -25,68 +25,72 @@ from starlette.endpoints import HTTPEndpoint
 from starlette.requests import Request
 from starlette.authentication import requires
 
-from marshmallow import Schema, EXCLUDE
-from webargs import fields
-from webargs_starlette import use_args
-
 from ..resources import Sessions
 from ..responses import error_response, response
-
-
-class BaseSchema(Schema):
-    class Meta:
-        unknown = EXCLUDE
-
-
-class ObjectSchema(BaseSchema):
-    id = fields.Str(required=True)
-    status = fields.Str(required=True)
-
-
-class DataSchema(BaseSchema):
-    object = fields.Nested(ObjectSchema, required=True)
-
-
-WEBHOOK_ARGS = {
-    "type": fields.Str(required=True),
-    "data": fields.Nested(DataSchema, required=True),
-    "created": fields.Int(allow_none=True),
-    "livemode": fields.Bool(allow_none=True),
-    "id": fields.Str(),
-    "object": fields.Str(allow_none=True),
-    "request": fields.Dict(allow_none=True),
-    "pending_webhooks": fields.Int(allow_none=True),
-    "api_version": fields.Str(allow_none=True)
-}
+from ..community import stripe_customer_to_community
+from ..exceptions import NoPendingPayment, InvalidCustomer
 
 
 class PaymentFailed(HTTPEndpoint):
-    @use_args(WEBHOOK_ARGS)
     @requires("valid_webhook")
-    async def post(self, request: Request, parameters: dict) -> response:
-        if parameters["type"] != "charge.failed":
+    async def post(self, request: Request) -> response:
+        json = await request.json()
+
+        if json["type"] != "charge.failed":
             return error_response("charge.failed expected")
 
-        await Sessions.websocket.emit(
-            parameters["id"],
-            {"paid": False},
-            room="ws_room"
-        )
+        try:
+            community = await stripe_customer_to_community(
+                json["data"]["object"]["customer"]
+            )
+        except InvalidCustomer:
+            raise
+        else:
+            try:
+                payment = await community.pending_payment()
+            except NoPendingPayment:
+                raise
+            else:
+                await community.decline_payment(payment.payment_id)
 
-        return response()
+                await Sessions.websocket.emit(
+                    payment.payment_id,
+                    {"paid": False},
+                    room="ws_room"
+                )
+
+                return response()
 
 
 class PaymentSuccess(HTTPEndpoint):
-    @use_args(WEBHOOK_ARGS)
     @requires("valid_webhook")
-    async def post(self, request: Request, parameters: dict) -> response:
-        if parameters["type"] != "charge.succeeded":
+    async def post(self, request: Request) -> response:
+        json = await request.json()
+
+        if json["type"] != "charge.succeeded":
             return error_response("charge.succeeded expected")
 
-        await Sessions.websocket.emit(
-            parameters["id"],
-            {"paid": True},
-            room="ws_room"
-        )
+        try:
+            community = await stripe_customer_to_community(
+                json["data"]["object"]["customer"]
+            )
+        except InvalidCustomer:
+            raise
+        else:
+            try:
+                payment = await community.pending_payment()
+            except NoPendingPayment:
+                raise
+            else:
+                await community.confirm_payment(
+                    payment.payment_id,
+                    json["data"]["object"]["receipt_url"]
+                )
 
-        return response()
+                await Sessions.websocket.emit(
+                    payment.payment_id,
+                    {"paid": True},
+                    room="ws_room"
+                )
+
+                return response()

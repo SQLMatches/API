@@ -38,7 +38,7 @@ class Customer:
                                   currency: str,
                                   product_id: str,
                                   interval_days: int,
-                                  cancel_at_period_end: bool = False
+                                  cancel_at_period_end: bool = False,
                                   ) -> Tuple[SubscriptionModel, Subscription]:
         """Used to create a subscription.
 

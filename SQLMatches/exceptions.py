@@ -164,3 +164,35 @@ class InvalidEmail(SQLMatchesException):
 
     def __init__(self, msg="Invalid email", *args, **kwargs):
         super().__init__(msg, *args, **kwargs)
+
+
+class InvalidCustomer(SQLMatchesException):
+    """Raised when customer ID is invalid.
+    """
+
+    def __init__(self, msg="Invalid stripe customer ID", *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)
+
+
+class NoActivePayment(SQLMatchesException):
+    """Raised when no active payment.
+    """
+
+    def __init__(self, msg="No active payment", *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)
+
+
+class NoPendingPayment(SQLMatchesException):
+    """Raised when no pending payment.
+    """
+
+    def __init__(self, msg="No pending payment", *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)
+
+
+class ActivePayment(SQLMatchesException):
+    """Raised when active payment.
+    """
+
+    def __init__(self, msg="Active payment", *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)

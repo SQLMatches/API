@@ -48,7 +48,8 @@ from ..exceptions import (
     AlreadyCommunity,
     NoOwnership,
     InvalidAPIKey,
-    UserExists
+    UserExists,
+    InvalidCustomer
 )
 from .models import (
     CommunityModel
@@ -97,6 +98,35 @@ async def api_key_to_community(api_key: str) -> Tuple[Community, bool]:
         return Community(row["community_name"]), bool(row["master"])
     else:
         raise InvalidAPIKey()
+
+
+async def stripe_customer_to_community(customer_id: str) -> Community:
+    """Converts stripe customer ID to community.
+
+    Parameters
+    ----------
+    customer_id : str
+
+    Returns
+    -------
+    Community
+
+    Raises
+    ------
+    InvalidCustomer
+    """
+
+    query = select([community_table.c.community_name]).select_from(
+        community_table
+    ).where(
+        community_table.c.customer_id == customer_id
+    )
+
+    community_name = await Sessions.database.fetch_val(query)
+    if not community_name:
+        raise InvalidCustomer()
+
+    return Community(community_name)
 
 
 async def get_community_from_owner(steam_id: str) -> Community:
