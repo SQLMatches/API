@@ -21,7 +21,6 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-import json
 from typing import Tuple
 from aiohttp import ClientResponse
 from functools import wraps
