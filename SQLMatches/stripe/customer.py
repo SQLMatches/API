@@ -21,16 +21,61 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-from typing import Tuple
+from typing import Any, Dict, List, Tuple
 
-from .models import CardModel
 from .card import Card
+
+from .models import SubscriptionModel, CardModel
+from .subscription import Subscription
 
 
 class Customer:
     def __init__(self, id: str, context: object) -> None:
         self.id = id
         self._context = context
+
+    async def create_subscription(self, unit_amount_decimal: float,
+                                  currency: str,
+                                  product_id: str,
+                                  interval_days: int,
+                                  cancel_at_period_end: bool = False
+                                  ) -> Tuple[SubscriptionModel, Subscription]:
+        """Used to create a subscription.
+
+        Parameters
+        ----------
+        unit_amount_decimal : float
+        currency : str
+        product_id : str
+        interval_days : int
+        cancel_at_period_end : bool, optional
+            by default False
+
+        Returns
+        -------
+        SubscriptionModel
+        Subscription
+        """
+
+        data = await self._context._post(
+            "subscriptions",
+            data={
+                "customer": self.id,
+                "cancel_at_period_end": cancel_at_period_end,
+                "items[0][price_data][unit_amount_decimal]":
+                unit_amount_decimal,
+                "items[0][price_data][currency]": currency,
+                "items[0][price_data][product]": product_id,
+                "items[0][price_data][recurring][interval]": "day",
+                "items[0][price_data][recurring][interval_count]":
+                interval_days
+            }
+        )
+
+        return (
+            SubscriptionModel(**data),
+            self._context.subscription(data["id"])
+        )
 
     def card(self, id: str) -> Card:
         """Used to interact with a card.

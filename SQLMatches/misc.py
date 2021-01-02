@@ -25,9 +25,11 @@ from typing import List
 from os import path
 from secrets import token_urlsafe
 from dotenv import load_dotenv, get_key, set_key
+from sqlalchemy.sql import select
 
 from .tables import (
-    community_type_table
+    community_type_table,
+    product_table
 )
 from .exceptions import InvalidUploadSize
 from .resources import Sessions, Config
@@ -107,7 +109,7 @@ def amount_to_upload_size(amount: float) -> float:
     """
 
     upload_size = round(
-        (amount * Config.cost_per_mb) + Config.free_upload_size,
+        (amount / Config.cost_per_mb) + Config.free_upload_size,
         2
     )
 
@@ -131,3 +133,27 @@ async def bulk_scoreboard_expire(community_name: str,
 
     for match in matches:
         await (cache.scoreboard(match)).expire()
+
+
+async def create_product_and_set(product_name: str) -> None:
+    product_id = await Sessions.database.fetch_val(
+        select([product_table.c.product_id]).select_from(
+            product_table
+        ).where(
+            product_table.c.name == product_name
+        )
+    )
+
+    if product_id:
+        Config.product_id = product_id
+    else:
+        data = await Sessions.stripe.create_product(name=product_name)
+
+        await Sessions.database.execute(
+            product_table.insert().values(
+                product_id=data.id,
+                name=product_name
+            )
+        )
+
+        Config.product_id = data.id

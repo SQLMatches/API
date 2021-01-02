@@ -327,10 +327,12 @@ class CommunityCreateAPI(HTTPEndpoint):
 
         return response(model.community_api_schema, background=BackgroundTask(
             community.email,
-            title=", Welcome!",
+            title="SQLMatches.com welcomes you, {}!".format(
+                model.community_name
+            ),
             content=("""Thanks for creating a community.
-            Consider to pay for a larger max upload size on the owner panel.
-            """),
+            Need to upload demos larger then {} MB? Consider buying a larger
+            max upload on the owner panel.""".format(Config.free_upload_size)),
             link_href=Config.frontend_url + "c/{}/owner#tab2".format(
                 model.community_name
             ),

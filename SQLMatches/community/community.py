@@ -49,8 +49,7 @@ from ..tables import (
     user_table,
     api_key_table,
     statistic_table,
-    payment_table,
-    subscription_table
+    payment_table
 )
 
 from ..exceptions import (
@@ -563,7 +562,7 @@ class Community:
             community_table.c.email,
             community_table.c.card_id,
             payment_table.c.max_upload,
-            subscription_table.c.amount
+            payment_table.c.amount
         ]).select_from(
             community_table.join(
                 api_key_table,
@@ -574,13 +573,9 @@ class Community:
                 and_(
                     community_table.c.community_name ==
                     payment_table.c.community_name,
-                    payment_table.c.expires >= datetime.now()
+                    payment_table.c.expires >= datetime.now(),
+                    payment_table.c.paid == True  # noqa: E712
                 ),
-                isouter=True
-            ).join(
-                subscription_table,
-                subscription_table.c.payment_id ==
-                payment_table.c.payment_id,
                 isouter=True
             )
         ).where(
@@ -619,16 +614,15 @@ class Community:
             payment_table.c.timestamp,
             payment_table.c.max_upload,
             payment_table.c.expires,
-            subscription_table.c.amount,
-            subscription_table.c.subscription_id
+            payment_table.c.amount,
+            payment_table.c.subscription_id
         ]).select_from(
-            payment_table.join(
-                subscription_table,
-                subscription_table.c.payment_id ==
-                payment_table.c.payment_id
-            )
+            payment_table
         ).where(
-            payment_table.c.community_name == self.community_name
+            and_(
+                payment_table.c.community_name == self.community_name,
+                payment_table.c.paid == True  # noqa: E712
+            )
         )
 
         async for row in Sessions.database.iterate(query):
@@ -652,18 +646,30 @@ class Community:
         except InvalidCommunity:
             raise
         else:
-            subscription, _ = await Sessions.stripe.create_subscription(
-                community.customer_id,
-                {"price": amount}
+            subscription, _ = await (Sessions.stripe.customer(
+                community.customer_id
+            )).create_subscription(
+                unit_amount_decimal=amount * 100,
+                currency=Config.currency,
+                product_id=Config.product_id,
+                interval_days=Config.payment_expires.days,
+                cancel_at_period_end=False
             )
 
             payment_id = str(uuid4())
+            upload_size = amount_to_upload_size(amount)
+            now = datetime.now()
+            expires = now + Config.payment_expires
 
-            query = subscription_table.insert().values(
+            query = payment_table.insert().values(
                 subscription_id=subscription.id,
                 payment_id=payment_id,
                 amount=amount,
-                community_name=self.community_name
+                community_name=self.community_name,
+                max_upload=upload_size,
+                timestamp=now,
+                expires=expires,
+                paid=False
             )
 
             await Sessions.database.execute(query)
@@ -743,43 +749,22 @@ class Community:
         InvalidCommunity
         """
 
-        query = select([
-            subscription_table.c.amount,
-            subscription_table.c.subscription_id
-        ]).select_from(
-            subscription_table
-        ).where(
-            subscription_table.c.payment_id == payment_id
+        row = await Sessions.database.fetch_one(
+            payment_table.select().where(
+                payment_table.c.payment_id == payment_id
+            )
         )
-
-        row = await Sessions.database.fetch_one(query)
         if not row:
             raise InvalidPaymentID()
 
-        upload_size = amount_to_upload_size(row["amount"])
-
-        now = datetime.now()
-        expires = now + Config.payment_expires
-
-        query = payment_table.insert().values(
-            community_name=self.community_name,
-            payment_id=payment_id,
-            amount=row["amount"],
-            max_upload=upload_size,
-            timestamp=now,
-            expires=expires
+        query = payment_table.update().values(
+            paid=True
+        ).where(
+            payment_table.c.payment_id == payment_id
         )
 
-        try:
-            await Sessions.database.execute(query)
-        except Exception:
-            raise InvalidCommunity()
-        else:
-            return PaymentModel(
-                payment_id,
-                row["amount"],
-                now,
-                row["subscription_id"],
-                upload_size,
-                expires
-            )
+        await Sessions.database.execute(query)
+
+        return PaymentModel(
+            **row
+        )

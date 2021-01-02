@@ -127,96 +127,6 @@ class ItemsModel:
         self.metadata = metadata
 
 
-class SubscriptionModel:
-    id: str
-    object: str
-    application_fee_percent: None
-    billing_cycle_anchor: int
-    billing_thresholds: None
-    cancel_at: None
-    cancel_at_period_end: bool
-    canceled_at: None
-    collection_method: str
-    created: int
-    current_period_end: int
-    current_period_start: int
-    customer: str
-    days_until_due: None
-    default_payment_method: None
-    default_source: None
-    default_tax_rates: List[Any]
-    discount: None
-    ended_at: None
-    items: ItemsModel
-    latest_invoice: None
-    livemode: bool
-    next_pending_invoice_item_invoice: None
-    pause_collection: None
-    pending_invoice_item_interval: None
-    pending_setup_intent: None
-    pending_update: None
-    schedule: None
-    start_date: int
-    status: str
-    transfer_data: None
-    trial_end: None
-    trial_start: None
-    metadata: Dict[str, Any]
-
-    def __init__(self, id: str, object: str, application_fee_percent: None,
-                 billing_cycle_anchor: int, billing_thresholds: None,
-                 cancel_at: str, cancel_at_period_end: bool,
-                 canceled_at: None, collection_method: str,
-                 created: int, current_period_end: int,
-                 current_period_start: int, customer: str,
-                 days_until_due: None, default_payment_method: None,
-                 default_source: None, default_tax_rates: List[Any],
-                 discount: None, ended_at: None, items: Dict[str, Any],
-                 latest_invoice: None,
-                 livemode: bool,
-                 next_pending_invoice_item_invoice: None,
-                 pause_collection: None, pending_invoice_item_interval: None,
-                 pending_setup_intent: None, pending_update: None,
-                 schedule: None, start_date: int, status: str,
-                 transfer_data: None, trial_end: None,
-                 trial_start: None, metadata: Dict[str, Any]) -> None:
-        self.id = id
-        self.object = object
-        self.application_fee_percent = application_fee_percent
-        self.billing_cycle_anchor = billing_cycle_anchor
-        self.billing_thresholds = billing_thresholds
-        self.cancel_at = cancel_at
-        self.cancel_at_period_end = cancel_at_period_end
-        self.canceled_at = canceled_at
-        self.collection_method = collection_method
-        self.created = created
-        self.current_period_end = current_period_end
-        self.current_period_start = current_period_start
-        self.customer = customer
-        self.days_until_due = days_until_due
-        self.default_payment_method = default_payment_method
-        self.default_source = default_source
-        self.default_tax_rates = default_tax_rates
-        self.discount = discount
-        self.ended_at = ended_at
-        self.items = ItemsModel(**items)
-        self.latest_invoice = latest_invoice
-        self.livemode = livemode
-        self.next_pending_invoice_item_invoice = \
-            next_pending_invoice_item_invoice
-        self.pause_collection = pause_collection
-        self.pending_invoice_item_interval = pending_invoice_item_interval
-        self.pending_setup_intent = pending_setup_intent
-        self.pending_update = pending_update
-        self.schedule = schedule
-        self.start_date = start_date
-        self.status = status
-        self.transfer_data = transfer_data
-        self.trial_end = trial_end
-        self.trial_start = trial_start
-        self.metadata = metadata
-
-
 class InvoiceSettingsModel:
     custom_fields: None
     default_payment_method: None
@@ -342,3 +252,287 @@ class CardModel:
         self.metadata = metadata
         self.name = name
         self.tokenization_method = tokenization_method
+
+
+class ProductModel:
+    id: str
+    object: str
+    active: bool
+    attributes: List[str]
+    created: int
+    description: str
+    images: List[Any]
+    livemode: bool
+    metadata: Dict[str, Any]
+    name: str
+    statement_descriptor: None
+    type: str
+    unit_label: None
+    updated: int
+
+    def __init__(self, id: str, object: str, active: bool,
+                 attributes: List[str], created: int, description: str,
+                 images: List[Any], livemode: bool, metadata: Dict[str, Any],
+                 name: str, statement_descriptor: None, unit_label: None,
+                 updated: int, type: str) -> None:
+        self.id = id
+        self.object = object
+        self.active = active
+        self.type = type
+        self.attributes = attributes
+        self.created = created
+        self.description = description
+        self.images = images
+        self.livemode = livemode
+        self.metadata = metadata
+        self.name = name
+        self.statement_descriptor = statement_descriptor
+        self.unit_label = unit_label
+        self.updated = updated
+
+
+class PlanModel:
+    id: str
+    object: str
+    active: bool
+    aggregate_usage: None
+    amount: int
+    amount_decimal: int
+    billing_scheme: str
+    created: int
+    currency: str
+    interval: str
+    interval_count: int
+    livemode: bool
+    metadata: Dict[str, Any]
+    nickname: None
+    product: str
+    tiers_mode: None
+    transform_usage: None
+    trial_period_days: None
+    usage_type: str
+
+    def __init__(self, id: str, object: str, active: bool,
+                 aggregate_usage: None, amount: int,
+                 amount_decimal: int, billing_scheme: str, created: int,
+                 currency: str, interval: str, interval_count: int,
+                 livemode: bool, metadata: Dict[str, Any], nickname: None,
+                 product: str, tiers_mode: None, transform_usage: None,
+                 trial_period_days: None, usage_type: str) -> None:
+        self.id = id
+        self.object = object
+        self.active = active
+        self.aggregate_usage = aggregate_usage
+        self.amount = amount
+        self.amount_decimal = amount_decimal
+        self.billing_scheme = billing_scheme
+        self.created = created
+        self.currency = currency
+        self.interval = interval
+        self.interval_count = interval_count
+        self.livemode = livemode
+        self.metadata = metadata
+        self.nickname = nickname
+        self.product = product
+        self.tiers_mode = tiers_mode
+        self.transform_usage = transform_usage
+        self.trial_period_days = trial_period_days
+        self.usage_type = usage_type
+
+
+class RecurringModel:
+    aggregate_usage: None
+    interval: str
+    interval_count: int
+    trial_period_days: None
+    usage_type: str
+
+    def __init__(self, aggregate_usage: None, interval: str,
+                 interval_count: int, trial_period_days: None,
+                 usage_type: str) -> None:
+        self.aggregate_usage = aggregate_usage
+        self.interval = interval
+        self.interval_count = interval_count
+        self.trial_period_days = trial_period_days
+        self.usage_type = usage_type
+
+
+class PriceModel:
+    id: str
+    object: str
+    active: bool
+    billing_scheme: str
+    created: int
+    currency: str
+    livemode: bool
+    lookup_key: None
+    metadata: Dict[str, Any]
+    nickname: None
+    product: str
+    recurring: RecurringModel
+    tiers_mode: None
+    transform_quantity: None
+    type: str
+    unit_amount: int
+    unit_amount_decimal: int
+
+    def __init__(self, id: str, object: str, active: bool, billing_scheme: str,
+                 created: int, currency: str, livemode: bool, lookup_key: None,
+                 metadata: Dict[str, Any], nickname: None, product: str,
+                 recurring: RecurringModel, tiers_mode: None,
+                 transform_quantity: None, type: str, unit_amount: int,
+                 unit_amount_decimal: int) -> None:
+        self.id = id
+        self.object = object
+        self.active = active
+        self.billing_scheme = billing_scheme
+        self.created = created
+        self.currency = currency
+        self.livemode = livemode
+        self.lookup_key = lookup_key
+        self.metadata = metadata
+        self.nickname = nickname
+        self.product = product
+        self.recurring = recurring
+        self.tiers_mode = tiers_mode
+        self.transform_quantity = transform_quantity
+        self.type = type
+        self.unit_amount = unit_amount
+        self.unit_amount_decimal = unit_amount_decimal
+
+
+class DatumPriceModel:
+    id: str
+    object: str
+    billing_thresholds: None
+    created: int
+    metadata: Dict[str, Any]
+    plan: PlanModel
+    price: PriceModel
+    quantity: int
+    subscription: str
+    tax_rates: List[Any]
+
+    def __init__(self, id: str, object: str, billing_thresholds: None,
+                 created: int, metadata: Dict[str, Any], plan: PlanModel,
+                 price: PriceModel, quantity: int, subscription: str,
+                 tax_rates: List[Any]) -> None:
+        self.id = id
+        self.object = object
+        self.billing_thresholds = billing_thresholds
+        self.created = created
+        self.metadata = metadata
+        self.plan = plan
+        self.price = price
+        self.quantity = quantity
+        self.subscription = subscription
+        self.tax_rates = tax_rates
+
+
+class ItemsPriceModel:
+    object: str
+    data: List[DatumPriceModel]
+    has_more: bool
+    total_count: int
+    url: str
+
+    def __init__(self, object: str, data: List[DatumPriceModel],
+                 has_more: bool, total_count: int, url: str) -> None:
+        self.object = object
+        self.data = [DatumPriceModel(**item) for item in data]
+        self.has_more = has_more
+        self.total_count = total_count
+        self.url = url
+
+
+class SubscriptionModel:
+    id: str
+    object: str
+    application_fee_percent: None
+    billing_cycle_anchor: int
+    billing_thresholds: None
+    cancel_at: None
+    cancel_at_period_end: bool
+    canceled_at: None
+    collection_method: str
+    created: int
+    current_period_end: int
+    current_period_start: int
+    customer: str
+    days_until_due: None
+    default_payment_method: None
+    default_source: None
+    default_tax_rates: List[Any]
+    discount: None
+    ended_at: None
+    items: ItemsModel
+    latest_invoice: str
+    livemode: bool
+    metadata: Dict[str, Any]
+    next_pending_invoice_item_invoice: None
+    pause_collection: None
+    pending_invoice_item_interval: None
+    pending_setup_intent: None
+    pending_update: None
+    plan: PlanModel
+    quantity: int
+    schedule: None
+    start_date: int
+    status: str
+    transfer_data: None
+    trial_end: None
+    trial_start: None
+
+    def __init__(self, id: str, object: str, application_fee_percent: None,
+                 billing_cycle_anchor: int, billing_thresholds: None,
+                 cancel_at: None, cancel_at_period_end: bool,
+                 canceled_at: None, collection_method: str,
+                 created: int, current_period_end: int,
+                 current_period_start: int, customer: str,
+                 days_until_due: None, default_payment_method: None,
+                 default_source: None, default_tax_rates: List[Any],
+                 discount: None, ended_at: None, items: ItemsPriceModel,
+                 latest_invoice: str, livemode: bool, metadata: Dict[str, Any],
+                 next_pending_invoice_item_invoice: None,
+                 pause_collection: None, pending_invoice_item_interval: None,
+                 pending_setup_intent: None, pending_update: None,
+                 plan: PlanModel, quantity: int, schedule: None,
+                 start_date: int, status: str, transfer_data: None,
+                 trial_end: None, trial_start: None) -> None:
+        self.id = id
+        self.object = object
+        self.application_fee_percent = application_fee_percent
+        self.billing_cycle_anchor = billing_cycle_anchor
+        self.billing_thresholds = billing_thresholds
+        self.cancel_at = cancel_at
+        self.cancel_at_period_end = cancel_at_period_end
+        self.canceled_at = canceled_at
+        self.collection_method = collection_method
+        self.created = created
+        self.current_period_end = current_period_end
+        self.current_period_start = current_period_start
+        self.customer = customer
+        self.days_until_due = days_until_due
+        self.default_payment_method = default_payment_method
+        self.default_source = default_source
+        self.default_tax_rates = default_tax_rates
+        self.discount = discount
+        self.ended_at = ended_at
+        self.items = items
+        self.latest_invoice = latest_invoice
+        self.livemode = livemode
+        self.metadata = metadata
+        self.next_pending_invoice_item_invoice = \
+            next_pending_invoice_item_invoice
+        self.pause_collection = pause_collection
+        self.pending_invoice_item_interval = pending_invoice_item_interval
+        self.pending_setup_intent = pending_setup_intent
+        self.pending_update = pending_update
+        self.plan = plan
+        self.quantity = quantity
+        self.schedule = schedule
+        self.start_date = start_date
+        self.status = status
+        self.transfer_data = transfer_data
+        self.trial_end = trial_end
+        self.trial_start = trial_start

@@ -135,7 +135,9 @@ class LocalUploadSettings(__Extension):
 
 
 class StripeSettings:
-    def __init__(self, api_key: str, testing: bool = False) -> None:
+    def __init__(self, api_key: str, testing: bool = False,
+                 currency: str = "USD",
+                 product_name: str = "SQLMatches upload limit") -> None:
         """Used to set stripe settings.
 
         Parameters
@@ -144,10 +146,16 @@ class StripeSettings:
             Don't include 'sk_test_' or 'sk_live_'
         testing : bool, optional
             by default False
+        currency : str, optional
+            https://stripe.com/docs/currencies, by default "USD"
+        product_name : str, optional
+            by default "SQLMatches upload limit"
         """
 
         self.api_key = api_key
         self.testing = testing
+        self.currency = currency
+        self.product_name = product_name
 
 
 class SmtpSettings:

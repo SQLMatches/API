@@ -61,7 +61,11 @@ from .routes.errors import auth_error
 
 from .background_tasks import TASKS_TO_SPAWN
 
-from .misc import cache_community_types, KeyLoader
+from .misc import (
+    cache_community_types,
+    create_product_and_set,
+    KeyLoader
+)
 
 from .constants import MAP_IMAGES, COMMUNITY_TYPES
 
@@ -195,9 +199,11 @@ class SQLMatches(Starlette):
         Config.payment_expires = payment_expires
         Config.system_email = system_email
         Config.frontend_url = frontend_url
+        Config.currency = stripe_settings.currency
 
         self.community_types = community_types
         self.clear_cache = clear_cache
+        self.product_name = stripe_settings.product_name
 
         database_url = "://{}:{}@{}:{}/{}?charset=utf8mb4".format(
             database_settings.username,
@@ -308,6 +314,7 @@ class SQLMatches(Starlette):
             await self.background_tasks.spawn(to_spawn())
 
         await cache_community_types(self.community_types)
+        await create_product_and_set(self.product_name)
 
     async def _shutdown(self) -> None:
         """Closes any underlying sessions.

@@ -21,13 +21,14 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-from typing import Any, Dict, Tuple
+import json
+from typing import Tuple
 from aiohttp import ClientResponse
 from functools import wraps
 
 from ..resources import Sessions
 
-from .models import SubscriptionModel, CustomerModel
+from .models import CustomerModel, ProductModel
 from .subscription import Subscription
 from .customer import Customer
 
@@ -142,35 +143,6 @@ class Stripe:
 
         return Subscription(id, self)
 
-    async def create_subscription(self, customer: str,
-                                  items: Dict[str, Any],
-                                  cancel_at_period_end: bool = False
-                                  ) -> Tuple[SubscriptionModel, Subscription]:
-        """Used to create a subscription.
-
-        Parameters
-        ----------
-        customer : str
-        items : Dict[str, Any]
-        cancel_at_period_end : bool, optional
-            by default False
-
-        Returns
-        -------
-        SubscriptionModel
-        """
-
-        data = await self._post(
-            "subscriptions",
-            data={
-                "customer": customer,
-                "items": items,
-                "cancel_at_period_end": cancel_at_period_end
-            }
-        )
-
-        return SubscriptionModel(**data), self.subscription(data["id"])
-
     def customer(self, id: str) -> Customer:
         """Used to interact with customer.
 
@@ -184,6 +156,24 @@ class Stripe:
         """
 
         return Customer(id, self)
+
+    async def create_product(self, name: str) -> ProductModel:
+        """Used to create a product.
+
+        Parameters
+        ----------
+        name : str
+
+        Returns
+        -------
+        ProductModel
+        """
+
+        data = await self._post("products", data={
+            "name": name
+        })
+
+        return ProductModel(**data)
 
     async def create_customer(self, **kwargs
                               ) -> Tuple[CustomerModel, Customer]:

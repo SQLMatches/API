@@ -76,6 +76,8 @@ class Config:
     payment_expires: timedelta
     system_email: str
     frontend_url: str
+    currency: str
+    product_id: str
 
 
 class DemoQueue:

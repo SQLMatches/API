@@ -42,6 +42,21 @@ from sqlalchemy.sql.sqltypes import Float
 metadata = MetaData()
 
 
+product_table = Table(
+    "product",
+    metadata,
+    Column(
+        "product_id",
+        String(length=27),
+        primary_key=True
+    ),
+    Column(
+        "name",
+        String(length=255)
+    )
+)
+
+
 update_table = Table(
     "update",
     metadata,
@@ -166,30 +181,6 @@ community_table = Table(
 )
 
 
-subscription_table = Table(
-    "subscription",
-    metadata,
-    Column(
-        "subscription_id",
-        String(length=27),
-        primary_key=True
-    ),
-    Column(
-        "payment_id",
-        String(length=36),
-        primary_key=True
-    ),
-    Column(
-        "amount",
-        Float
-    ),
-    PrimaryKeyConstraint(
-        "payment_id",
-        "subscription_id"
-    ),
-)
-
-
 payment_table = Table(
     "payment",
     metadata,
@@ -200,9 +191,13 @@ payment_table = Table(
         primary_key=True
     ),
     Column(
+        "subscription_id",
+        String(length=27),
+        primary_key=True
+    ),
+    Column(
         "payment_id",
         String(length=36),
-        ForeignKey("subscription.payment_id"),
         primary_key=True
     ),
     Column(
@@ -218,7 +213,16 @@ payment_table = Table(
         "expires",
         TIMESTAMP,
     ),
+    Column(
+        "amount",
+        Float
+    ),
+    Column(
+        "paid",
+        Boolean
+    ),
     PrimaryKeyConstraint(
+        "subscription_id",
         "payment_id",
         "community_name"
     ),
