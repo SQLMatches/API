@@ -170,6 +170,8 @@ class CommunityPaymentAPI(HTTPEndpoint):
             parameters["amount"]
         )
 
+        await (CommunityCache(request.state.community.community_name)).expire()
+
         return response({"payment_id": payment_id})
 
 
@@ -196,6 +198,8 @@ class CommunityCardAPI(HTTPEndpoint):
 
         await request.state.community.add_card(**parameters)
 
+        await (CommunityCache(request.state.community.community_name)).expire()
+
         return response()
 
     @requires("is_owner")
@@ -213,6 +217,8 @@ class CommunityCardAPI(HTTPEndpoint):
         """
 
         await request.state.community.delete_card()
+
+        await (CommunityCache(request.state.community.community_name)).expire()
 
         return response()
 

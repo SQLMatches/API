@@ -106,11 +106,11 @@ community_table = Table(
     ),
     Column(
         "customer_id",
-        String(length=27)
+        String(length=30)
     ),
     Column(
         "card_id",
-        String(length=27)
+        String(length=30)
     ),
     Column(
         "owner_id",
@@ -167,7 +167,7 @@ subscription_table = Table(
     metadata,
     Column(
         "subscription_id",
-        String(length=27),
+        String(length=30),
         primary_key=True
     ),
     Column(

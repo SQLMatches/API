@@ -626,7 +626,7 @@ class Community:
     async def add_card(self, number: str, exp_month: int,
                        exp_year: int, cvc: int,
                        name: str) -> None:
-        """Used to create a card for a community.
+        """Used to create / update a card for a community.
 
         Parameters
         ----------
@@ -639,10 +639,18 @@ class Community:
 
         community = await self.get()
 
+        customer = Sessions.stripe.customer(
+            community.customer_id
+        )
+
+        if community.card_id:
+            # We'll just delete the card if exists.
+            await (customer.card(
+                community.card_id
+            )).delete()
+
         try:
-            data, _ = await (Sessions.stripe.customer(
-                community.customer_id
-            )).create_card(
+            data, _ = await customer.create_card(
                 number, exp_month, exp_year, cvc, name
             )
         except ClientError:

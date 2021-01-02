@@ -44,7 +44,36 @@ class Customer:
         Card
         """
 
-        return Card(self.id, id, self)
+        return Card(self.id, id, self._context)
+
+    async def _token(self, number: str, exp_month: int,
+                     exp_year: int, cvc: int,
+                     name: str) -> str:
+        """Used to create token.
+
+        Parameters
+        ----------
+        number : str
+        exp_month : int
+        exp_year : int
+        cvc : int
+        name : str
+
+        Returns
+        -------
+        str
+        """
+
+        return (await self._context._post(
+            "tokens",
+            data={
+                "[card]number": number,
+                "[card]exp_month": exp_month,
+                "[card]exp_year": exp_year,
+                "[card]cvc": cvc,
+                "[card]name": name
+            }
+        ))["id"]
 
     async def create_card(self, number: str, exp_month: int,
                           exp_year: int, cvc: int,
@@ -57,6 +86,7 @@ class Customer:
         number : str
         exp_month : int
         exp_year : int
+            Expects full year format.
         cvc : int
         name : str
 
@@ -69,14 +99,10 @@ class Customer:
         data = await self._context._post(
             "customers/{}/sources".format(self.id),
             data={
-                "source": {
-                    "object": "card",
-                    "number": number,
-                    "exp_month": exp_month,
-                    "exp_year": exp_year,
-                    "cvc": cvc,
-                    "name": name
-                }
+                "source": await self._token(
+                    number, exp_month, exp_year,
+                    cvc, name
+                )
             }
         )
 
