@@ -26,7 +26,8 @@ from SQLMatches import SQLMatches
 from SQLMatches.settings import (
     DatabaseSettings,
     LocalUploadSettings,
-    StripeSettings
+    StripeSettings,
+    SmtpSettings
 )
 
 
@@ -41,6 +42,10 @@ app = SQLMatches(
     stripe_settings=StripeSettings(
         api_key="...",
         testing=False
+    ),
+    smtp_settings=SmtpSettings(
+        hostname="127.0.0.1",
+        port=1025
     ),
     upload_settings=LocalUploadSettings(),
     friendly_url="http://localhost/api",

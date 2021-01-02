@@ -41,6 +41,7 @@ from databases import Database
 from aiohttp import ClientSession
 from aiojobs import create_scheduler
 from aiocache import Cache
+from aiosmtplib import SMTP
 
 from .stripe import Stripe
 
@@ -50,7 +51,8 @@ from .settings import (
     DatabaseSettings,
     B2UploadSettings,
     LocalUploadSettings,
-    StripeSettings
+    StripeSettings,
+    SmtpSettings
 )
 from .middlewares import APIAuthentication
 
@@ -82,6 +84,7 @@ class SQLMatches(Starlette):
     def __init__(self,
                  database_settings: DatabaseSettings,
                  stripe_settings: StripeSettings,
+                 smtp_settings: SmtpSettings,
                  friendly_url: str,
                  root_steam_id: str,
                  upload_settings: Tuple[
@@ -207,6 +210,12 @@ class SQLMatches(Starlette):
             )
         )
 
+        Sessions.smtp = SMTP(
+            hostname=smtp_settings.hostname,
+            port=smtp_settings.port,
+            use_tls=smtp_settings.use_tls
+        )
+
         Sessions.stripe = Stripe(
             stripe_settings.api_key,
             stripe_settings.testing
@@ -266,6 +275,7 @@ class SQLMatches(Starlette):
         """Starts up needed sessions.
         """
 
+        await Sessions.smtp.connect()
         await Sessions.database.connect()
         Sessions.aiohttp = ClientSession()
 
@@ -294,6 +304,7 @@ class SQLMatches(Starlette):
         """Closes any underlying sessions.
         """
 
+        await Sessions.smtp.close()
         await Sessions.database.disconnect()
         await Sessions.aiohttp.close()
         await Sessions.cache.close()

@@ -148,3 +148,19 @@ class StripeSettings:
 
         self.api_key = api_key
         self.testing = testing
+
+
+class SmtpSettings:
+    def __init__(self, hostname: str, port: int, use_tls: bool = True) -> None:
+        """SMTP Connection settings.
+
+        Parameters
+        ----------
+        hostname : str
+        port : int
+        use_tls : bool, optional
+        """
+
+        self.hostname = hostname
+        self.port = port
+        self.use_tls = use_tls

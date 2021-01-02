@@ -31,6 +31,7 @@ from aiohttp import ClientSession
 from databases import Database
 from aiocache import Cache
 from datetime import timedelta
+from aiosmtplib import SMTP
 
 
 class Sessions:
@@ -43,6 +44,7 @@ class Sessions:
         cors_allowed_origins=[]
     )
     stripe: Any
+    smtp: SMTP
 
 
 class Config:
