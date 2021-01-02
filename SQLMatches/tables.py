@@ -109,6 +109,10 @@ community_table = Table(
         String(length=30)
     ),
     Column(
+        "email",
+        String(length=255)
+    ),
+    Column(
         "card_id",
         String(length=30)
     ),

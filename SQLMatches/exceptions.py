@@ -150,9 +150,17 @@ class InvalidPaymentID(SQLMatchesException):
         super().__init__(msg, *args, **kwargs)
 
 
-class InvaldCard(SQLMatchesException):
-    """Raised when card is incorrect.
+class InvalidCard(SQLMatchesException):
+    """Raised when card is invalid.
     """
 
     def __init__(self, msg="Invalid card ID", *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)
+
+
+class InvalidEmail(SQLMatchesException):
+    """Raised when email is invalid.
+    """
+
+    def __init__(self, msg="Invalid email", *args, **kwargs):
         super().__init__(msg, *args, **kwargs)

@@ -40,6 +40,8 @@ setup(
         "SQLMatches.user",
         "SQLMatches.caches",
         "SQLMatches.stripe",
+        "SQLMatches.mail",
+        "SQLMatches.mail.templates",
         "SQLMatches.tests"
     ],
     python_requires=">=3.6",

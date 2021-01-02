@@ -26,7 +26,8 @@ from .. import SQLMatches, COMMUNITY_TYPES
 from ..settings import (
     DatabaseSettings,
     LocalUploadSettings,
-    StripeSettings
+    StripeSettings,
+    SmtpSettings
 )
 
 from ..community import create_community, Community
@@ -46,6 +47,11 @@ sqlmatches = SQLMatches(
     stripe_settings=StripeSettings(
         api_key="npTQKVz6lrs4YjB2qy8oKgbp",
         testing=True
+    ),
+    smtp_settings=SmtpSettings(
+        hostname="127.0.0.1",
+        port=25,
+        use_tls=False
     ),
     upload_settings=LocalUploadSettings(),
     friendly_url="http://localhost/api",

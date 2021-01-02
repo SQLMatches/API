@@ -82,6 +82,7 @@ class CommunityModel(PublicCommunityModel):
                  match_start_webhook: str,
                  round_end_webhook: str,
                  match_end_webhook: str,
+                 email: str,
                  max_upload: float = None,
                  amount: float = None,
                  customer_id: str = None,
@@ -99,6 +100,7 @@ class CommunityModel(PublicCommunityModel):
         self.match_end_webhook = match_end_webhook
         self.customer_id = customer_id
         self.card_id = card_id
+        self.email = email
 
     @property
     def community_api_schema(self) -> dict:
@@ -115,7 +117,8 @@ class CommunityModel(PublicCommunityModel):
             "round_end_webhook": self.round_end_webhook,
             "match_end_webhook": self.match_end_webhook,
             "customer_id": self.customer_id,
-            "card_id": self.card_id
+            "card_id": self.card_id,
+            "email": self.email
         }
 
 

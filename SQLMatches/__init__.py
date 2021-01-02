@@ -272,7 +272,7 @@ class SQLMatches(Starlette):
         )
 
     async def _startup(self) -> None:
-        """Starts up needed sessions.
+        """Creates needed sessions.
         """
 
         await Sessions.smtp.connect()
@@ -304,7 +304,7 @@ class SQLMatches(Starlette):
         """Closes any underlying sessions.
         """
 
-        await Sessions.smtp.close()
+        await Sessions.smtp.quit()
         await Sessions.database.disconnect()
         await Sessions.aiohttp.close()
         await Sessions.cache.close()

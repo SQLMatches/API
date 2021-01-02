@@ -30,17 +30,30 @@ from .exceptions import (
     InvalidWebhook,
     InvalidCommunityName,
     InvalidCommunityType,
+    InvalidEmail
 )
 
 
 def validate_webhooks(func):
     @wraps(func)
     def _validate(*args, **kwargs):
-        for param in ["match_start_webhook", "round_end_webhook",
-                      "match_end_webhook"]:
+        for param in ("match_start_webhook", "round_end_webhook",
+                      "match_end_webhook"):
             if param in kwargs and kwargs[param]:
                 if validators.url(kwargs[param]) is not True:
                     raise InvalidWebhook()
+
+        return func(*args, **kwargs)
+
+    return _validate
+
+
+def validate_email(func):
+    @wraps(func)
+    def _validate(*args, **kwargs):
+        if "email" in kwargs and kwargs["email"]:
+            if validators.email(kwargs["email"]) is not True:
+                raise InvalidEmail()
 
         return func(*args, **kwargs)
 

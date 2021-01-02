@@ -33,7 +33,8 @@ from ..resources import Sessions, Config, DemoQueue
 
 from ..decorators import (
     validate_community_type,
-    validate_webhooks
+    validate_webhooks,
+    validate_email
 )
 
 from ..misc import amount_to_upload_size
@@ -52,7 +53,7 @@ from ..tables import (
 from ..exceptions import (
     InvalidCommunity,
     InvalidSteamID,
-    InvaldCard,
+    InvalidCard,
     InvalidPaymentID
 )
 
@@ -81,12 +82,14 @@ class Community:
 
     @validate_webhooks
     @validate_community_type
+    @validate_email
     async def update(self, demos: bool = None,
                      community_type: str = None,
                      match_start_webhook: str = None,
                      round_end_webhook: str = None,
                      match_end_webhook: str = None,
-                     allow_api_access: bool = None) -> CommunityModel:
+                     allow_api_access: bool = None,
+                     email: str = None) -> CommunityModel:
         """Used to update a community.
 
         Parameters
@@ -102,6 +105,8 @@ class Community:
         match_end_webhook : str, optional
             by default None
         allow_api_access : bool, optional
+            by default None
+        email : str, optional
             by default None
 
         Returns
@@ -130,6 +135,9 @@ class Community:
 
         if match_end_webhook:
             values["match_end_webhook"] = match_end_webhook
+
+        if email:
+            values["email"] = email
 
         if values:
             query = community_table.update().values(
@@ -514,6 +522,7 @@ class Community:
             community_table.c.round_end_webhook,
             community_table.c.match_end_webhook,
             community_table.c.customer_id,
+            community_table.c.email,
             community_table.c.card_id,
             payment_table.c.max_upload,
             subscription_table.c.amount
@@ -654,7 +663,7 @@ class Community:
                 number, exp_month, exp_year, cvc, name
             )
         except ClientError:
-            raise InvaldCard()
+            raise InvalidCard()
         else:
             await Sessions.database.execute(
                 community_table.update().values(

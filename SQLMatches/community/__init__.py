@@ -22,11 +22,8 @@ DEALINGS IN THE SOFTWARE.
 
 
 from operator import or_
-
 from typing import Tuple
-
 from sqlalchemy.sql import select, and_, func
-
 from secrets import token_urlsafe
 from datetime import datetime
 
@@ -40,7 +37,8 @@ from ..tables import (
 from ..decorators import (
     validate_community_type,
     validate_webhooks,
-    validate_community_name
+    validate_community_name,
+    validate_email
 )
 
 from ..user import create_user
@@ -146,7 +144,8 @@ async def owner_exists(steam_id: str) -> bool:
 @validate_webhooks
 @validate_community_name
 @validate_community_type
-async def create_community(steam_id: str, community_name: str,
+@validate_email
+async def create_community(steam_id: str, community_name: str, email: str,
                            disabled: bool = False, demos: bool = True,
                            community_type: str = None,
                            allow_api_access: bool = False,
@@ -154,24 +153,31 @@ async def create_community(steam_id: str, community_name: str,
                            round_end_webhook: str = None,
                            match_end_webhook: str = None
                            ) -> Tuple[CommunityModel, Community]:
-    """Creates a community.
+    """[summary]
 
-    Paramters
-    ---------
-    owner_id: str
-        Owner ID.
-    name: str
-        Name of community.
-    disabled: bool
-        Defaults to False.
-    community_type: str
-        Community type str
-        ["personal", "community", "team", "organization"]
-    allow_api_access: bool
-        Defaults to False
+    Parameters
+    ----------
+    steam_id : str
+    community_name : str
+    email : str
+    disabled : bool, optional
+        by default False
+    demos : bool, optional
+        by default True
+    community_type : str, optional
+        by default None
+    allow_api_access : bool, optional
+        by default False
+    match_start_webhook : str, optional
+        by default None
+    round_end_webhook : str, optional
+        by default None
+    match_end_webhook : str, optional
+        by default None
 
     Returns
     -------
+    CommunityModel
     Community
         Used for interacting with a community
 
@@ -220,7 +226,8 @@ async def create_community(steam_id: str, community_name: str,
         match_start_webhook=match_start_webhook,
         round_end_webhook=round_end_webhook,
         match_end_webhook=match_end_webhook,
-        customer_id=customer.id
+        customer_id=customer.id,
+        email=email
     )
 
     try:
@@ -250,4 +257,5 @@ async def create_community(steam_id: str, community_name: str,
             match_start_webhook=match_start_webhook,
             match_end_webhook=match_end_webhook,
             round_end_webhook=round_end_webhook,
+            email=email
         ), Community(community_name)

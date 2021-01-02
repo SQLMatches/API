@@ -20,39 +20,11 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
-import uvicorn
 
-from SQLMatches import SQLMatches
-from SQLMatches.settings import (
-    DatabaseSettings,
-    LocalUploadSettings,
-    StripeSettings,
-    SmtpSettings
-)
+from email.mime.text import MIMEText
+
+from ..resources import Sessions
 
 
-app = SQLMatches(
-    database_settings=DatabaseSettings(
-        username="sqlmatches",
-        password="Y2ZRSsje9qZHsxDu",
-        server="localhost",
-        port=3306,
-        database="sqlmatches"
-    ),
-    stripe_settings=StripeSettings(
-        api_key="...",
-        testing=False
-    ),
-    smtp_settings=SmtpSettings(
-        hostname="127.0.0.1",
-        port=25,
-        use_tls=False
-    ),
-    upload_settings=LocalUploadSettings(),
-    friendly_url="http://localhost/api",
-    root_steam_id="76561198077228213"
-)
-
-
-if __name__ == "__main__":
-    uvicorn.run(app)
+class Mail:
+    pass

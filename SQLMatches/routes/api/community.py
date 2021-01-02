@@ -228,7 +228,8 @@ class CommunityUpdateAPI(HTTPEndpoint):
                "match_start_webhook": fields.Str(min=5, max=255),
                "round_end_webhook": fields.Str(min=5, max=255),
                "match_end_webhook": fields.Str(min=5, max=255),
-               "allow_api_access": fields.Bool()})
+               "allow_api_access": fields.Bool(),
+               "email": fields.Str(max=255)})
     @requires("is_owner")
     @LIMITER.limit("30/minute")
     async def post(self, request: Request, parameters: dict) -> response:
@@ -275,7 +276,8 @@ class CommunityCreateAPI(HTTPEndpoint):
     @use_args({"community_name": fields.Str(required=True, max=32, min=4),
                "community_type": fields.Str(),
                "demos": fields.Bool(),
-               "allow_api_access": fields.Bool()})
+               "allow_api_access": fields.Bool(),
+               "email": fields.Str(max=255)})
     @requires("steam_login")
     @LIMITER.limit("60/minute")
     async def post(self, request: Request, parameters: dict) -> response:
