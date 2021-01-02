@@ -29,6 +29,7 @@ from ..resources import Sessions
 from ..responses import error_response, response
 from ..community import stripe_customer_to_community
 from ..exceptions import NoPendingPayment, InvalidCustomer
+from ..caches import CommunityCache
 
 
 class PaymentFailed(HTTPEndpoint):
@@ -52,6 +53,8 @@ class PaymentFailed(HTTPEndpoint):
                 raise
             else:
                 await community.decline_payment(payment.payment_id)
+
+                await CommunityCache(community.community_name).expire()
 
                 await Sessions.websocket.emit(
                     payment.payment_id,
@@ -86,6 +89,8 @@ class PaymentSuccess(HTTPEndpoint):
                     payment.payment_id,
                     json["data"]["object"]["receipt_url"]
                 )
+
+                await CommunityCache(community.community_name).expire()
 
                 await Sessions.websocket.emit(
                     payment.payment_id,

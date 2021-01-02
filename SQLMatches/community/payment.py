@@ -198,6 +198,13 @@ class CommunityPayment:
             return payment_id
 
     async def decline_payment(self, payment_id: str) -> None:
+        """Used to decline payment.
+
+        Parameters
+        ----------
+        payment_id : str
+        """
+
         query = payment_table.update().values(
             payment_status=2
         ).where(
@@ -314,6 +321,9 @@ class CommunityPayment:
             return data.id
 
     async def delete_card(self) -> None:
+        """Used to delete card.
+        """
+
         community = await self.get()
 
         if community.card_id:

@@ -570,8 +570,7 @@ class Community(CommunityPayment):
                 and_(
                     community_table.c.community_name ==
                     payment_table.c.community_name,
-                    payment_table.c.expires >= datetime.now(),
-                    payment_table.c.payment_status != 2
+                    payment_table.c.expires >= datetime.now()
                 ),
                 isouter=True
             )
@@ -580,6 +579,8 @@ class Community(CommunityPayment):
                 community_table.c.community_name == self.community_name,
                 api_key_table.c.master == True  # noqa: E712
             )
+        ).order_by(
+            payment_table.c.expires.desc()
         )
 
         row = await Sessions.database.fetch_one(query=query)
