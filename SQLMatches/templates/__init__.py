@@ -21,10 +21,20 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-from email.mime.text import MIMEText
+from jinja2 import Environment, FileSystemLoader, select_autoescape
+from os import path
 
-from ..resources import Sessions
+from ..resources import Config
 
 
-class Mail:
-    pass
+jinja2 = Environment(
+    loader=FileSystemLoader(path.join(
+        Config.current_dir,
+        "templates"
+    )),
+    autoescape=select_autoescape(["html", "xml"])
+)
+
+
+def render_html(file: str, params: dict) -> str:
+    return (jinja2.get_template(file)).render(**params)

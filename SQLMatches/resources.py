@@ -48,8 +48,9 @@ class Sessions:
 
 
 class Config:
+    current_dir = os.path.dirname(os.path.realpath(__file__))
     maps_dir = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)),
+        current_dir,
         "maps"
     )
     steam_openid_url = "https://steamcommunity.com/openid/login"

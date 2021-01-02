@@ -69,12 +69,14 @@ class TestBase:
 
         STEAM_ID = "76561198077228213"
         COMMUNITY_NAME = "TestLeague"
+        EMAIL = "hi@wardpearce.com"
 
         try:
             community, _ = await create_community(
                 community_name=COMMUNITY_NAME,
                 steam_id=STEAM_ID,
-                community_type=COMMUNITY_TYPES[0]
+                community_type=COMMUNITY_TYPES[0],
+                email=EMAIL
             )
         except (CommunityTaken, AlreadyCommunity):
             community = await Community(community_name=COMMUNITY_NAME).get()
