@@ -54,7 +54,6 @@ class Config:
         "maps"
     )
     steam_openid_url = "https://steamcommunity.com/openid/login"
-
     upload_type: Any
     url: str
     map_images: str
