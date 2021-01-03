@@ -34,7 +34,7 @@ from ..caches import CommunityCache
 
 
 class PaymentFailedWebhook(HTTPEndpoint):
-    @requires("valid_webhook")
+    @requires("stripe_webhook")
     async def post(self, request: Request) -> response:
         json = await request.json()
 
@@ -76,7 +76,7 @@ class PaymentFailedWebhook(HTTPEndpoint):
 
 
 class PaymentSuccessWebhook(HTTPEndpoint):
-    @requires("valid_webhook")
+    @requires("stripe_webhook")
     async def post(self, request: Request) -> response:
         json = await request.json()
 

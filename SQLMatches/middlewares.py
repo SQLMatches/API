@@ -128,6 +128,6 @@ class APIAuthentication(AuthenticationBackend):
             if bcrypt.checkpw(request.query_params["webhook_key"].encode(),
                               Config.root_webhook_key_hashed):
                 return (
-                    AuthCredentials(["valid_webhook"]),
+                    AuthCredentials(["stripe_webhook"]),
                     SimpleUser("")
                 )
