@@ -202,7 +202,8 @@ class CommunityPayment:
         except InvalidCommunity:
             raise
         else:
-            if community.payment_status is not None:
+            if (community.payment_status is not None and
+                    community.cancelled is not False):
                 raise ActivePayment()
 
             subscription, _ = await (Sessions.stripe.customer(

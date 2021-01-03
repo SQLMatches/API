@@ -23,16 +23,17 @@ DEALINGS IN THE SOFTWARE.
 
 from starlette.endpoints import HTTPEndpoint
 from starlette.requests import Request
+from starlette.background import BackgroundTask
 from starlette.authentication import requires
 
-from ..resources import Sessions
+from ..resources import Config, Sessions
 from ..responses import error_response, response
 from ..community import stripe_customer_to_community
-from ..exceptions import NoPendingPayment, InvalidCustomer
+from ..exceptions import NoActivePayment, NoPendingPayment, InvalidCustomer
 from ..caches import CommunityCache
 
 
-class PaymentFailed(HTTPEndpoint):
+class PaymentFailedWebhook(HTTPEndpoint):
     @requires("valid_webhook")
     async def post(self, request: Request) -> response:
         json = await request.json()
@@ -50,7 +51,7 @@ class PaymentFailed(HTTPEndpoint):
             try:
                 payment = await community.pending_payment()
             except NoPendingPayment:
-                raise
+                pass
             else:
                 await community.decline_payment(payment.payment_id)
 
@@ -62,10 +63,19 @@ class PaymentFailed(HTTPEndpoint):
                     room="ws_room"
                 )
 
-                return response()
+            return response(background=BackgroundTask(
+                community.email,
+                title="SQLMatches - Payment Failed!",
+                content=("""Your payment has been decline,
+                please update your card details on the owner page."""),
+                link_href="{}'s owner panel".format(community.community_name),
+                link_text="{}c/{}/owner#tab2".format(
+                    Config.frontend_url, community.community_name
+                )
+            ))
 
 
-class PaymentSuccess(HTTPEndpoint):
+class PaymentSuccessWebhook(HTTPEndpoint):
     @requires("valid_webhook")
     async def post(self, request: Request) -> response:
         json = await request.json()
@@ -81,21 +91,35 @@ class PaymentSuccess(HTTPEndpoint):
             raise
         else:
             try:
-                payment = await community.pending_payment()
+                payment_id = (await community.pending_payment()).payment_id
             except NoPendingPayment:
-                raise
-            else:
-                await community.confirm_payment(
-                    payment.payment_id,
-                    json["data"]["object"]["receipt_url"]
+                try:
+                    await community.cancel_subscription()
+                except NoActivePayment:
+                    pass
+
+                payment_id = await community.create_payment(
+                    json["data"]["object"]["amount"] / 100
                 )
 
-                await CommunityCache(community.community_name).expire()
+            await community.confirm_payment(
+                payment_id,
+                json["data"]["object"]["receipt_url"]
+            )
 
-                await Sessions.websocket.emit(
-                    payment.payment_id,
-                    {"paid": True},
-                    room="ws_room"
-                )
+            await CommunityCache(community.community_name).expire()
 
-                return response()
+            await Sessions.websocket.emit(
+                payment_id,
+                {"paid": True},
+                room="ws_room"
+            )
+
+            return response(background=BackgroundTask(
+                community.email,
+                title="SQLMatches - Invoice",
+                content=("""Thanks for supporting SQLMatches,
+                your receipt can be found below."""),
+                link_href=json["data"]["object"]["receipt_url"],
+                link_text="Receipt"
+            ))

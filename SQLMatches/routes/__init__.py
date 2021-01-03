@@ -63,8 +63,8 @@ from .api.profile import ProfileAPI
 from .websockets import *  # noqa: F403, F401
 
 from .webhooks import (
-    PaymentFailed,
-    PaymentSuccess
+    PaymentFailedWebhook,
+    PaymentSuccessWebhook
 )
 
 from .download import DownloadPage
@@ -127,8 +127,8 @@ ROUTES = [
     Mount("/ws/", socketio.ASGIApp(Sessions.websocket)),
     Mount("/webhook", routes=[
         Mount("/payment", routes=[
-            Route("/fail/", PaymentFailed),
-            Route("/success/", PaymentSuccess)
+            Route("/fail/", PaymentFailedWebhook),
+            Route("/success/", PaymentSuccessWebhook)
         ])
     ])
 ]
