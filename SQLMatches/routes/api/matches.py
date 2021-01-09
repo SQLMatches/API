@@ -313,53 +313,53 @@ class DemoUploadAPI(HTTPEndpoint):
         except InvalidMatchID:
             raise
         else:
-            if demo_status == 0:
-                await match.set_demo_status(1)
+            if demo_status != 0:
+                raise DemoAlreadyUploaded()
 
-                if await demo.upload():
-                    background_task = None
+            await match.set_demo_status(1)
 
-                    await match.set_demo_status(2)
-                else:
-                    background_task = BackgroundTask(
-                        request.state.community.email,
-                        title="SQLMatches.com, upload failed.",
-                        content=("""A upload for a demo failed due to it
-                        being too large. Go to the owner panel to increase
-                        your max upload size!"""),
-                        link_href=(
-                            Config.frontend_url + "c/{}/owner#tab2".format(
-                                match.community_name
-                            )
-                        ),
-                        link_text="{}'s owner panel.".format(
+            if await demo.upload():
+                background_task = None
+
+                await match.set_demo_status(2)
+            else:
+                background_task = BackgroundTask(
+                    request.state.community.email,
+                    title="SQLMatches.com, upload failed.",
+                    content=("""A upload for a demo failed due to it
+                    being too large. Go to the owner panel to increase
+                    your max upload size!"""),
+                    link_href=(
+                        Config.frontend_url + "c/{}/owner#tab2".format(
                             match.community_name
                         )
+                    ),
+                    link_text="{}'s owner panel.".format(
+                        match.community_name
                     )
-
-                    await match.set_demo_status(3)
-
-                scoreboard = await match.scoreboard()
-                data = scoreboard.scoreboard_api_schema
-
-                await (CommunityCache(
-                    match.community_name
-                ).scoreboard(request.path_params["match_id"])).set(
-                    data
                 )
 
-                await Sessions.websocket.emit(
-                    "match_update",
-                    scoreboard.match_api_schema,
-                    room="ws_room"
-                )
+                await match.set_demo_status(3)
 
-                await Sessions.websocket.emit(
-                    request.path_params["match_id"],
-                    data,
-                    room="ws_room"
-                )
+            scoreboard = await match.scoreboard()
+            data = scoreboard.scoreboard_api_schema
 
-                return response(background=background_task)
-            else:
-                raise DemoAlreadyUploaded()
+            await (CommunityCache(
+                match.community_name
+            ).scoreboard(request.path_params["match_id"])).set(
+                data
+            )
+
+            await Sessions.websocket.emit(
+                "match_update",
+                scoreboard.match_api_schema,
+                room="ws_room"
+            )
+
+            await Sessions.websocket.emit(
+                request.path_params["match_id"],
+                data,
+                room="ws_room"
+            )
+
+            return response(background=background_task)
