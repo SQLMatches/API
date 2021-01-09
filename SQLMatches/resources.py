@@ -73,6 +73,7 @@ class Config:
     webhook_timeout: int
     match_max_length: timedelta
     payment_expires: timedelta
+    demo_expires: timedelta
     system_email: str
     frontend_url: str
     currency: str
@@ -81,4 +82,4 @@ class Config:
 
 
 class DemoQueue:
-    matches: list = []
+    matches: dict = {}

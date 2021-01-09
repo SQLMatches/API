@@ -34,7 +34,7 @@ from .rate_limiter import LIMITER
 
 from ...webhook_pusher import WebhookPusher
 from ...responses import response
-from ...resources import Sessions
+from ...resources import Sessions, Config
 from ...demos import Demo
 from ...caches import CommunityCache, CommunitiesCache
 from ...exceptions import InvalidMatchID, DemoAlreadyUploaded
@@ -317,15 +317,33 @@ class DemoUploadAPI(HTTPEndpoint):
                 await match.set_demo_status(1)
 
                 if await demo.upload():
+                    background_task = None
+
                     await match.set_demo_status(2)
                 else:
+                    background_task = BackgroundTask(
+                        request.state.community.email,
+                        title="SQLMatches.com, upload failed.",
+                        content=("""A upload for a demo failed due to it
+                        being too large. Go to the owner panel to increase
+                        your max upload size!"""),
+                        link_href=(
+                            Config.frontend_url + "c/{}/owner#tab2".format(
+                                match.community_name
+                            )
+                        ),
+                        link_text="{}'s owner panel.".format(
+                            match.community_name
+                        )
+                    )
+
                     await match.set_demo_status(3)
 
                 scoreboard = await match.scoreboard()
                 data = scoreboard.scoreboard_api_schema
 
                 await (CommunityCache(
-                    request.state.community.community_name
+                    match.community_name
                 ).scoreboard(request.path_params["match_id"])).set(
                     data
                 )
@@ -342,6 +360,6 @@ class DemoUploadAPI(HTTPEndpoint):
                     room="ws_room"
                 )
 
-                return response()
+                return response(background=background_task)
             else:
                 raise DemoAlreadyUploaded()

@@ -25,9 +25,10 @@ from sqlalchemy.sql import select, and_, or_
 from datetime import datetime
 
 from .demos import Demo
-from .community.match import Match
 from .resources import DemoQueue, Sessions, Config
 from .tables import scoreboard_total_table
+from .caches import CommunityCache
+from .community.match import Match
 
 
 async def demo_delete() -> None:
@@ -35,11 +36,11 @@ async def demo_delete() -> None:
     """
 
     while True:
-        for community_matches in list(DemoQueue.matches):
-            for match_id in community_matches["matches"]:
+        for community_name, matches in dict(DemoQueue.matches):
+            for match_id in matches:
                 demo = Demo(Match(
                     match_id,
-                    community_matches["community_name"]
+                    community_name
                 ))
 
                 if demo.delete:
@@ -49,9 +50,59 @@ async def demo_delete() -> None:
 
                 await sleep(5.0)
 
-            DemoQueue.matches.remove(community_matches)
+            DemoQueue.matches.pop(community_name, None)
 
         await sleep(10.0)
+
+
+async def expired_demos() -> None:
+    """Used to expire demos what are older then the max
+    life-span for a demo.
+    """
+
+    while True:
+        query = select([
+            scoreboard_total_table.c.match_id,
+            scoreboard_total_table.c.community_name
+        ]).select_from(scoreboard_total_table).where(
+            datetime.now() >= scoreboard_total_table.c.timestamp +
+            Config.demo_expires
+        )
+
+        statements = []
+        statements_append = statements.append
+        async for match in Sessions.database.iterate(query):
+            if match["community_name"] not in DemoQueue.matches:
+                DemoQueue.matches[match["community_name"]] = []
+
+            DemoQueue.matches[match["community_name"]].append(
+                match["match_id"]
+            )
+
+            statements_append(
+                and_(
+                    scoreboard_total_table.c.match_id == match["match_id"],
+                    scoreboard_total_table.c.community_name ==
+                    match["community_name"]
+                )
+            )
+
+            await (CommunityCache(
+                match["community_name"]
+            ).scoreboard(match["match_id"])).expire()
+
+        if statements:
+            await Sessions.database.execute(
+                scoreboard_total_table.update().values(
+                    status=4
+                ).where(
+                    or_(
+                        *statements
+                    )
+                )
+            )
+
+        await sleep(43200.0)
 
 
 async def match_ender() -> None:
@@ -85,6 +136,10 @@ async def match_ender() -> None:
                 )
             )
 
+            await (CommunityCache(
+                match["community_name"]
+            ).scoreboard(match["match_id"])).expire()
+
         if statements:
             await Sessions.database.execute(
                 scoreboard_total_table.update().values(
@@ -101,5 +156,6 @@ async def match_ender() -> None:
 
 TASKS_TO_SPAWN = [
     demo_delete,
-    match_ender
+    match_ender,
+    expired_demos
 ]

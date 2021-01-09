@@ -27,6 +27,7 @@ import aiofiles
 from starlette.requests import Request
 from sqlalchemy.sql import and_, select
 from typing import Any
+from datetime import datetime
 
 from backblaze.exceptions import BackblazeException
 
@@ -36,7 +37,7 @@ from backblaze.settings import PartSettings, UploadSettings
 from .community.match import Match
 from .resources import Config, Sessions
 from .settings import B2UploadSettings, LocalUploadSettings
-from .tables import scoreboard_total_table
+from .tables import scoreboard_total_table, payment_table
 
 
 class Demo:
@@ -81,8 +82,31 @@ class Demo:
             self.match.community_name
         )
 
-    async def __invalid_upload(self, total_size: float) -> bool:
-        # will be async later
+    async def __invalid_upload(self, total_size: int) -> bool:
+        """Used to see if upload size is invalid.
+
+        Parameters
+        ----------
+        total_size : int
+            Total size in bytes.
+
+        Returns
+        -------
+        bool
+            If invalid or not.
+        """
+
+        max_upload = await Sessions.database.fetch_val(select([
+            payment_table.c.max_upload
+        ]).select_from(payment_table).where(
+            and_(
+                payment_table.c.community_name == self.match.community_name,
+                payment_table.c.expires >= datetime.now()
+            )
+        ))
+
+        if max_upload:
+            return total_size > max_upload
 
         return total_size == 0 or total_size / 1000000 > Config.max_upload_size
 
