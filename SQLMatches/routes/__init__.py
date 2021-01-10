@@ -56,6 +56,7 @@ from .api.communities import (
     CommunityMatchesAPI,
     MatchesCommunitiesAPI
 )
+from .api.admin import CommunitiesAdminAPI
 from .api.profile import ProfileAPI
 
 # A bit gross, but because socketio uses singletons, we
@@ -121,6 +122,9 @@ ROUTES = [
             Route("/", CommunitiesAPI),
             Route("/matches/", CommunityMatchesAPI),
             Route("/all/", MatchesCommunitiesAPI)
+        ]),
+        Mount("/admin", routes=[
+            Route("/communities/", CommunitiesAdminAPI)
         ]),
         Route("/schema/", SchemaAPI, include_in_schema=False)
     ]),
