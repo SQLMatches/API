@@ -153,6 +153,11 @@ community_table = Table(
         default=False
     ),
     Column(
+        "banned",
+        Boolean,
+        default=False
+    ),
+    Column(
         "demos",
         Boolean,
         default=False

@@ -28,8 +28,6 @@ from starlette.requests import Request
 from webargs import fields
 from webargs_starlette import use_args
 
-from .rate_limiter import LIMITER
-
 from ...responses import response
 
 from ...communities import communities, matches
@@ -41,7 +39,6 @@ class CommunitiesAPI(HTTPEndpoint):
     @use_args({"search": fields.Str(), "page": fields.Int(),
                "desc": fields.Bool()})
     @requires("steam_login")
-    @LIMITER.limit("60/minute")
     async def post(self, request: Request, parameters: dict) -> response:
         """Used to get communities.
 
@@ -67,7 +64,6 @@ class CommunityMatchesAPI(HTTPEndpoint):
     @use_args({"search": fields.Str(), "page": fields.Int(),
                "desc": fields.Bool()})
     @requires("steam_login")
-    @LIMITER.limit("60/minute")
     async def post(self, request: Request, parameters: dict) -> response:
         """Used to get matches outside of community context.
 
@@ -90,7 +86,6 @@ class CommunityMatchesAPI(HTTPEndpoint):
 
 class MatchesCommunitiesAPI(HTTPEndpoint):
     @requires("steam_login")
-    @LIMITER.limit("60/minute")
     async def get(self, request: Request) -> response:
         """Used to get communities & matches in one response,
            ideally I'd be using GraphQL but this is the only

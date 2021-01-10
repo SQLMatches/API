@@ -29,8 +29,6 @@ from starlette.background import BackgroundTask
 from webargs import fields
 from webargs_starlette import use_args
 
-from .rate_limiter import LIMITER
-
 from ...misc import bulk_scoreboard_expire
 
 from ...community import create_community, get_community_from_owner
@@ -43,9 +41,29 @@ from ...resources import Config, Sessions
 from ...caches import CommunityCache, CommunitiesCache
 
 
+class PublicCommunityAPI(HTTPEndpoint):
+    @requires("community")
+    async def get(self, request: Request) -> response:
+        """Used to get public details on community.
+
+        Parameters
+        ----------
+        request : Request
+
+        Returns
+        -------
+        response
+        """
+
+        return response(
+            (
+                await request.state.community.public()
+            ).public_community_api_schema
+        )
+
+
 class CommunityExistsAPI(HTTPEndpoint):
     @requires("community")
-    @LIMITER.limit("30/minute")
     async def get(self, request: Request) -> response:
         """Used to check if community already exists.
 
@@ -65,7 +83,6 @@ class CommunityExistsAPI(HTTPEndpoint):
 
 class CommunityOwnerAPI(HTTPEndpoint):
     @requires("is_owner")
-    @LIMITER.limit("30/minute")
     async def get(self, request: Request) -> response:
         """Gets community details including secrets.
 
@@ -104,7 +121,6 @@ class CommunityOwnerAPI(HTTPEndpoint):
         return response(data)
 
     @requires("is_owner")
-    @LIMITER.limit("30/minute")
     async def delete(self, request: Request) -> response:
         """Used to disable a community.
 
@@ -124,7 +140,6 @@ class CommunityOwnerAPI(HTTPEndpoint):
         return response()
 
     @requires("is_owner")
-    @LIMITER.limit("10/minute")
     async def post(self, request: Request) -> response:
         """Used to regenerate a key for a community.
 
@@ -140,7 +155,6 @@ class CommunityOwnerAPI(HTTPEndpoint):
 
 class CommunityPaymentAPI(HTTPEndpoint):
     @requires("is_owner")
-    @LIMITER.limit("30/minute")
     async def get(self, request: Request) -> response:
         """Used to get all made payments.
 
@@ -172,7 +186,6 @@ class CommunityPaymentAPI(HTTPEndpoint):
 
     @use_args({"amount": fields.Float(required=True)})
     @requires("is_owner")
-    @LIMITER.limit("60/minute")
     async def post(self, request: Request, parameters: dict) -> response:
         """Used to create a subscription.
 
@@ -222,7 +235,6 @@ class CommunityCardAPI(HTTPEndpoint):
                "cvc": fields.Int(required=True),
                "name": fields.Str(required=True)})
     @requires("is_owner")
-    @LIMITER.limit("60/minute")
     async def post(self, request: Request, parameters: dict) -> response:
         """Used to add a card.
 
@@ -243,7 +255,6 @@ class CommunityCardAPI(HTTPEndpoint):
         return response({"card_id": card_id})
 
     @requires("is_owner")
-    @LIMITER.limit("60/minute")
     async def delete(self, request: Request) -> response:
         """Used to delete a card.
 
@@ -271,7 +282,6 @@ class CommunityUpdateAPI(HTTPEndpoint):
                "allow_api_access": fields.Bool(),
                "email": fields.Str(max=255)})
     @requires("is_owner")
-    @LIMITER.limit("30/minute")
     async def post(self, request: Request, parameters: dict) -> response:
         await request.state.community.update(**parameters)
 
@@ -283,7 +293,6 @@ class CommunityUpdateAPI(HTTPEndpoint):
 class CommunityOwnerMatchesAPI(HTTPEndpoint):
     @use_args({"matches": fields.List(fields.String(), required=True)})
     @requires("is_owner")
-    @LIMITER.limit("30/minute")
     async def delete(self, request: Request, parameters: dict) -> response:
         """Used to bulk delete matches.
 
@@ -319,7 +328,6 @@ class CommunityCreateAPI(HTTPEndpoint):
                "demos": fields.Bool(),
                "allow_api_access": fields.Bool()})
     @requires("steam_login")
-    @LIMITER.limit("60/minute")
     async def post(self, request: Request, parameters: dict) -> response:
         """Used to create a community.
 
@@ -360,7 +368,6 @@ class CommunityCreateAPI(HTTPEndpoint):
         ))
 
     @requires("steam_login")
-    @LIMITER.limit("60/minute")
     async def get(self, request: Request) -> response:
         """Used to valid if user owns a community.
 
@@ -374,13 +381,17 @@ class CommunityCreateAPI(HTTPEndpoint):
         """
 
         try:
-            community_name = (await get_community_from_owner(
+            community, banned = await get_community_from_owner(
                 request.session["steam_id"]
-            )).community_name
+            )
+
+            community_name = community.community_name
         except NoOwnership:
             community_name = None
+            banned = False
 
         return response({
             "community_name": community_name,
+            "banned": banned,
             "steam_id": request.session["steam_id"]
         })

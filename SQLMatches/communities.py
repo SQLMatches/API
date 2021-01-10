@@ -21,8 +21,8 @@ DEALINGS IN THE SOFTWARE.
 """
 
 
-from typing import AsyncGenerator
-from sqlalchemy.sql import select, or_
+from typing import AsyncGenerator, List
+from sqlalchemy.sql import select, or_, and_
 
 from .resources import Sessions
 
@@ -64,11 +64,15 @@ async def communities(search: str = None, page: int = 1,
         community_table.c.community_name,
         community_table.c.owner_id,
         community_table.c.timestamp,
-        community_table.c.disabled
+        community_table.c.disabled,
+        community_table.c.banned
     ]).select_from(
         community_table
     ).where(
-        community_table.c.disabled == False  # noqa: E712
+        and_(
+            community_table.c.disabled == False,  # noqa: E712
+            community_table.c.banned == False  # noqa: E712
+        )
     ).order_by(
         community_table.c.timestamp.desc() if desc
         else community_table.c.timestamp.asc()
@@ -89,6 +93,24 @@ async def communities(search: str = None, page: int = 1,
             PublicCommunityModel(**community),
             Community(community["community_name"])
         )
+
+
+async def ban_communities(communities: List[str]) -> None:
+    """Used to ban communities.
+
+    Parameters
+    ----------
+    communities : List[str]
+        List of community names.
+    """
+
+    await Sessions.database.execute(
+        community_table.update().values(
+            banned=True
+        ).where(
+            community_table.c.community_name.in_(communities)
+        )
+    )
 
 
 async def matches(search: str = None,
@@ -167,7 +189,10 @@ async def matches(search: str = None,
         )
 
     query = query.where(
-        community_table.c.disabled == False  # noqa: E712
+        and_(
+            community_table.c.disabled == False,  # noqa: E712
+            community_table.c.banned == False  # noqa: E712
+        )
     ).distinct().order_by(
         scoreboard_total_table.c.timestamp.desc() if desc
         else scoreboard_total_table.c.timestamp.asc()

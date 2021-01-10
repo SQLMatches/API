@@ -99,9 +99,13 @@ class APIAuthentication(AuthenticationBackend):
                         request.query_params["check_ownership"].lower()
                         == "true"):
                     try:
-                        community = await get_community_from_owner(
+                        community, banned = await get_community_from_owner(
                             request.session["steam_id"]
                         )
+
+                        if banned:
+                            return
+
                     except NoOwnership:
                         pass
                     else:

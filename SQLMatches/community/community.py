@@ -59,7 +59,8 @@ from .models import (
     CommunityModel,
     MatchModel,
     ProfileModel,
-    CommunityStatsModel
+    CommunityStatsModel,
+    PublicCommunityModel
 )
 
 from .match import Match
@@ -507,6 +508,35 @@ class Community(CommunityPayment):
         async for row in Sessions.database.iterate(query=query):
             yield MatchModel(**row), self.match(row["match_id"])
 
+    async def public(self) -> PublicCommunityModel:
+        """Used to get public data on a community.
+
+        Returns
+        -------
+        PublicCommunityModel
+
+        Raises
+        ------
+        InvalidCommunity
+            Raised when community ID doesn't exist.
+        """
+
+        query = select([
+            community_table.c.owner_id,
+            community_table.c.disabled,
+            community_table.c.community_name,
+            community_table.c.timestamp,
+            community_table.c.banned
+        ]).select_from(community_table).where(
+            community_table.c.community_name == self.community_name
+        )
+
+        row = await Sessions.database.fetch_one(query)
+        if row:
+            return PublicCommunityModel(**row)
+        else:
+            raise InvalidCommunity()
+
     async def get(self) -> CommunityModel:
         """Gets base community details.
 
@@ -525,6 +555,7 @@ class Community(CommunityPayment):
             api_key_table.c.api_key,
             api_key_table.c.owner_id,
             community_table.c.disabled,
+            community_table.c.banned,
             community_table.c.community_name,
             community_table.c.timestamp,
             community_table.c.allow_api_access,
@@ -537,7 +568,7 @@ class Community(CommunityPayment):
             payment_table.c.max_upload,
             payment_table.c.amount,
             payment_table.c.payment_status,
-            payment_table.c.cancelled
+            payment_table.c.cancelled,
         ]).select_from(
             community_table.join(
                 api_key_table,
@@ -561,7 +592,7 @@ class Community(CommunityPayment):
             payment_table.c.expires.desc()
         )
 
-        row = await Sessions.database.fetch_one(query=query)
+        row = await Sessions.database.fetch_one(query)
         if row:
             return CommunityModel(**row)
         else:
@@ -575,4 +606,4 @@ class Community(CommunityPayment):
             community_table.c.community_name == self.community_name
         ).values(disabled=True)
 
-        await Sessions.database.execute(query=query)
+        await Sessions.database.execute(query)

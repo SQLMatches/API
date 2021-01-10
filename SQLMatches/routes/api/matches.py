@@ -30,8 +30,6 @@ from marshmallow import Schema, validate
 from webargs import fields
 from webargs_starlette import use_args
 
-from .rate_limiter import LIMITER
-
 from ...webhook_pusher import WebhookPusher
 from ...responses import response
 from ...resources import Sessions, Config
@@ -59,7 +57,6 @@ class PlayersSchema(Schema):
 
 class MatchAPI(HTTPEndpoint):
     @requires("community")
-    @LIMITER.limit("30/minute")
     async def get(self, request: Request) -> response:
         """Used to get the scoreboard for a match.
 
@@ -100,7 +97,6 @@ class MatchAPI(HTTPEndpoint):
                "team_2_side": fields.Int(validates=validate.Range(0, 1)),
                "end": fields.Bool()})
     @requires("master")
-    @LIMITER.limit("30/minute")
     async def post(self, request: Request, parameters: dict) -> response:
         """Used to update a match.
 
@@ -156,7 +152,6 @@ class MatchAPI(HTTPEndpoint):
             )
 
     @requires("master")
-    @LIMITER.limit("30/minute")
     async def delete(self, request: Request) -> response:
         """Used to end a match.
 
@@ -217,7 +212,6 @@ class MatchesAPI(HTTPEndpoint):
     @use_args({"search": fields.Str(), "page": fields.Int(),
                "desc": fields.Bool(), "require_scoreboard": fields.Bool()})
     @requires("community")
-    @LIMITER.limit("60/minute")
     async def post(self, request: Request, parameters: dict) -> response:
         """Used to list matches.
 
@@ -264,7 +258,6 @@ class CreateMatchAPI(HTTPEndpoint):
                                           validates=validate.Range(0, 240)),
                "map_name": fields.Str(min=1, max=24, required=True)})
     @requires("master")
-    @LIMITER.limit("30/minute")
     async def post(self, request: Request, parameters: dict) -> response:
         """Used to create a match.
 
@@ -293,7 +286,6 @@ class CreateMatchAPI(HTTPEndpoint):
 
 class DemoUploadAPI(HTTPEndpoint):
     @requires("master")
-    @LIMITER.limit("30/minute")
     async def put(self, request: Request) -> response:
         """Used to upload a demo.
 

@@ -60,11 +60,12 @@ class _DepthStatsModel:
 
 class PublicCommunityModel:
     def __init__(self, owner_id: str, disabled: bool, community_name: str,
-                 timestamp: datetime) -> None:
+                 timestamp: datetime, banned: bool) -> None:
         self.owner_id = owner_id
         self.disabled = disabled
         self.community_name = community_name
         self.timestamp = timestamp
+        self.banned = banned
 
     @property
     def public_community_api_schema(self) -> dict:
@@ -73,6 +74,7 @@ class PublicCommunityModel:
             "owner_id": self.owner_id,
             "disabled": self.disabled,
             "timestamp": self.timestamp.strftime(Config.timestamp_format),
+            "banned": self.banned
         }
 
 
@@ -109,11 +111,7 @@ class CommunityModel(PublicCommunityModel):
     @property
     def community_api_schema(self) -> dict:
         return {
-            "community_name": self.community_name,
             "master_api_key": self.master_api_key,
-            "owner_id": self.owner_id,
-            "disabled": self.disabled,
-            "timestamp": self.timestamp.strftime(Config.timestamp_format),
             "max_upload": self.max_upload,
             "amount": self.amount,
             "allow_api_access": self.allow_api_access,
@@ -124,7 +122,8 @@ class CommunityModel(PublicCommunityModel):
             "card_id": self.card_id,
             "email": self.email,
             "payment_status": self.payment_status,
-            "cancelled": self.cancelled
+            "cancelled": self.cancelled,
+            **self.public_community_api_schema
         }
 
 

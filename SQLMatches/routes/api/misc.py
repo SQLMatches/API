@@ -32,8 +32,6 @@ from ...responses import error_response, response
 from ...caches import VersionCache
 from ...constants import SCHEMAS
 
-from .rate_limiter import LIMITER
-
 
 class SchemaAPI(HTTPEndpoint):
     async def get(self, request: Request):
@@ -42,7 +40,6 @@ class SchemaAPI(HTTPEndpoint):
 
 class VersionAPI(HTTPEndpoint):
     @requires("community")
-    @LIMITER.limit("60/minute")
     async def get(self, request: Request) -> response:
         """Used to get a version update message.
 

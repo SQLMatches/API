@@ -25,8 +25,6 @@ from starlette.endpoints import HTTPEndpoint
 from starlette.authentication import requires
 from starlette.requests import Request
 
-from .rate_limiter import LIMITER
-
 from ...responses import response
 
 from ...caches import CommunityCache
@@ -34,7 +32,6 @@ from ...caches import CommunityCache
 
 class ProfileAPI(HTTPEndpoint):
     @requires("community")
-    @LIMITER.limit("30/minute")
     async def get(self, request: Request) -> response:
         """Gets profile of community player.
 

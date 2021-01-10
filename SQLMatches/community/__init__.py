@@ -84,6 +84,7 @@ async def api_key_to_community(api_key: str) -> Tuple[Community, bool]:
         and_(
             api_key_table.c.api_key == api_key,
             community_table.c.disabled == False,  # noqa: E712
+            community_table.c.banned == False  # noqa: E712
         )
     ).where(
         or_(
@@ -129,8 +130,19 @@ async def stripe_customer_to_community(customer_id: str) -> Community:
     return Community(community_name)
 
 
-async def get_community_from_owner(steam_id: str) -> Community:
-    """Gets community name from owners steamID.
+async def get_community_from_owner(steam_id: str) -> Tuple[Community, bool]:
+    """[summary]
+
+    Parameters
+    ----------
+    steam_id : str
+        [description]
+
+    Returns
+    -------
+    Community
+    bool
+        If banned.
 
     Raises
     ------
@@ -139,20 +151,20 @@ async def get_community_from_owner(steam_id: str) -> Community:
     """
 
     query = select([
-        community_table.c.community_name
+        community_table.c.community_name,
+        community_table.c.banned
     ]).select_from(
         community_table
     ).where(
         and_(
             community_table.c.owner_id == steam_id,
-            community_table.c.disabled == 0
+            community_table.c.disabled == False  # noqa: E712
         )
     )
 
-    community_name = await Sessions.database.fetch_val(query=query)
-
-    if community_name:
-        return Community(community_name)
+    row = await Sessions.database.fetch_one(query)
+    if row:
+        return Community(row["community_name"]), row["banned"]
     else:
         raise NoOwnership()
 
@@ -164,7 +176,7 @@ async def owner_exists(steam_id: str) -> bool:
     query = select([func.count()]).select_from(community_table).where(
         and_(
             community_table.c.owner_id == steam_id,
-            community_table.c.disabled == 0
+            community_table.c.disabled == False  # noqa: E712
         )
     )
 
@@ -181,7 +193,8 @@ async def create_community(steam_id: str, community_name: str, email: str,
                            allow_api_access: bool = False,
                            match_start_webhook: str = None,
                            round_end_webhook: str = None,
-                           match_end_webhook: str = None
+                           match_end_webhook: str = None,
+                           banned: bool = False
                            ) -> Tuple[CommunityModel, Community]:
     """[summary]
 
@@ -204,6 +217,8 @@ async def create_community(steam_id: str, community_name: str, email: str,
         by default None
     match_end_webhook : str, optional
         by default None
+    banned : bool, optional
+        by default False
 
     Returns
     -------
@@ -257,7 +272,8 @@ async def create_community(steam_id: str, community_name: str, email: str,
         round_end_webhook=round_end_webhook,
         match_end_webhook=match_end_webhook,
         customer_id=customer.id,
-        email=email
+        email=email,
+        banned=banned
     )
 
     try:
@@ -287,5 +303,6 @@ async def create_community(steam_id: str, community_name: str, email: str,
             match_start_webhook=match_start_webhook,
             match_end_webhook=match_end_webhook,
             round_end_webhook=round_end_webhook,
-            email=email
+            email=email,
+            banned=banned
         ), Community(community_name)

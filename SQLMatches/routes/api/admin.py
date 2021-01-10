@@ -25,10 +25,38 @@ from starlette.endpoints import HTTPEndpoint
 from starlette.authentication import requires
 from starlette.requests import Request
 
+from webargs import fields
+from webargs_starlette import use_args
+
 from ...responses import response
+from ...communities import ban_communities
+from ...caches import CommunitiesCache
 
 
 class CommunitiesAdminAPI(HTTPEndpoint):
+    @use_args({"communities": fields.List(fields.String(), required=True)})
     @requires("root_login")
-    async def delete(self, request: Request) -> response:
+    async def delete(self, request: Request, parameters: dict) -> response:
+        """Used to ban communities.
+
+        Parameters
+        ----------
+        request : Request
+        parameters : dict
+
+        Returns
+        -------
+        response
+        """
+
+        await ban_communities(**parameters)
+
+        await CommunitiesCache().expire()
+
+        return response()
+
+
+class AdminAPI(HTTPEndpoint):
+    @requires("root_login")
+    async def get(self, request: Request) -> response:
         return response()
