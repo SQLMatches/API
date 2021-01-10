@@ -90,11 +90,11 @@ class MatchAPI(HTTPEndpoint):
             return response(data)
 
     @use_args({"team_1_score": fields.Int(required=True,
-                                          validates=validate.Range(0)),
+                                          validates=validate.Range(0, 240)),
                "team_2_score": fields.Int(required=True,
-                                          validates=validate.Range(0)),
+                                          validates=validate.Range(0, 240)),
                "players": fields.List(fields.Nested(PlayersSchema),
-                                      validates=validate.Length(2, 30)
+                                      validates=validate.Length(1, 30)
                                       ),
                "team_1_side": fields.Int(validates=validate.Range(0, 1)),
                "team_2_side": fields.Int(validates=validate.Range(0, 1)),
@@ -259,9 +259,9 @@ class CreateMatchAPI(HTTPEndpoint):
                "team_2_side": fields.Int(required=True,
                                          validates=validate.Range(0, 1)),
                "team_1_score": fields.Int(required=True,
-                                          validates=validate.Range(0)),
+                                          validates=validate.Range(0, 240)),
                "team_2_score": fields.Int(required=True,
-                                          validates=validate.Range(0)),
+                                          validates=validate.Range(0, 240)),
                "map_name": fields.Str(min=1, max=24, required=True)})
     @requires("master")
     @LIMITER.limit("30/minute")

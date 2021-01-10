@@ -40,14 +40,17 @@ def on_scoreboard_conflict() -> Any:
             team=query_insert.inserted.team,
             alive=query_insert.inserted.alive,
             ping=query_insert.inserted.ping,
-            kills=query_insert.inserted.kills,
-            headshots=query_insert.inserted.headshots,
-            assists=query_insert.inserted.assists,
-            deaths=query_insert.inserted.deaths,
-            shots_fired=query_insert.inserted.shots_fired,
-            shots_hit=query_insert.inserted.shots_hit,
-            mvps=query_insert.inserted.mvps,
-            score=query_insert.inserted.score,
+            kills=scoreboard_table.c.kills + query_insert.inserted.kills,
+            headshots=scoreboard_table.c.headshots +
+            query_insert.inserted.headshots,
+            assists=scoreboard_table.c.assists + query_insert.inserted.assists,
+            deaths=scoreboard_table.c.deaths + query_insert.inserted.deaths,
+            shots_fired=scoreboard_table.c.shots_fired +
+            query_insert.inserted.shots_fired,
+            shots_hit=scoreboard_table.c.shots_hit +
+            query_insert.inserted.shots_hit,
+            mvps=scoreboard_table.c.mvps + query_insert.inserted.mvps,
+            score=scoreboard_table.c.score + query_insert.inserted.score,
             disconnected=query_insert.inserted.disconnected
         )
     elif Config.db_engine == "psycopg2":
@@ -57,14 +60,19 @@ def on_scoreboard_conflict() -> Any:
                 team=query_insert.inserted.team,
                 alive=query_insert.inserted.alive,
                 ping=query_insert.inserted.ping,
-                kills=query_insert.inserted.kills,
-                headshots=query_insert.inserted.headshots,
-                assists=query_insert.inserted.assists,
-                deaths=query_insert.inserted.deaths,
-                shots_fired=query_insert.inserted.shots_fired,
-                shots_hit=query_insert.inserted.shots_hit,
-                mvps=query_insert.inserted.mvps,
-                score=query_insert.inserted.score,
+                kills=scoreboard_table.c.kills + query_insert.inserted.kills,
+                headshots=scoreboard_table.c.headshots +
+                query_insert.inserted.headshots,
+                assists=scoreboard_table.c.assists +
+                query_insert.inserted.assists,
+                deaths=scoreboard_table.c.deaths +
+                query_insert.inserted.deaths,
+                shots_fired=scoreboard_table.c.shots_fired +
+                query_insert.inserted.shots_fired,
+                shots_hit=scoreboard_table.c.shots_hit +
+                query_insert.inserted.shots_hit,
+                mvps=scoreboard_table.c.mvps + query_insert.inserted.mvps,
+                score=scoreboard_table.c.score + query_insert.inserted.score,
                 disconnected=query_insert.inserted.disconnected
             )
         )
