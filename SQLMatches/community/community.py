@@ -297,16 +297,18 @@ class Community(CommunityPayment):
             List of match IDs to delete.
         """
 
-        query = scoreboard_total_table.delete().where(
-            scoreboard_total_table.c.match_id == scoreboard_table.c.match_id
-        ).where(
-            and_(
-                scoreboard_total_table.c.community_name == self.community_name,
-                scoreboard_total_table.c.match_id.in_(matches)
+        await Sessions.database.execute(
+            scoreboard_total_table.delete().where(
+                scoreboard_total_table.c.match_id ==
+                scoreboard_table.c.match_id
+            ).where(
+                and_(
+                    scoreboard_total_table.c.community_name ==
+                    self.community_name,
+                    scoreboard_total_table.c.match_id.in_(matches)
+                )
             )
         )
-
-        await Sessions.database.execute(query)
 
         # Todo
         # Work out sqlalchemy left joining delete,
@@ -379,31 +381,6 @@ class Community(CommunityPayment):
         """
 
         return Match(match_id, self.community_name)
-
-    async def regenerate(self, old_key: str) -> str:
-        """Regenerates a API key.
-
-        Parameters
-        ----------
-        old_key : str
-            Old key to update.
-        """
-
-        key = token_urlsafe(24)
-
-        query = api_key_table.update().values(
-            api_key=key,
-            timestamp=datetime.now()
-        ).where(
-            and_(
-                api_key_table.c.community_name == self.community_name,
-                api_key_table.c.api_key == old_key
-            )
-        )
-
-        await Sessions.database.execute(query=query)
-
-        return key
 
     async def regenerate_master(self) -> str:
         """Regenerates the master API key.
