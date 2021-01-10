@@ -106,7 +106,7 @@ class Demo:
         ))
 
         if max_upload:
-            return total_size > max_upload
+            return total_size > max_upload * 1000000
 
         return total_size == 0 or total_size / 1000000 > Config.max_upload_size
 
