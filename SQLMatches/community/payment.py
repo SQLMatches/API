@@ -308,7 +308,8 @@ class CommunityPayment:
             expires=row["expires"],
             amount=row["amount"],
             receipt_url=row["receipt_url"],
-            payment_status=payment_status
+            payment_status=payment_status,
+            cancelled=False
         )
 
     async def add_card(self, number: str, exp_month: int,

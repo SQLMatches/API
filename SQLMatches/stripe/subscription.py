@@ -39,7 +39,7 @@ class Subscription:
         """
 
         return SubscriptionModel(**(
-            await self._context.__delete(
+            await self._context._delete(
                 "subscriptions/" + self.id,
                 data={
                     "invoice_now": invoice_now,
