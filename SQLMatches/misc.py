@@ -65,6 +65,7 @@ async def cache_community_types(community_types: List[str]):
 
             Config.community_types[community_type] = last_id
 
+
 def amount_to_upload_size(amount: float) -> float:
     """Used to calculate amount paid to upload size.
 
