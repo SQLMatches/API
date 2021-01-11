@@ -72,5 +72,5 @@ class CommunitiesCache(CacheBase, __MatchesCache):
 
 
 class VersionCache(CacheBase):
-    def __init__(self, version: str) -> None:
-        super().__init__("version-" + version)
+    def __init__(self, major: int, minor: int, patch: int) -> None:
+        super().__init__("version-{}-{}-{}".format(major, minor, patch))

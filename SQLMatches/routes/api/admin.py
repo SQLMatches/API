@@ -31,8 +31,9 @@ from webargs_starlette import use_args
 
 from ...responses import response
 from ...communities import ban_communities
-from ...caches import CommunitiesCache
+from ...caches import CommunitiesCache, VersionCache
 from ...misc import bulk_community_expire
+from ...version import Version
 
 
 class CommunitiesAdminAPI(HTTPEndpoint):
@@ -64,4 +65,36 @@ class CommunitiesAdminAPI(HTTPEndpoint):
 class AdminAPI(HTTPEndpoint):
     @requires("root_login")
     async def get(self, request: Request) -> response:
+        return response()
+
+    @use_args({"major": fields.Int(required=True),
+               "minor": fields.Int(required=True),
+               "patch": fields.Int(required=True),
+               "message": fields.String(min=6, max=64, required=True)})
+    @requires("root_login")
+    async def post(self, request: Request, parameters: dict) -> response:
+        """Used to create or update a message.
+
+        Parameters
+        ----------
+        request : Request
+        parameters : dict
+
+        Returns
+        -------
+        response
+        """
+
+        await Version(
+            parameters["major"],
+            parameters["minor"],
+            parameters["patch"]
+        ).save(parameters["message"])
+
+        await VersionCache(
+            parameters["major"],
+            parameters["minor"],
+            parameters["patch"]
+        ).set(parameters["message"])
+
         return response()

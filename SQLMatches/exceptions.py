@@ -196,3 +196,11 @@ class ActivePayment(SQLMatchesException):
 
     def __init__(self, msg="Active payment", *args, **kwargs):
         super().__init__(msg, *args, **kwargs)
+
+
+class InvalidVersion(SQLMatchesException):
+    """Raised when version invalid.
+    """
+
+    def __init__(self, msg="Invalid version", *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)

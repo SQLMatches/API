@@ -61,13 +61,28 @@ update_table = Table(
     "update",
     metadata,
     Column(
-        "version",
-        String(length=8),
+        "major",
+        Integer,
+        primary_key=True
+    ),
+    Column(
+        "minor",
+        Integer,
+        primary_key=True
+    ),
+    Column(
+        "patch",
+        Integer,
         primary_key=True
     ),
     Column(
         "message",
         String(length=64)
+    ),
+    PrimaryKeyConstraint(
+        "major",
+        "minor",
+        "patch"
     ),
     mysql_engine="InnoDB",
     mysql_charset="utf8mb4"

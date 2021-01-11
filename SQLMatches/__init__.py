@@ -64,8 +64,9 @@ from .background_tasks import TASKS_TO_SPAWN
 from .misc import (
     cache_community_types,
     create_product_and_set,
-    KeyLoader
 )
+
+from .key_loader import KeyLoader
 
 from .constants import MAP_IMAGES, COMMUNITY_TYPES
 

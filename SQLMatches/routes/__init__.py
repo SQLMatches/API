@@ -27,8 +27,6 @@ from starlette.routing import Route, Mount
 from starlette.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException
 
-from slowapi.errors import RateLimitExceeded
-
 from webargs_starlette import WebargsHTTPException
 
 from ..exceptions import SQLMatchesException
@@ -41,7 +39,7 @@ from .api.matches import (
     DemoUploadAPI,
     MatchesAPI
 )
-from .api.misc import VersionAPI, SchemaAPI
+from .api.misc import SchemaAPI
 from .api.community import (
     CommunityOwnerAPI,
     CommunityCreateAPI,
@@ -61,6 +59,7 @@ from .api.admin import (
     CommunitiesAdminAPI,
     AdminAPI
 )
+from .api.version import VersionAPI, VersionsAPI
 from .api.profile import ProfileAPI
 
 # A bit gross, but because socketio uses singletons, we
@@ -77,14 +76,12 @@ from .steam import SteamValidate, SteamLogin, SteamLogout
 from .errors import (
     server_error,
     payload_error,
-    rate_limted_error,
     internal_error
 )
 
 
 ERROR_HANDLERS = {
     WebargsHTTPException: payload_error,
-    RateLimitExceeded: rate_limted_error,
     HTTPException: server_error,
     SQLMatchesException: internal_error
 }
@@ -108,7 +105,10 @@ ROUTES = [
             ])
         ]),
         Route("/profile/{steam_id}/", ProfileAPI),
-        Route("/version/{version}/", VersionAPI),
+        Mount("/version", routes=[
+            Route("/{major:int}/{minor:int}/{patch:int}/", VersionAPI),
+            Route("/", VersionsAPI)
+        ]),
         Mount("/community", routes=[
             Route("/exists/", CommunityExistsAPI),
             Mount("/owner", routes=[

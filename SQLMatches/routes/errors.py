@@ -24,7 +24,6 @@ DEALINGS IN THE SOFTWARE.
 from starlette.requests import Request
 
 from webargs_starlette import WebargsHTTPException
-from slowapi.errors import RateLimitExceeded
 from starlette.exceptions import HTTPException
 
 from ..responses import error_response
@@ -57,12 +56,4 @@ def payload_error(request: Request, exc: WebargsHTTPException
         error=exc.messages,
         status_code=exc.status_code,
         headers=exc.headers
-    )
-
-
-def rate_limted_error(request: Request, exc: RateLimitExceeded
-                      ) -> error_response:
-    return error_response(
-        error="Rate limit exceeded: {}".format(exc.detail),
-        status_code=429
     )

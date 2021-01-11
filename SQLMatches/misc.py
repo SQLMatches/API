@@ -22,9 +22,6 @@ DEALINGS IN THE SOFTWARE.
 
 
 from typing import List
-from os import path
-from secrets import token_urlsafe
-from dotenv import load_dotenv, get_key, set_key
 from sqlalchemy.sql import select
 
 from .tables import (
@@ -67,30 +64,6 @@ async def cache_community_types(community_types: List[str]):
             )
 
             Config.community_types[community_type] = last_id
-
-
-class KeyLoader:
-    def __init__(self, name: str, pathway: str = None) -> None:
-        self.name = name
-        self.pathway = path.join(
-            path.dirname(path.realpath(__file__)) if not pathway else pathway,
-            ".env"
-        )
-
-        load_dotenv(self.pathway)
-
-    def load(self) -> str:
-        key = get_key(self.pathway, self.name)
-        if key:
-            return key
-
-        return self.save()
-
-    def save(self) -> str:
-        key = token_urlsafe()
-        set_key(self.pathway, self.name, key)
-        return key
-
 
 def amount_to_upload_size(amount: float) -> float:
     """Used to calculate amount paid to upload size.
@@ -148,6 +121,13 @@ async def bulk_community_expire(communities: List[str]) -> None:
 
 
 async def create_product_and_set(product_name: str) -> None:
+    """Used to create and set products.
+
+    Parameters
+    ----------
+    product_name : str
+    """
+
     product_id = await Sessions.database.fetch_val(
         select([product_table.c.product_id]).select_from(
             product_table
