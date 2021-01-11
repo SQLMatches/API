@@ -135,6 +135,18 @@ async def bulk_scoreboard_expire(community_name: str,
         await (cache.scoreboard(match)).expire()
 
 
+async def bulk_community_expire(communities: List[str]) -> None:
+    """Used to expire communities in bulk.
+
+    Parameters
+    ----------
+    communities : List[str]
+    """
+
+    for community in communities:
+        await CommunityCache(community).expire()
+
+
 async def create_product_and_set(product_name: str) -> None:
     product_id = await Sessions.database.fetch_val(
         select([product_table.c.product_id]).select_from(

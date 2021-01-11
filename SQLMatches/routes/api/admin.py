@@ -24,6 +24,7 @@ DEALINGS IN THE SOFTWARE.
 from starlette.endpoints import HTTPEndpoint
 from starlette.authentication import requires
 from starlette.requests import Request
+from starlette.background import BackgroundTask
 
 from webargs import fields
 from webargs_starlette import use_args
@@ -31,6 +32,7 @@ from webargs_starlette import use_args
 from ...responses import response
 from ...communities import ban_communities
 from ...caches import CommunitiesCache
+from ...misc import bulk_community_expire
 
 
 class CommunitiesAdminAPI(HTTPEndpoint):
@@ -53,7 +55,10 @@ class CommunitiesAdminAPI(HTTPEndpoint):
 
         await CommunitiesCache().expire()
 
-        return response()
+        return response(background=BackgroundTask(
+            bulk_community_expire,
+            **parameters
+        ))
 
 
 class AdminAPI(HTTPEndpoint):
