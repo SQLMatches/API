@@ -31,7 +31,7 @@ from webargs_starlette import use_args
 
 from ...responses import response
 from ...communities import ban_communities
-from ...caches import CommunitiesCache, VersionCache
+from ...caches import CommunitiesCache, VersionCache, VersionsCache
 from ...misc import bulk_community_expire
 from ...version import Version
 
@@ -96,5 +96,7 @@ class AdminAPI(HTTPEndpoint):
             parameters["minor"],
             parameters["patch"]
         ).set(parameters["message"])
+
+        await VersionsCache().expire()
 
         return response()

@@ -24,7 +24,7 @@ from starlette.endpoints import HTTPEndpoint
 from starlette.requests import Request
 
 from ...responses import response
-from ...caches import VersionCache
+from ...caches import VersionCache, VersionsCache
 from ...version import Version, versions
 from ...exceptions import InvalidVersion
 
@@ -76,7 +76,16 @@ class VersionsAPI(HTTPEndpoint):
         response
         """
 
-        return response([
+        cache = VersionsCache()
+        cache_get = await cache.get()
+        if cache_get:
+            return response(cache_get)
+
+        data = [
             {"message": message, "version": version}
             async for message, version, _ in versions()
-        ])
+        ]
+
+        await cache.set(data)
+
+        return response(data)
