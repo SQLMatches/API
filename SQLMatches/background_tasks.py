@@ -21,7 +21,7 @@ DEALINGS IN THE SOFTWARE.
 """
 
 from asyncio import sleep
-from sqlalchemy.sql import select, and_, or_
+from sqlalchemy.sql import select, and_, or_, func, text
 from datetime import datetime
 
 from .demos import Demo
@@ -36,7 +36,7 @@ async def demo_delete() -> None:
     """
 
     while True:
-        for community_name, matches in dict(DemoQueue.matches):
+        for community_name, matches in dict(DemoQueue.matches).items():
             for match_id in matches:
                 demo = Demo(Match(
                     match_id,
@@ -65,8 +65,11 @@ async def expired_demos() -> None:
             scoreboard_total_table.c.match_id,
             scoreboard_total_table.c.community_name
         ]).select_from(scoreboard_total_table).where(
-            datetime.now() >= scoreboard_total_table.c.timestamp +
-            Config.demo_expires
+            datetime.now() >= func.timestampadd(
+                text("DAY"),
+                Config.demo_expires.days,
+                scoreboard_total_table.c.timestamp
+            )
         )
 
         statements = []

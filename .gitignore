@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+# Demo files
+*dem.bz2
+
 # Ignoring message_ids.txt
 message_ids.txt
 
