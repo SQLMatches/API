@@ -4,6 +4,23 @@ Visit your owner panel on [SQLMatches.com](https://sqlmatches.com) under the com
 #### ✨ Help show support by starring this repo! Watch it to get notifications when updated. ✨
 ![sellout](https://tinyurl.com/y6br8dx3)
 
+## Setup
+### Hosted version
+- Visit [SQLMatches.com](https://sqlmatches.com) & follow the video.
+- Follow the setup section on the [Plugin](https://github.com/SQLMatches/Plugins#setup) repo.
+
+### Self-hosing
+- Install SQLMatches with ``pip3 install SQLMatches --upgrade``.
+- Create a file like [run.py](/run.py).
+- Set up [uvicorn](https://www.uvicorn.org/deployment/) with Starlette.
+    - I recommend running [Nginx as a reverse proxy](http://www.uvicorn.org/deployment/#running-behind-nginx).
+        - [Production Config](/nginx/production.conf)
+        - [Development Config](/nginx/development.conf)
+    - Use a UDS (UNIX domain socket) for production.
+        - e.g. `uvicorn.run(app, uds="/tmp/uvicorn.sock", log_level="warning")`
+    - SSL with [Certbot](https://certbot.eff.org/).
+- Run [run.py](/website/run.py) using PM2 or screen.
+
 ## Thanks to
 - [WardPearce](https://github.com/WardPearce) - [backblaze](https://github.com/WardPearce/backblaze) - Contributor - Maintainer
 - [encode](https://www.encode.io/) - [databases](https://www.encode.io/databases/) - [uvicorn](http://www.uvicorn.org/) - [starlette](https://www.starlette.io/)
