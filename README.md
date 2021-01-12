@@ -1,6 +1,9 @@
 # Need a larger upload size?
 Visit your owner panel on [SQLMatches.com](https://sqlmatches.com) under the community tab to increase the max upload size.
 
+#### ✨ Help show support by starring this repo! Watch it to get notifications when updated. ✨
+![sellout](https://tinyurl.com/y6br8dx3)
+
 ## Thanks to
 - [WardPearce](https://github.com/WardPearce) - [backblaze](https://github.com/WardPearce/backblaze) - Contributor - Maintainer
 - [encode](https://www.encode.io/) - [databases](https://www.encode.io/databases/) - [uvicorn](http://www.uvicorn.org/) - [starlette](https://www.starlette.io/)
