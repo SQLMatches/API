@@ -46,7 +46,7 @@ sqlmatches = SQLMatches(
     ),
     stripe_settings=StripeSettings(
         api_key="...",
-        testing=False
+        testing=True
     ),
     smtp_settings=SmtpSettings(
         hostname="127.0.0.1",
