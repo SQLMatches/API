@@ -45,8 +45,8 @@ sqlmatches = SQLMatches(
         database="sqlmatches"
     ),
     stripe_settings=StripeSettings(
-        api_key="npTQKVz6lrs4YjB2qy8oKgbp",
-        testing=True
+        api_key="...",
+        testing=False
     ),
     smtp_settings=SmtpSettings(
         hostname="127.0.0.1",
@@ -56,11 +56,14 @@ sqlmatches = SQLMatches(
     upload_settings=LocalUploadSettings(),
     friendly_url="http://localhost/api",
     root_steam_id="76561198077228213",
-    system_email="noreply@127.0.0.1"
+    system_email="noreply@127.0.0.1",
+    frontend_url="http://localhost"
 )
 
 
 class TestBase:
+    use_default_loop = True
+
     async def setUp(self) -> None:
         await sqlmatches._startup()
 

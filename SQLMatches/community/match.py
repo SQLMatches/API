@@ -25,7 +25,7 @@ from typing import Any, Dict, List
 
 from datetime import datetime
 
-from sqlalchemy.sql import select, and_
+from sqlalchemy.sql import select, and_, func
 
 from asyncio import sleep
 
@@ -122,7 +122,7 @@ class Match:
         bool
         """
 
-        query = scoreboard_total_table.count().where(
+        query = select([func.count()]).where(
             and_(
                 scoreboard_total_table.c.match_id == self.match_id,
                 scoreboard_total_table.c.community_name == self.community_name
