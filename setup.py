@@ -38,7 +38,6 @@ setup(
         "SQLMatches.routes",
         "SQLMatches.routes.api",
         "SQLMatches.user",
-        "SQLMatches.caches",
         "SQLMatches.stripe",
         "SQLMatches.templates",
         "SQLMatches.tests"
