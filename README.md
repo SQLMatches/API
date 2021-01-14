@@ -19,6 +19,7 @@ Visit your owner panel on [SQLMatches.com](https://sqlmatches.com) under the com
     - Use a UDS (UNIX domain socket) for production.
         - e.g. `uvicorn.run(app, uds="/tmp/uvicorn.sock", log_level="warning")`
     - SSL with [Certbot](https://certbot.eff.org/).
+    - Setup a SMTP server, I use [Postfix](https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-postfix-as-a-send-only-smtp-server-on-ubuntu-18-04).
     - Build the [Frontend](https://github.com/SQLMatches/Frontend) or run it in development mode.
         - If building, make sure to edit line [16](https://github.com/SQLMatches/API/blob/master/nginx/production.conf#L16) & [48](https://github.com/SQLMatches/API/blob/master/nginx/production.conf#L48) to the location of the built frontend.
 - Run [run.py](/website/run.py) using PM2 or screen.
