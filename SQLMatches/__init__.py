@@ -73,10 +73,7 @@ from .constants import MAP_IMAGES, COMMUNITY_TYPES
 
 __version__ = "0.1.0"
 __url__ = "https://github.com/WardPearce/SQLMatches"
-__description__ = """
-SQLMatches is a free & open source software built around
-giving players & communities easy access to match records & demos.
-"""
+__description__ = "SQLMatches, match & demos recorder."
 __author__ = "WardPearce"
 __author_email__ = "wardpearce@protonmail.com"
 __license__ = "GPL v3"
