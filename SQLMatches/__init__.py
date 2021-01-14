@@ -95,7 +95,7 @@ class SQLMatches(Starlette):
                      B2UploadSettings, LocalUploadSettings] = None,
                  map_images: Dict[str, str] = MAP_IMAGES,
                  upload_delay: float = 0.00001,
-                 free_upload_size: float = 50.0,
+                 free_upload_size: float = 30.0,
                  max_upload_size: float = 100.0,
                  cost_per_mb: float = 0.15,
                  timestamp_format: str = "%m/%d/%Y-%H:%M:%S",
