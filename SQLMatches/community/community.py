@@ -52,7 +52,8 @@ from ..tables import (
 
 from ..exceptions import (
     InvalidCommunity,
-    InvalidSteamID
+    InvalidSteamID,
+    NoActivePayment
 )
 
 from .models import (
@@ -599,8 +600,13 @@ class Community(CommunityPayment):
             raise InvalidCommunity()
 
     async def disable(self) -> None:
-        """Disables a community.
+        """Disables a community, tries to cancel any active subscriptions.
         """
+
+        try:
+            await self.cancel_subscription()
+        except NoActivePayment:
+            pass
 
         query = community_table.update().where(
             community_table.c.community_name == self.community_name

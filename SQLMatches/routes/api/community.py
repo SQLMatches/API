@@ -131,11 +131,13 @@ class CommunityOwnerAPI(HTTPEndpoint):
 
         await request.state.community.disable()
 
-        cache = CommunityCache(request.state.community.community_name)
-        cache_matches = cache.matches()
+        await (CommunityCache(
+            request.state.community.community_name
+        )).expire()
 
-        await cache.expire()
-        await cache_matches.expire()
+        communities_cache = CommunitiesCache()
+        await communities_cache.expire()
+        await (communities_cache.matches()).expire()
 
         return response()
 
