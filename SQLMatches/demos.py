@@ -22,6 +22,7 @@ DEALINGS IN THE SOFTWARE.
 
 
 import asyncio
+import logging
 import aiofiles
 
 from starlette.requests import Request
@@ -69,10 +70,16 @@ class Demo:
 
     @property
     def __demo_pathway(self) -> str:
-        return path.join(
+        pathway = path.join(
             Config.demo_pathway,
             self.__file_name
         )
+
+        if Config.upload_type == B2UploadSettings:
+            # Backblaze only works with '/'
+            return pathway.replace("\\", "/")
+
+        return pathway
 
     @property
     def __where_statement(self) -> Any:
@@ -96,6 +103,9 @@ class Demo:
             If invalid or not.
         """
 
+        if total_size == 0:
+            return False
+
         max_upload = await Sessions.database.fetch_val(select([
             payment_table.c.max_upload
         ]).select_from(payment_table).where(
@@ -108,7 +118,7 @@ class Demo:
         if max_upload:
             return total_size > max_upload * 1000000
 
-        return total_size == 0 or total_size / 1000000 > Config.max_upload_size
+        return total_size / 1000000 > Config.free_upload_size
 
     async def __update_value(self, **kwargs) -> None:
         await Sessions.database.execute(
@@ -148,8 +158,9 @@ class Demo:
             return False
 
         try:
-            await (Sessions.bucket.file(b2_id)).delete(self.__file_name)
-        except BackblazeException:
+            await (Sessions.bucket.file(b2_id)).delete(self.__demo_pathway)
+        except BackblazeException as error:
+            logging.warning("Backblaze failed because of\n{}".format(error))
             return False
         else:
             await self.__update_value(demo_status=4)
@@ -191,8 +202,11 @@ class Demo:
 
         assert self.request
 
+        content_type = "application/octet-stream"
+
         model, file = await Sessions.bucket.create_part(PartSettings(
-            self.__demo_pathway
+            self.__demo_pathway,
+            content_type=content_type
         ))
 
         parts = file.parts()
@@ -216,8 +230,8 @@ class Demo:
 
                 model, _ = await Sessions.bucket.upload(UploadSettings(
                     self.__demo_pathway,
-                    chunked
-                ))
+                    content_type=content_type
+                ), chunked)
 
                 await self.__update_value(b2_id=model.file_id)
 

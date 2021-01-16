@@ -21,6 +21,7 @@ DEALINGS IN THE SOFTWARE.
 """
 
 from asyncio import sleep
+import logging
 from sqlalchemy.sql import select, and_, or_, func, text
 from datetime import datetime
 
@@ -65,16 +66,23 @@ async def expired_demos() -> None:
             scoreboard_total_table.c.match_id,
             scoreboard_total_table.c.community_name
         ]).select_from(scoreboard_total_table).where(
-            datetime.now() >= func.timestampadd(
-                text("DAY"),
-                Config.demo_expires.days,
-                scoreboard_total_table.c.timestamp
+            and_(
+                datetime.now() >= func.timestampadd(
+                    text("DAY"),
+                    Config.demo_expires.days,
+                    scoreboard_total_table.c.timestamp
+                ),
+                scoreboard_total_table.c.demo_status == 2
             )
         )
 
         statements = []
         statements_append = statements.append
         async for match in Sessions.database.iterate(query):
+            logging.info("Attempting to delete demo of {}".format(
+                match["match_id"]
+            ))
+
             if match["community_name"] not in DemoQueue.matches:
                 DemoQueue.matches[match["community_name"]] = []
 
@@ -97,7 +105,7 @@ async def expired_demos() -> None:
         if statements:
             await Sessions.database.execute(
                 scoreboard_total_table.update().values(
-                    status=4
+                    demo_status=4
                 ).where(
                     or_(
                         *statements
@@ -131,6 +139,10 @@ async def match_ender() -> None:
         statements = []
         statements_append = statements.append
         async for match in Sessions.database.iterate(query):
+            logging.info("Attempting to end match {}".format(
+                match["match_id"]
+            ))
+
             statements_append(
                 and_(
                     scoreboard_total_table.c.match_id == match["match_id"],

@@ -46,6 +46,7 @@ class DownloadPage(HTTPEndpoint):
             return RedirectResponse(
                 Config.cdn_url +
                 Config.demo_pathway +
+                "/" +
                 request.path_params["match_id"] +
                 Config.demo_extension
             )

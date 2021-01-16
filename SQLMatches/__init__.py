@@ -63,7 +63,7 @@ from .background_tasks import TASKS_TO_SPAWN
 
 from .misc import (
     cache_community_types,
-    create_product_and_set,
+    create_product_and_set
 )
 
 from .key_loader import KeyLoader
@@ -71,7 +71,7 @@ from .key_loader import KeyLoader
 from .constants import MAP_IMAGES, COMMUNITY_TYPES
 
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 __url__ = "https://github.com/WardPearce/SQLMatches"
 __description__ = "SQLMatches, match & demos recorder."
 __author__ = "WardPearce"
