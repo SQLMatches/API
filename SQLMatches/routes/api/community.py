@@ -312,7 +312,7 @@ class CommunityOwnerMatchesAPI(HTTPEndpoint):
         await (cache.matches()).expire()
         await cache.expire()
 
-        await CommunitiesCache().expire()
+        await (CommunitiesCache().matches()).expire()
 
         return response(background=BackgroundTask(
             bulk_scoreboard_expire,
