@@ -309,10 +309,10 @@ class CommunityOwnerMatchesAPI(HTTPEndpoint):
         await request.state.community.delete_matches(**parameters)
 
         cache = CommunityCache(request.state.community.community_name)
-        cache_matches = cache.matches()
-
+        await (cache.matches()).expire()
         await cache.expire()
-        await cache_matches.expire()
+
+        await CommunitiesCache().expire()
 
         return response(background=BackgroundTask(
             bulk_scoreboard_expire,
