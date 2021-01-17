@@ -71,7 +71,7 @@ from .key_loader import KeyLoader
 from .constants import MAP_IMAGES, COMMUNITY_TYPES
 
 
-__version__ = "0.1.4"
+__version__ = "0.1.5"
 __url__ = "https://github.com/WardPearce/SQLMatches"
 __description__ = "SQLMatches, match & demos recorder."
 __author__ = "WardPearce"
@@ -229,7 +229,9 @@ class SQLMatches(Starlette):
         Sessions.smtp = SMTP(
             hostname=smtp_settings.hostname,
             port=smtp_settings.port,
-            use_tls=smtp_settings.use_tls
+            use_tls=smtp_settings.use_tls,
+            password=smtp_settings.password,
+            username=smtp_settings.username
         )
 
         Sessions.stripe = Stripe(

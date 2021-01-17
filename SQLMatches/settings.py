@@ -169,7 +169,8 @@ class StripeSettings:
 
 
 class SmtpSettings:
-    def __init__(self, hostname: str, port: int, use_tls: bool = True) -> None:
+    def __init__(self, hostname: str, port: int, use_tls: bool = True,
+                 username: str = None, password: str = None) -> None:
         """SMTP Connection settings.
 
         Parameters
@@ -177,8 +178,12 @@ class SmtpSettings:
         hostname : str
         port : int
         use_tls : bool, optional
+        username : str, optional
+        password : str, optional
         """
 
         self.hostname = hostname
         self.port = port
         self.use_tls = use_tls
+        self.username = username
+        self.password = password
