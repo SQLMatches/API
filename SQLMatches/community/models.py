@@ -46,7 +46,7 @@ class _DepthStatsModel:
     @property
     def hs_percentage(self) -> float:
         return (
-            round((self.kills / self.headshots) * 100, 2)
+            round((self.headshots / self.kills) * 100, 2)
             if self.kills > 0 and self.headshots > 0 else 0.00
         )
 
