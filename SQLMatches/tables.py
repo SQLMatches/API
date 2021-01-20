@@ -36,8 +36,6 @@ from sqlalchemy import (
 )
 from datetime import datetime
 
-from sqlalchemy.sql.sqltypes import Float
-
 
 metadata = MetaData()
 
