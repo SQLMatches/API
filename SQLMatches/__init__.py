@@ -94,13 +94,12 @@ class SQLMatches(Starlette):
                  upload_delay: float = 0.00001,
                  free_upload_size: float = 30.0,
                  max_upload_size: float = 100.0,
-                 cost_per_mb: float = 0.15,
                  timestamp_format: str = "%m/%d/%Y-%H:%M:%S",
                  community_types: List[str] = COMMUNITY_TYPES,
                  webhook_timeout: float = 3.0,
                  match_max_length: timedelta = timedelta(hours=3),
-                 payment_expires: timedelta = timedelta(days=31),
                  demo_expires: timedelta = timedelta(weeks=20),
+                 subscription_length: timedelta = timedelta(days=31),
                  clear_cache: bool = True,
                  **kwargs) -> None:
         """SQLMatches API.
@@ -123,8 +122,6 @@ class SQLMatches(Starlette):
             by default 50.0
         max_upload_size : float, optional
             by default 100.0
-        cost_per_mb : float, optional
-            by default 0.15
         timestamp_format : str, optional
             by default "%m/%d/%Y-%H:%M:%S"
         community_types : List[str], optional
@@ -133,8 +130,10 @@ class SQLMatches(Starlette):
             by default 3.0
         match_max_length : timedelta, optional
             by default timedelta(hours=3)
-        payment_expires : timedelta, optional
-            by default timedelta(days=31)
+        clear_cache : bool, optional
+            by default True
+        demo_expires : timedelta, optional
+            by default timedelta(weeks=20)
         """
 
         startup_tasks = [self._startup]
@@ -182,7 +181,6 @@ class SQLMatches(Starlette):
         Config.upload_delay = upload_delay
         Config.free_upload_size = free_upload_size
         Config.max_upload_size = max_upload_size
-        Config.cost_per_mb = cost_per_mb
         Config.timestamp_format = timestamp_format
         Config.root_steam_id_hashed = bcrypt.hashpw(
             root_steam_id.encode(), bcrypt.gensalt()
@@ -192,11 +190,11 @@ class SQLMatches(Starlette):
         )
         Config.webhook_timeout = webhook_timeout
         Config.match_max_length = match_max_length
-        Config.payment_expires = payment_expires
         Config.system_email = system_email
         Config.frontend_url = frontend_url
         Config.demo_expires = demo_expires
         Config.price_id = stripe_settings.price_id
+        Config.subscription_length = subscription_length
 
         self.community_types = community_types
         self.clear_cache = clear_cache

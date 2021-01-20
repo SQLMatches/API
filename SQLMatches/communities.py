@@ -39,7 +39,7 @@ from .community.models import PublicCommunityModel, MatchModel
 
 
 async def communities(search: str = None, page: int = 1,
-                      limit: int = 10, desc: bool = True
+                      limit: int = 8, desc: bool = True
                       ) -> AsyncGenerator[PublicCommunityModel, Community]:
     """Used to list communities.
 

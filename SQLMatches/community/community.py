@@ -115,7 +115,8 @@ class Community:
     async def update_subscription_expire(self) -> None:
         await Sessions.database.execute(
             community_table.update().values(
-                subscription_expires=datetime.now() + Config.payment_expires
+                subscription_expires=datetime.now() +
+                Config.subscription_length
             ).where(
                 community_table.c.community_name == self.community_name
             )

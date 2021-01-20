@@ -64,7 +64,6 @@ class Config:
     upload_delay: float
     free_upload_size: float
     max_upload_size: float
-    cost_per_mb: float
     timestamp_format: str
     root_steam_id_hashed: Any
     root_webhook_key_hashed: Any
@@ -72,8 +71,8 @@ class Config:
     community_types: Dict[str, int] = {}
     webhook_timeout: int
     match_max_length: timedelta
-    payment_expires: timedelta
     demo_expires: timedelta
+    subscription_length: timedelta
     system_email: str
     frontend_url: str
     price_id: str
