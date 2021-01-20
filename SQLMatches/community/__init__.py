@@ -196,7 +196,7 @@ async def create_community(steam_id: str, community_name: str, email: str,
                            match_end_webhook: str = None,
                            banned: bool = False
                            ) -> Tuple[CommunityModel, Community]:
-    """[summary]
+    """Used to create community.
 
     Parameters
     ----------

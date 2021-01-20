@@ -140,32 +140,23 @@ class LocalUploadSettings(__Extension):
 
 
 class StripeSettings:
-    def __init__(self, api_key: str, testing: bool = False,
-                 currency: str = "USD",
-                 product_name: str = "SQLMatches Increase Upload",
-                 receipt_url_base: str = "https://pay.stripe.com/receipts/"
-                 ) -> None:
+    def __init__(self, api_key: str, price_id: str,
+                 testing: bool = False) -> None:
         """Used to set stripe settings.
 
         Parameters
         ----------
         api_key : str
             Don't include 'sk_test_' or 'sk_live_'
+        price_id : str
+            Stripe price ID, created on dashboard.
         testing : bool, optional
             by default False
-        currency : str, optional
-            https://stripe.com/docs/currencies, by default "USD"
-        product_name : str, optional
-            by default "SQLMatches Increase Upload"
-        receipt_url_base : str, optional
-            by default "https://pay.stripe.com/receipts/"
         """
 
         self.api_key = api_key
+        self.price_id = price_id
         self.testing = testing
-        self.currency = currency
-        self.product_name = product_name
-        self.receipt_url_base = receipt_url_base
 
 
 class SmtpSettings:

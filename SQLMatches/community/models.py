@@ -85,44 +85,39 @@ class CommunityModel(PublicCommunityModel):
                  round_end_webhook: str,
                  match_end_webhook: str,
                  email: str,
-                 max_upload: float = None,
                  amount: float = None,
                  customer_id: str = None,
-                 card_id: str = None,
-                 payment_status: int = None,
                  cancelled: bool = None,
+                 subscription_expires: datetime = None,
                  **kwargs) -> None:
         super().__init__(**kwargs)
 
         self.master_api_key = api_key
-        self.max_upload = (Config.free_upload_size if not
-                           max_upload else max_upload)
         self.amount = amount if amount else 0.0
         self.allow_api_access = allow_api_access
         self.match_start_webhook = match_start_webhook
         self.round_end_webhook = round_end_webhook
         self.match_end_webhook = match_end_webhook
         self.customer_id = customer_id
-        self.card_id = card_id
         self.email = email
-        self.payment_status = payment_status
         self.cancelled = cancelled
+        self.subscription_expires = subscription_expires
 
     @property
     def community_api_schema(self) -> dict:
         return {
             "master_api_key": self.master_api_key,
-            "max_upload": self.max_upload,
             "amount": self.amount,
             "allow_api_access": self.allow_api_access,
             "match_start_webhook": self.match_start_webhook,
             "round_end_webhook": self.round_end_webhook,
             "match_end_webhook": self.match_end_webhook,
             "customer_id": self.customer_id,
-            "card_id": self.card_id,
             "email": self.email,
-            "payment_status": self.payment_status,
             "cancelled": self.cancelled,
+            "subscription_expires": self.subscription_expires.strftime(
+                Config.timestamp_format
+            ) if self.subscription_expires else None,
             **self.public_community_api_schema
         }
 
@@ -167,39 +162,6 @@ class MatchModel:
             "team_2_side": self.team_2_side,
             "cover_image": self.cover_image,
             "community_name": self.community_name
-        }
-
-
-class PaymentModel:
-    def __init__(self, payment_id: str, amount: float,
-                 timestamp: datetime.now, subscription_id: str,
-                 max_upload: float, expires: datetime.now,
-                 receipt_url: str, payment_status: int,
-                 cancelled: bool) -> None:
-        self.payment_id = payment_id
-        self.amount = amount
-        self.timestamp = timestamp
-        self.subscription_id = subscription_id
-        self.max_upload = max_upload
-        self.expires = expires
-        self.receipt_url = (Config.receipt_url_base + receipt_url if
-                            receipt_url else None)
-        self.payment_status = payment_status
-        self.cancelled = cancelled
-
-    @property
-    def payment_api_schema(self) -> dict:
-        return {
-            "payment_id": self.payment_id,
-            "amount": self.amount,
-            "timestamp": self.timestamp.strftime(Config.timestamp_format),
-            "max_upload": self.max_upload,
-            "expires": self.expires.strftime(Config.timestamp_format)
-            if self.expires else None,
-            "subscription_id": self.subscription_id,
-            "receipt_url": self.receipt_url,
-            "payment_status": self.payment_status,
-            "cancelled": self.cancelled
         }
 
 

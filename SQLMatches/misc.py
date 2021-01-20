@@ -22,13 +22,8 @@ DEALINGS IN THE SOFTWARE.
 
 
 from typing import List
-from sqlalchemy.sql import select
 
-from .tables import (
-    community_type_table,
-    product_table
-)
-from .exceptions import InvalidUploadSize
+from .tables import community_type_table
 from .resources import Sessions, Config
 from .caches import CommunityCache
 
@@ -66,33 +61,6 @@ async def cache_community_types(community_types: List[str]):
             Config.community_types[community_type] = last_id
 
 
-def amount_to_upload_size(amount: float) -> float:
-    """Used to calculate amount paid to upload size.
-
-    Parameters
-    ----------
-    amount : float
-
-    Returns
-    -------
-    float
-
-    Raises
-    ------
-    InvalidUploadSize
-    """
-
-    upload_size = round(
-        (amount / Config.cost_per_mb) + Config.free_upload_size,
-        2
-    )
-
-    if upload_size > Config.max_upload_size or upload_size < 1:
-        raise InvalidUploadSize()
-
-    return upload_size
-
-
 async def bulk_scoreboard_expire(community_name: str,
                                  matches: List[str]) -> None:
     """Used to expire multiple scoreboards.
@@ -119,34 +87,3 @@ async def bulk_community_expire(communities: List[str]) -> None:
 
     for community in communities:
         await CommunityCache(community).expire()
-
-
-async def create_product_and_set(product_name: str) -> None:
-    """Used to create and set products.
-
-    Parameters
-    ----------
-    product_name : str
-    """
-
-    product_id = await Sessions.database.fetch_val(
-        select([product_table.c.product_id]).select_from(
-            product_table
-        ).where(
-            product_table.c.name == product_name
-        )
-    )
-
-    if product_id:
-        Config.product_id = product_id
-    else:
-        data = await Sessions.stripe.create_product(name=product_name)
-
-        await Sessions.database.execute(
-            product_table.insert().values(
-                product_id=data.id,
-                name=product_name
-            )
-        )
-
-        Config.product_id = data.id

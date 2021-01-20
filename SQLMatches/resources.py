@@ -76,9 +76,7 @@ class Config:
     demo_expires: timedelta
     system_email: str
     frontend_url: str
-    currency: str
-    product_id: str
-    receipt_url_base: str
+    price_id: str
 
 
 class DemoQueue:

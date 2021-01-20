@@ -25,7 +25,7 @@ from typing import Tuple
 
 from .card import Card
 
-from .models import SubscriptionModel, CardModel
+from .models import SubscriptionModel, CardModel, SessionModel
 from .subscription import Subscription
 
 
@@ -152,3 +152,65 @@ class Customer:
         )
 
         return CardModel(**data), self.card(data["id"])
+
+    async def create_billing_session(self, return_url: str) -> SessionModel:
+        """Used to create a billing session.
+
+        Parameters
+        ----------
+        return_url : str
+
+        Returns
+        -------
+        SessionModel
+        """
+
+        data = await self._context._post(
+            "billing_portal/sessions",
+            data={
+                "customer": self.id,
+                "return_url": return_url
+            }
+        )
+
+        return SessionModel(**data)
+
+    async def create_checkout_session(self, cancel_url: str, success_url: str,
+                                      price_id: str,
+                                      payment_method_types: str = "card",
+                                      mode: str = "subscription",
+                                      quantity: int = 1) -> str:
+        """Used to create a checkout session.
+
+        Parameters
+        ----------
+        cancel_url : str
+        success_url : str
+        price_id : str
+        payment_method_types : str, optional
+            by default "card"
+        mode : str, optional
+            by default "subscription"
+        quantity : int, optional
+            by default 1
+
+        Returns
+        -------
+        str
+            Checkout session ID.
+        """
+
+        data = await self._context._post(
+            "checkout/sessions",
+            data={
+                "cancel_url": cancel_url,
+                "success_url": success_url,
+                "line_items[0][price]": price_id,
+                "line_items[0][quantity]": quantity,
+                "payment_method_types[0]": payment_method_types,
+                "mode": mode,
+                "customer": self.id
+            }
+        )
+
+        return data["id"]

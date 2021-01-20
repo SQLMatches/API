@@ -45,10 +45,9 @@ from .api.community import (
     CommunityCreateAPI,
     CommunityOwnerMatchesAPI,
     CommunityUpdateAPI,
-    CommunityPaymentAPI,
-    CommunityCardAPI,
     CommunityExistsAPI,
-    PublicCommunityAPI
+    PublicCommunityAPI,
+    CommunitySessionAPI
 )
 from .api.communities import (
     CommunitiesAPI,
@@ -115,10 +114,7 @@ ROUTES = [
                 Route("/", CommunityOwnerAPI),
                 Route("/matches/", CommunityOwnerMatchesAPI),
                 Route("/update/", CommunityUpdateAPI),
-                Mount("/payments", routes=[
-                    Route("/", CommunityPaymentAPI),
-                    Route("/card/", CommunityCardAPI)
-                ])
+                Route("/stripe-session/", CommunitySessionAPI)
             ]),
             Route("/public/", PublicCommunityAPI),
             Route("/", CommunityCreateAPI),

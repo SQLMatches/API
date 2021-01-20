@@ -42,21 +42,6 @@ from sqlalchemy.sql.sqltypes import Float
 metadata = MetaData()
 
 
-product_table = Table(
-    "product",
-    metadata,
-    Column(
-        "product_id",
-        String(length=27),
-        primary_key=True
-    ),
-    Column(
-        "name",
-        String(length=255)
-    )
-)
-
-
 update_table = Table(
     "update",
     metadata,
@@ -139,12 +124,12 @@ community_table = Table(
         String(length=27)
     ),
     Column(
-        "email",
-        String(length=255)
+        "subscription_expires",
+        TIMESTAMP
     ),
     Column(
-        "card_id",
-        String(length=30)
+        "email",
+        String(length=255)
     ),
     Column(
         "owner_id",
@@ -198,63 +183,6 @@ community_table = Table(
     ),
     mysql_engine="InnoDB",
     mysql_charset="utf8mb4"
-)
-
-# Payment status codes
-# 0 - Awaiting payment
-# 1 - Paid
-# 2 - Payment failed
-payment_table = Table(
-    "payment",
-    metadata,
-    Column(
-        "community_name",
-        String(length=32),
-        ForeignKey("community.community_name"),
-        primary_key=True
-    ),
-    Column(
-        "payment_id",
-        String(length=36),
-        primary_key=True
-    ),
-    Column(
-        "subscription_id",
-        String(length=27)
-    ),
-    Column(
-        "max_upload",
-        Float
-    ),
-    Column(
-        "timestamp",
-        TIMESTAMP,
-        default=datetime.now
-    ),
-    Column(
-        "cancelled",
-        Boolean
-    ),
-    Column(
-        "expires",
-        TIMESTAMP,
-    ),
-    Column(
-        "amount",
-        Float
-    ),
-    Column(
-        "payment_status",
-        Integer
-    ),
-    Column(
-        "receipt_url",
-        String(length=150)
-    ),
-    PrimaryKeyConstraint(
-        "payment_id",
-        "community_name"
-    ),
 )
 
 

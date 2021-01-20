@@ -536,3 +536,23 @@ class SubscriptionModel:
         self.transfer_data = transfer_data
         self.trial_end = trial_end
         self.trial_start = trial_start
+
+
+class SessionModel:
+    id: str
+    object: str
+    created: int
+    customer: str
+    livemode: bool
+    return_url: str
+    url: str
+
+    def __init__(self, id: str, object: str, created: int, customer: str,
+                 livemode: bool, return_url: str, url: str) -> None:
+        self.id = id
+        self.object = object
+        self.created = created
+        self.customer = customer
+        self.livemode = livemode
+        self.return_url = return_url
+        self.url = url

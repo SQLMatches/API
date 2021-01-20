@@ -126,35 +126,11 @@ class UserExists(SQLMatchesException):
         super().__init__(msg, *args, **kwargs)
 
 
-class InvalidUploadSize(SQLMatchesException):
-    """Raised when upload size is incorrect.
-    """
-
-    def __init__(self, msg="Must be between 50 & 100 MB", *args, **kwargs):
-        super().__init__(msg, *args, **kwargs)
-
-
 class InvalidWebhook(SQLMatchesException):
     """Raised when webhook URL is invalid.
     """
 
     def __init__(self, msg="Invalid webhook url", *args, **kwargs):
-        super().__init__(msg, *args, **kwargs)
-
-
-class InvalidPaymentID(SQLMatchesException):
-    """Raised when Payment ID is incorrect.
-    """
-
-    def __init__(self, msg="Invalid payment ID", *args, **kwargs):
-        super().__init__(msg, *args, **kwargs)
-
-
-class InvalidCard(SQLMatchesException):
-    """Raised when card is invalid.
-    """
-
-    def __init__(self, msg="Invalid card ID", *args, **kwargs):
         super().__init__(msg, *args, **kwargs)
 
 
@@ -171,30 +147,6 @@ class InvalidCustomer(SQLMatchesException):
     """
 
     def __init__(self, msg="Invalid stripe customer ID", *args, **kwargs):
-        super().__init__(msg, *args, **kwargs)
-
-
-class NoActivePayment(SQLMatchesException):
-    """Raised when no active payment.
-    """
-
-    def __init__(self, msg="No active payment", *args, **kwargs):
-        super().__init__(msg, *args, **kwargs)
-
-
-class NoPendingPayment(SQLMatchesException):
-    """Raised when no pending payment.
-    """
-
-    def __init__(self, msg="No pending payment", *args, **kwargs):
-        super().__init__(msg, *args, **kwargs)
-
-
-class ActivePayment(SQLMatchesException):
-    """Raised when active payment.
-    """
-
-    def __init__(self, msg="Active payment", *args, **kwargs):
         super().__init__(msg, *args, **kwargs)
 
 

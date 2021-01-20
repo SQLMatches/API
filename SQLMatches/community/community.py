@@ -46,14 +46,12 @@ from ..tables import (
     scoreboard_table,
     user_table,
     api_key_table,
-    statistic_table,
-    payment_table
+    statistic_table
 )
 
 from ..exceptions import (
     InvalidCommunity,
-    InvalidSteamID,
-    NoActivePayment
+    InvalidSteamID
 )
 
 from .models import (
@@ -65,10 +63,9 @@ from .models import (
 )
 
 from .match import Match
-from .payment import CommunityPayment
 
 
-class Community(CommunityPayment):
+class Community:
     def __init__(self, community_name: str) -> str:
         """Handles community interactions.
 
@@ -114,6 +111,60 @@ class Community(CommunityPayment):
         )
 
         await Sessions.smtp.send_message(message)
+
+    async def update_subscription_expire(self) -> None:
+        await Sessions.database.execute(
+            community_table.update().values(
+                subscription_expires=datetime.now() + Config.payment_expires
+            ).where(
+                community_table.c.community_name == self.community_name
+            )
+        )
+
+    async def billing_session(self) -> str:
+        """Used to get a billing session.
+
+        Returns
+        -------
+        str
+        """
+
+        league = await self.get()
+
+        billing = await (
+            Sessions.stripe.customer(league.customer_id)
+        ).create_billing_session(
+            "{}c/{}/owner".format(
+                Config.frontend_url,
+                league.community_name
+            )
+        )
+
+        return billing.url
+
+    async def checkout_session(self) -> str:
+        """Used to get a checkout session.
+
+        Returns
+        -------
+        str
+            Session ID.
+        """
+
+        league = await self.get()
+
+        owner_url = "{}c/{}/owner/".format(
+            Config.frontend_url,
+            league.community_name
+        )
+
+        return await (
+            Sessions.stripe.customer(league.customer_id)
+        ).create_checkout_session(
+            cancel_url=owner_url + "cancel",
+            success_url=owner_url + "success",
+            price_id=Config.price_id
+        )
 
     @validate_webhooks
     @validate_community_type
@@ -565,32 +616,18 @@ class Community(CommunityPayment):
             community_table.c.match_end_webhook,
             community_table.c.customer_id,
             community_table.c.email,
-            community_table.c.card_id,
-            payment_table.c.max_upload,
-            payment_table.c.amount,
-            payment_table.c.payment_status,
-            payment_table.c.cancelled,
+            community_table.c.subscription_expires
         ]).select_from(
             community_table.join(
                 api_key_table,
                 community_table.c.community_name ==
                 api_key_table.c.community_name
-            ).join(
-                payment_table,
-                and_(
-                    community_table.c.community_name ==
-                    payment_table.c.community_name,
-                    payment_table.c.expires >= datetime.now()
-                ),
-                isouter=True
             )
         ).where(
             and_(
                 community_table.c.community_name == self.community_name,
                 api_key_table.c.master == True  # noqa: E712
             )
-        ).order_by(
-            payment_table.c.expires.desc()
         )
 
         row = await Sessions.database.fetch_one(query)
@@ -600,13 +637,8 @@ class Community(CommunityPayment):
             raise InvalidCommunity()
 
     async def disable(self) -> None:
-        """Disables a community, tries to cancel any active subscriptions.
+        """Disables a community.
         """
-
-        try:
-            await self.cancel_subscription()
-        except NoActivePayment:
-            pass
 
         query = community_table.update().where(
             community_table.c.community_name == self.community_name

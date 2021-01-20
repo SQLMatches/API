@@ -41,7 +41,8 @@ app = SQLMatches(
     ),
     stripe_settings=StripeSettings(
         api_key="...",
-        testing=False
+        testing=False,
+        price_id="..."
     ),
     smtp_settings=SmtpSettings(
         hostname="127.0.0.1",

@@ -319,8 +319,8 @@ class DemoUploadAPI(HTTPEndpoint):
                     request.state.community.email,
                     title="SQLMatches.com, upload failed.",
                     content=("""A upload for a demo failed due to it
-                    being too large. Go to the owner panel to increase
-                    your max upload size!"""),
+                    being too large. Visit the owner panel to
+                    increase this!"""),
                     link_href=(
                         Config.frontend_url + "c/{}/owner#tab2".format(
                             match.community_name

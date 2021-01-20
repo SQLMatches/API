@@ -26,7 +26,7 @@ import logging
 import aiofiles
 
 from starlette.requests import Request
-from sqlalchemy.sql import and_, select
+from sqlalchemy.sql import and_, select, func
 from typing import Any
 from datetime import datetime
 
@@ -38,7 +38,7 @@ from backblaze.settings import PartSettings, UploadSettings
 from .community.match import Match
 from .resources import Config, Sessions
 from .settings import B2UploadSettings, LocalUploadSettings
-from .tables import scoreboard_total_table, payment_table
+from .tables import scoreboard_total_table, community_table
 
 
 class Demo:
@@ -106,19 +106,22 @@ class Demo:
         if total_size == 0:
             return False
 
-        max_upload = await Sessions.database.fetch_val(select([
-            payment_table.c.max_upload
-        ]).select_from(payment_table).where(
-            and_(
-                payment_table.c.community_name == self.match.community_name,
-                payment_table.c.expires >= datetime.now()
+        allow_max_upload = bool(await Sessions.database.fetch_val(
+            select([func.count()]).select_from(community_table).where(
+                and_(
+                    community_table.c.community_name ==
+                    self.match.community_name,
+                    community_table.c.subscription_expires >= datetime.now()
+                )
             )
         ))
 
-        if max_upload:
-            return total_size > max_upload * 1000000
+        size_in_mb = total_size / 1000000
 
-        return total_size / 1000000 > Config.free_upload_size
+        return (
+            size_in_mb > Config.max_upload_size if allow_max_upload
+            else size_in_mb > Config.free_upload_size
+        )
 
     async def __update_value(self, **kwargs) -> None:
         await Sessions.database.execute(

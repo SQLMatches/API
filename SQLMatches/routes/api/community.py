@@ -81,6 +81,20 @@ class CommunityExistsAPI(HTTPEndpoint):
         })
 
 
+class CommunitySessionAPI(HTTPEndpoint):
+    @requires("is_owner")
+    async def get(self, request: Request) -> response:
+        return response({
+            "url": await request.state.community.billing_session()
+        })
+
+    @requires("is_owner")
+    async def post(self, request: Request) -> response:
+        return response({
+            "session_id": await request.state.community.checkout_session()
+        })
+
+
 class CommunityOwnerAPI(HTTPEndpoint):
     @requires("is_owner")
     async def get(self, request: Request) -> response:
@@ -153,127 +167,6 @@ class CommunityOwnerAPI(HTTPEndpoint):
         return response({
             "master_api_key": await request.state.community.regenerate_master()
         })
-
-
-class CommunityPaymentAPI(HTTPEndpoint):
-    @requires("is_owner")
-    async def get(self, request: Request) -> response:
-        """Used to get all made payments.
-
-        Parameters
-        ----------
-        request : Request
-
-        Returns
-        -------
-        response
-        """
-
-        cache = CommunityCache(
-            request.state.community.community_name
-        ).payments()
-        cache_get = await cache.get()
-
-        if cache_get:
-            return response(cache_get)
-
-        data = [
-            payment.payment_api_schema async for payment in
-            request.state.community.payments()
-        ]
-
-        await cache.set(data)
-
-        return response(data)
-
-    @use_args({"amount": fields.Float(required=True)})
-    @requires("is_owner")
-    async def post(self, request: Request, parameters: dict) -> response:
-        """Used to create a subscription.
-
-        Parameters
-        ----------
-        request : Request
-        parameters : dict
-
-        Returns
-        -------
-        response
-        """
-
-        payment_id = await request.state.community.create_payment(
-            parameters["amount"]
-        )
-
-        await (CommunityCache(request.state.community.community_name)).expire()
-
-        return response({"payment_id": payment_id})
-
-    @requires("is_owner")
-    async def delete(self, request: Request) -> response:
-        """Used to cancel a subscription, subscription will be active
-        until end of date.
-
-        Parameters
-        ----------
-        request : Request
-
-        Returns
-        -------
-        response
-        """
-
-        await request.state.community.cancel_subscription()
-
-        await (CommunityCache(request.state.community.community_name)).expire()
-
-        return response()
-
-
-class CommunityCardAPI(HTTPEndpoint):
-    @use_args({"number": fields.Str(required=True),
-               "exp_month": fields.Int(required=True),
-               "exp_year": fields.Int(required=True),
-               "cvc": fields.Int(required=True),
-               "name": fields.Str(required=True)})
-    @requires("is_owner")
-    async def post(self, request: Request, parameters: dict) -> response:
-        """Used to add a card.
-
-        Parameters
-        ----------
-        request : Request
-        parameters : dict
-
-        Returns
-        -------
-        response
-        """
-
-        card_id = await request.state.community.add_card(**parameters)
-
-        await (CommunityCache(request.state.community.community_name)).expire()
-
-        return response({"card_id": card_id})
-
-    @requires("is_owner")
-    async def delete(self, request: Request) -> response:
-        """Used to delete a card.
-
-        Parameters
-        ----------
-        request : Request
-
-        Returns
-        -------
-        response
-        """
-
-        await request.state.community.delete_card()
-
-        await (CommunityCache(request.state.community.community_name)).expire()
-
-        return response()
 
 
 class CommunityUpdateAPI(HTTPEndpoint):

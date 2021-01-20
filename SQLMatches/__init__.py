@@ -61,17 +61,14 @@ from .routes.errors import auth_error
 
 from .background_tasks import TASKS_TO_SPAWN
 
-from .misc import (
-    cache_community_types,
-    create_product_and_set
-)
+from .misc import cache_community_types
 
 from .key_loader import KeyLoader
 
 from .constants import MAP_IMAGES, COMMUNITY_TYPES
 
 
-__version__ = "0.1.6"
+__version__ = "0.2.0"
 __url__ = "https://github.com/WardPearce/SQLMatches"
 __description__ = "SQLMatches, match & demos recorder."
 __author__ = "WardPearce"
@@ -198,13 +195,11 @@ class SQLMatches(Starlette):
         Config.payment_expires = payment_expires
         Config.system_email = system_email
         Config.frontend_url = frontend_url
-        Config.currency = stripe_settings.currency
-        Config.receipt_url_base = stripe_settings.receipt_url_base
         Config.demo_expires = demo_expires
+        Config.price_id = stripe_settings.price_id
 
         self.community_types = community_types
         self.clear_cache = clear_cache
-        self.product_name = stripe_settings.product_name
 
         database_url = "://{}:{}@{}:{}/{}?charset=utf8mb4".format(
             database_settings.username,
@@ -317,7 +312,6 @@ class SQLMatches(Starlette):
             await self.background_tasks.spawn(to_spawn())
 
         await cache_community_types(self.community_types)
-        await create_product_and_set(self.product_name)
 
     async def _shutdown(self) -> None:
         """Closes any underlying sessions.
