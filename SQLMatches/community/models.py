@@ -60,12 +60,14 @@ class _DepthStatsModel:
 
 class PublicCommunityModel:
     def __init__(self, owner_id: str, disabled: bool, community_name: str,
-                 timestamp: datetime, banned: bool) -> None:
+                 timestamp: datetime, banned: bool,
+                 allow_api_access: bool) -> None:
         self.owner_id = owner_id
         self.disabled = disabled
         self.community_name = community_name
         self.timestamp = timestamp
         self.banned = banned
+        self.allow_api_access = allow_api_access
 
     @property
     def public_community_api_schema(self) -> dict:
@@ -74,13 +76,13 @@ class PublicCommunityModel:
             "owner_id": self.owner_id,
             "disabled": self.disabled,
             "timestamp": self.timestamp.strftime(Config.timestamp_format),
-            "banned": self.banned
+            "banned": self.banned,
+            "allow_api_access": self.allow_api_access
         }
 
 
 class CommunityModel(PublicCommunityModel):
-    def __init__(self, allow_api_access: bool,
-                 api_key: str,
+    def __init__(self, api_key: str,
                  match_start_webhook: str,
                  round_end_webhook: str,
                  match_end_webhook: str,
@@ -94,7 +96,6 @@ class CommunityModel(PublicCommunityModel):
 
         self.master_api_key = api_key
         self.amount = amount if amount else 0.0
-        self.allow_api_access = allow_api_access
         self.match_start_webhook = match_start_webhook
         self.round_end_webhook = round_end_webhook
         self.match_end_webhook = match_end_webhook
@@ -108,7 +109,6 @@ class CommunityModel(PublicCommunityModel):
         return {
             "master_api_key": self.master_api_key,
             "amount": self.amount,
-            "allow_api_access": self.allow_api_access,
             "match_start_webhook": self.match_start_webhook,
             "round_end_webhook": self.round_end_webhook,
             "match_end_webhook": self.match_end_webhook,

@@ -46,6 +46,7 @@ sqlmatches = SQLMatches(
     ),
     stripe_settings=StripeSettings(
         api_key="...",
+        price_id="...",
         testing=True
     ),
     smtp_settings=SmtpSettings(

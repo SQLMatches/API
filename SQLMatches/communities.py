@@ -65,7 +65,8 @@ async def communities(search: str = None, page: int = 1,
         community_table.c.owner_id,
         community_table.c.timestamp,
         community_table.c.disabled,
-        community_table.c.banned
+        community_table.c.banned,
+        community_table.c.allow_api_access
     ]).select_from(
         community_table
     ).where(

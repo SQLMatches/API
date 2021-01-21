@@ -49,6 +49,7 @@ from .api.community import (
     PublicCommunityAPI,
     CommunitySessionAPI
 )
+from .api.key import KeyAPI
 from .api.communities import (
     CommunitiesAPI,
     CommunityMatchesAPI,
@@ -116,6 +117,7 @@ ROUTES = [
                 Route("/update/", CommunityUpdateAPI),
                 Route("/stripe-session/", CommunitySessionAPI)
             ]),
+            Route("/key/", KeyAPI),
             Route("/public/", PublicCommunityAPI),
             Route("/", CommunityCreateAPI),
         ]),

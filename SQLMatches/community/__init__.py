@@ -89,7 +89,7 @@ async def api_key_to_community(api_key: str) -> Tuple[Community, bool]:
     ).where(
         or_(
             api_key_table.c.master == True,  # noqa: E712
-            community_table.c.allow_api_access == True,  # noqa: E712
+            community_table.c.allow_api_access == True  # noqa: E712
         )
     )
 

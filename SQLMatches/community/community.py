@@ -51,7 +51,8 @@ from ..tables import (
 
 from ..exceptions import (
     InvalidCommunity,
-    InvalidSteamID
+    InvalidSteamID,
+    UserExists
 )
 
 from .models import (
@@ -62,6 +63,9 @@ from .models import (
     PublicCommunityModel
 )
 
+from ..user import create_user
+
+from .key import Key
 from .match import Match
 
 
@@ -436,6 +440,81 @@ class Community:
 
         return Match(match_id, self.community_name)
 
+    def key(self, api_key: str) -> Key:
+        """Used to interact with key.
+
+        Parameters
+        ----------
+        api_key : str
+
+        Returns
+        -------
+        Key
+        """
+
+        return Key(api_key, self.community_name)
+
+    async def user_to_key(self, steam_id: str) -> Tuple[str, Key]:
+        """Used to get a API key from a steam ID.
+
+        Parameters
+        ----------
+        steam_id : str
+
+        Returns
+        -------
+        str
+            The API key.
+        Key
+        """
+
+        key = await Sessions.database.fetch_val(
+            select([api_key_table.c.api_key]).select_from(
+                api_key_table
+            ).where(
+                and_(
+                    api_key_table.c.community_name == self.community_name,
+                    api_key_table.c.owner_id == steam_id,
+                    api_key_table.c.master == False  # noqa: E712
+                )
+            )
+        )
+
+        return key, self.key(key)
+
+    async def create_key(self, steam_id: str) -> Tuple[str, Key]:
+        """Used to create a API key for a user.
+
+        Parameters
+        ----------
+        steam_id : str
+
+        Returns
+        -------
+        str
+            The API key.
+        Key
+        """
+
+        key = token_urlsafe(24)
+
+        try:
+            await create_user(steam_id, "Unknown")
+        except UserExists:
+            pass
+
+        await Sessions.database.execute(
+            api_key_table.insert().values(
+                api_key=key,
+                owner_id=steam_id,
+                timestamp=datetime.now(),
+                community_name=self.community_name,
+                master=False
+            )
+        )
+
+        return key, self.key(key)
+
     async def regenerate_master(self) -> str:
         """Regenerates the master API key.
         """
@@ -579,7 +658,8 @@ class Community:
             community_table.c.disabled,
             community_table.c.community_name,
             community_table.c.timestamp,
-            community_table.c.banned
+            community_table.c.banned,
+            community_table.c.allow_api_access
         ]).select_from(community_table).where(
             community_table.c.community_name == self.community_name
         )
