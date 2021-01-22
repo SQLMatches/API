@@ -1,5 +1,7 @@
-# Need a larger upload size?
-Visit your owner panel on [SQLMatches.com](https://sqlmatches.com) under the community tab to increase the max upload size.
+# Help support SQLMatches development & hosting
+- [Subscribe](https://sqlmatches.com/) to SQLMatches on the 'Owner Panel' under the 'Subscriptions / Billing' tab.
+- [Donate via PayPal](https://www.paypal.com/donate?hosted_button_id=ZGS5RJ9FC94GQ)
+
 
 #### ✨ Help show support by starring this repo! Watch it to get notifications when updated. ✨
 ![sellout](https://tinyurl.com/y6br8dx3)
