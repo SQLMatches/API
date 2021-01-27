@@ -79,3 +79,13 @@ class VersionCache(CacheBase):
 class VersionsCache(CacheBase):
     def __init__(self, key: str = "versions") -> None:
         super().__init__(key)
+
+
+class ServerCache(CacheBase):
+    def __init__(self, ip: str, port: int) -> None:
+        super().__init__("{}-{}".format(ip, port))
+
+
+class ServersCache(CacheBase):
+    def __init__(self, key: str = "servers") -> None:
+        super().__init__(key)

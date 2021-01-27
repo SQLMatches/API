@@ -156,3 +156,19 @@ class InvalidVersion(SQLMatchesException):
 
     def __init__(self, msg="Invalid version", *args, **kwargs):
         super().__init__(msg, *args, **kwargs)
+
+
+class ServerExists(SQLMatchesException):
+    """Raised when server already exists.
+    """
+
+    def __init__(self, msg="Server exists", *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)
+
+
+class InvalidServer(SQLMatchesException):
+    """Raised when server doesn't exists.
+    """
+
+    def __init__(self, msg="Invalid server", *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)

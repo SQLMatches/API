@@ -184,6 +184,49 @@ community_table = Table(
 )
 
 
+server_table = Table(
+    "server",
+    metadata,
+    Column(
+        "community_name",
+        String(length=32),
+        ForeignKey("community.community_name"),
+        primary_key=True
+    ),
+    Column(
+        "ip",
+        String(length=15),
+        primary_key=True
+    ),
+    Column(
+        "port",
+        Integer,
+        primary_key=True
+    ),
+    Column(
+        "name",
+        String(length=64)
+    ),
+    Column(
+        "players",
+        Integer,
+        default=0
+    ),
+    Column(
+        "max_players",
+        Integer,
+        default=0
+    ),
+    PrimaryKeyConstraint(
+        "community_name",
+        "ip",
+        "port"
+    ),
+    mysql_engine="InnoDB",
+    mysql_charset="utf8mb4"
+)
+
+
 statistic_table = Table(
     "statistic",
     metadata,

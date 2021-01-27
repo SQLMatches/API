@@ -284,3 +284,26 @@ class CommunityStatsModel:
             "stored_demos": self.stored_demos,
             "total_users": self.total_users
         }
+
+
+class ServerModel:
+    def __init__(self, community_name: str, ip: str,
+                 port: int, name: str, players: int,
+                 max_players: int) -> None:
+        self.community_name = community_name
+        self.ip = ip
+        self.port = port
+        self.name = name
+        self.players = players
+        self.max_players = max_players
+
+    @property
+    def api_schema(self) -> dict:
+        return {
+            "community_name": self.community_name,
+            "name": self.name,
+            "players": self.players,
+            "max_players": self.max_players,
+            "ip": self.ip,
+            "port": self.port
+        }

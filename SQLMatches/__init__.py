@@ -68,7 +68,7 @@ from .key_loader import KeyLoader
 from .constants import MAP_IMAGES, COMMUNITY_TYPES
 
 
-__version__ = "0.2.3"
+__version__ = "0.3.0"
 __url__ = "https://github.com/WardPearce/SQLMatches"
 __description__ = "SQLMatches, match & demos recorder."
 __author__ = "WardPearce"

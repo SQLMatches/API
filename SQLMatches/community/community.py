@@ -46,13 +46,15 @@ from ..tables import (
     scoreboard_table,
     user_table,
     api_key_table,
-    statistic_table
+    statistic_table,
+    server_table
 )
 
 from ..exceptions import (
     InvalidCommunity,
     InvalidSteamID,
-    UserExists
+    UserExists,
+    ServerExists
 )
 
 from .models import (
@@ -67,6 +69,7 @@ from ..user import create_user
 
 from .key import Key
 from .match import Match
+from .server import Server
 
 
 class Community:
@@ -80,6 +83,54 @@ class Community:
         """
 
         self.community_name = community_name
+
+    async def create_server(self, ip: str, port: int, name: str) -> Server:
+        """Used to create server.
+
+        Parameters
+        ----------
+        ip : str
+        port : int
+        name : str
+
+        Returns
+        -------
+        Server
+
+        Raises
+        ------
+        ServerExists
+        """
+
+        try:
+            await Sessions.database.execute(
+                server_table.insert().values(
+                  ip=ip,
+                  port=port,
+                  name=name,
+                  players=0,
+                  max_players=0
+                )
+            )
+        except Exception:
+            raise ServerExists()
+        else:
+            return self.server(ip, port)
+
+    def server(self, ip: str, port: int) -> Server:
+        """Used to interact with a server.
+
+        Parameters
+        ----------
+        ip : str
+        port : int
+
+        Returns
+        -------
+        Server
+        """
+
+        return Server(ip, port, self.community_name)
 
     async def email(self, title: str, content: str,
                     link_href: str, link_text: str) -> None:

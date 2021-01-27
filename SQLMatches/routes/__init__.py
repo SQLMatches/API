@@ -61,6 +61,7 @@ from .api.admin import (
 )
 from .api.version import VersionAPI, VersionsAPI
 from .api.profile import ProfileAPI
+from .api.server import ServerAPI
 
 # A bit gross, but because socketio uses singletons, we
 # need to do this.
@@ -95,11 +96,11 @@ ROUTES = [
             Route("/logout", SteamLogout)
         ]),
         Mount("/maps/", StaticFiles(directory=Config.maps_dir), name="maps"),
-        Route("/matches/", MatchesAPI),  # Tested - POST @ 0.1.0
+        Route("/matches/", MatchesAPI),  # Tested - POST @ 0.2.0
         Mount("/match", routes=[
-            Route("/create/", CreateMatchAPI),  # Tested - POST @ 0.1.0
+            Route("/create/", CreateMatchAPI),  # Tested - POST @ 0.2.0
             Mount("/{match_id}", routes=[
-                Route("/", MatchAPI),  # Tested - GET, POST, DELETE @ 0.1.0
+                Route("/", MatchAPI),  # Tested - GET, POST, DELETE @ 0.2.0
                 Route("/upload/", DemoUploadAPI),
                 Route("/download/", DownloadPage, name="DownloadPage")
             ])
@@ -109,6 +110,7 @@ ROUTES = [
             Route("/{major:int}/{minor:int}/{patch:int}/", VersionAPI),
             Route("/", VersionsAPI)
         ]),
+        Route("/server/{ip:str}/{port:int}", ServerAPI),
         Mount("/community", routes=[
             Route("/exists/", CommunityExistsAPI),
             Mount("/owner", routes=[
