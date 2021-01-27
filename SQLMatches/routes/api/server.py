@@ -29,6 +29,37 @@ from webargs_starlette import use_args
 
 from ...responses import response
 from ...caches import ServerCache, ServersCache
+from ...resources import Sessions
+
+
+class ServersAPI(HTTPEndpoint):
+    @requires("community")
+    async def get(self, request: Request) -> response:
+        """Used to list servers.
+
+        Parameters
+        ----------
+        request : Request
+
+        Returns
+        -------
+        response
+        """
+
+        cache = ServersCache()
+        cache_get = await cache.get()
+
+        if cache_get:
+            return response(cache_get)
+
+        data = [
+            server.api_schema async for server, _
+            in request.state.community.servers()
+        ]
+
+        await cache.set(data)
+
+        return response(data)
 
 
 class ServerAPI(HTTPEndpoint):
@@ -87,6 +118,17 @@ class ServerAPI(HTTPEndpoint):
         await ServerCache(ip, port).expire()
         await ServersCache().expire()
 
+        await Sessions.websocket.emit(
+            request.state.community.community_name,
+            {
+                "ip": ip,
+                "port": port,
+                "data": parameters,
+                "state": "update"
+            },
+            room="ws_room"
+        )
+
         return response()
 
     @requires("is_owner")
@@ -108,5 +150,15 @@ class ServerAPI(HTTPEndpoint):
 
         await ServerCache(ip, port).expire()
         await ServersCache().expire()
+
+        await Sessions.websocket.emit(
+            request.state.community.community_name,
+            {
+                "ip": ip,
+                "port": port,
+                "state": "delete"
+            },
+            room="ws_room"
+        )
 
         return response()

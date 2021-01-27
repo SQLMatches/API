@@ -61,7 +61,7 @@ from .api.admin import (
 )
 from .api.version import VersionAPI, VersionsAPI
 from .api.profile import ProfileAPI
-from .api.server import ServerAPI
+from .api.server import ServerAPI, ServersAPI
 
 # A bit gross, but because socketio uses singletons, we
 # need to do this.
@@ -110,7 +110,8 @@ ROUTES = [
             Route("/{major:int}/{minor:int}/{patch:int}/", VersionAPI),
             Route("/", VersionsAPI)
         ]),
-        Route("/server/{ip:str}/{port:int}", ServerAPI),
+        Route("/servers/", ServersAPI),
+        Route("/server/{ip:str}/{port:int}/", ServerAPI),
         Mount("/community", routes=[
             Route("/exists/", CommunityExistsAPI),
             Mount("/owner", routes=[

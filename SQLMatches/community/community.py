@@ -62,7 +62,8 @@ from .models import (
     MatchModel,
     ProfileModel,
     CommunityStatsModel,
-    PublicCommunityModel
+    PublicCommunityModel,
+    ServerModel
 )
 
 from ..user import create_user
@@ -116,6 +117,22 @@ class Community:
             raise ServerExists()
         else:
             return self.server(ip, port)
+
+    async def servers(self) -> AsyncGenerator[ServerModel, Server]:
+        """Used to list servers.
+
+        Yields
+        -------
+        ServerModel
+        Server
+        """
+
+        query = server_table.select().where(
+            server_table.c.community_name == self.community_name
+        )
+
+        async for row in Sessions.database.iterate(query):
+            yield ServerModel(**row), self.server(row["ip"], row["port"])
 
     def server(self, ip: str, port: int) -> Server:
         """Used to interact with a server.
