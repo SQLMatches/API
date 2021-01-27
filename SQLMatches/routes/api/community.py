@@ -58,7 +58,7 @@ class PublicCommunityAPI(HTTPEndpoint):
         return response(
             (
                 await request.state.community.public()
-            ).public_community_api_schema
+            ).api_schema
         )
 
 
@@ -117,7 +117,7 @@ class CommunityOwnerAPI(HTTPEndpoint):
             except InvalidCommunity:
                 raise
             else:
-                data["community"] = community.community_api_schema
+                data["community"] = community.api_schema
 
                 await cache.set(data["community"])
 
@@ -128,7 +128,7 @@ class CommunityOwnerAPI(HTTPEndpoint):
         else:
             data["stats"] = (
                 await request.state.community.stats()
-            ).stats_api_schema
+            ).api_schema
 
             await stats_cache.set(data["stats"])
 
@@ -239,16 +239,16 @@ class CommunityCreateAPI(HTTPEndpoint):
 
         await Sessions.websocket.emit(
             "community_updates",
-            model.community_api_schema,
+            model.api_schema,
             room="ws_room"
         )
 
         await CommunityCache(parameters["community_name"]).set(
-            model.community_api_schema
+            model.api_schema
         )
         await CommunitiesCache().expire()
 
-        return response(model.community_api_schema, background=BackgroundTask(
+        return response(model.api_schema, background=BackgroundTask(
             community.email,
             title="SQLMatches.com welcomes you, {}!".format(
                 model.community_name

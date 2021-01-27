@@ -55,7 +55,7 @@ class ProfileAPI(HTTPEndpoint):
 
         data = (await request.state.community.profile(
             request.path_params["steam_id"]
-        )).profile_api_schema
+        )).api_schema
 
         await cache.set(data, ttl=30)
 

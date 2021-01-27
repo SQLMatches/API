@@ -64,12 +64,12 @@ class WebhookPusher:
         row = await Sessions.database.fetch_one(query)
         if row and row[0]:
             try:
-                (await Sessions.aiohttp.post(
+                await Sessions.aiohttp.post(
                     row[0],
                     timeout=Config.webhook_timeout,
                     json=self.data,
                     auth=BasicAuth("", row[1])
-                )).close()
+                )
             except ClientConnectionError:
                 pass
 

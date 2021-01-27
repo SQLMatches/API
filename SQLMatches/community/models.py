@@ -70,7 +70,7 @@ class PublicCommunityModel:
         self.allow_api_access = allow_api_access
 
     @property
-    def public_community_api_schema(self) -> dict:
+    def api_schema(self) -> dict:
         return {
             "community_name": self.community_name,
             "owner_id": self.owner_id,
@@ -105,7 +105,7 @@ class CommunityModel(PublicCommunityModel):
         self.subscription_expires = subscription_expires
 
     @property
-    def community_api_schema(self) -> dict:
+    def api_schema(self) -> dict:
         return {
             "master_api_key": self.master_api_key,
             "amount": self.amount,
@@ -118,7 +118,7 @@ class CommunityModel(PublicCommunityModel):
             "subscription_expires": self.subscription_expires.strftime(
                 Config.timestamp_format
             ) if self.subscription_expires else None,
-            **self.public_community_api_schema
+            **super().api_schema
         }
 
 
@@ -147,7 +147,7 @@ class MatchModel:
         self.community_name = community_name
 
     @property
-    def match_api_schema(self) -> dict:
+    def api_schema(self) -> dict:
         return {
             "match_id": self.match_id,
             "timestamp": self.timestamp.strftime(Config.timestamp_format),
@@ -169,8 +169,8 @@ class ProfileModel(_DepthStatsModel):
     def __init__(self, name: str, steam_id: str, kills: int, headshots: int,
                  assists: int, deaths: int, shots_fired: int, shots_hit: int,
                  mvps: int, timestamp: datetime) -> None:
-        _DepthStatsModel.__init__(self, kills, deaths,
-                                  headshots, shots_hit, shots_fired)
+        super().__init__(kills, deaths,
+                         headshots, shots_hit, shots_fired)
 
         self.name = name
         self.steam_id = steam_id
@@ -184,7 +184,7 @@ class ProfileModel(_DepthStatsModel):
         self.timestamp = timestamp
 
     @property
-    def profile_api_schema(self) -> dict:
+    def api_schema(self) -> dict:
         return {
             "name": self.name,
             "steam_id": self.steam_id,
@@ -208,8 +208,8 @@ class _ScoreboardPlayerModel(_DepthStatsModel):
                  assists: int, deaths: int, shots_fired: int,
                  shots_hit: int, mvps: int, score: int,
                  disconnected: bool) -> None:
-        _DepthStatsModel.__init__(self, kills, deaths,
-                                  headshots, shots_hit, shots_fired)
+        super().__init__(kills, deaths,
+                         headshots, shots_hit, shots_fired)
 
         self.name = name
         self.steam_id = steam_id
@@ -230,7 +230,7 @@ class _ScoreboardPlayerModel(_DepthStatsModel):
 class ScoreboardModel(MatchModel):
     def __init__(self, team_1: List[Dict[str, Any]],
                  team_2: List[Dict[str, Any]], match: Dict[str, Any]) -> None:
-        MatchModel.__init__(self, **match)
+        super().__init__(**match)
 
         self.__team_1 = team_1
         self.__team_2 = team_2
@@ -260,9 +260,9 @@ class ScoreboardModel(MatchModel):
             yield _ScoreboardPlayerModel(**player)
 
     @property
-    def scoreboard_api_schema(self) -> dict:
+    def api_schema(self) -> dict:
         return {
-            **self.match_api_schema,
+            **super().api_schema,
             "team_1": self.__team_1,
             "team_2": self.__team_2
         }
@@ -277,7 +277,7 @@ class CommunityStatsModel:
         self.total_users = total_users
 
     @property
-    def stats_api_schema(self) -> dict:
+    def api_schema(self) -> dict:
         return {
             "total_matches": self.total_matches,
             "active_matches": self.active_matches,

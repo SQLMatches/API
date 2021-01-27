@@ -80,7 +80,7 @@ class MatchAPI(HTTPEndpoint):
         except InvalidMatchID:
             raise
         else:
-            data = scoreboard.scoreboard_api_schema
+            data = scoreboard.api_schema
 
             await cache.set(data)
 
@@ -116,7 +116,7 @@ class MatchAPI(HTTPEndpoint):
             raise
         else:
             scoreboard = await match.scoreboard()
-            data = scoreboard.scoreboard_api_schema
+            data = scoreboard.api_schema
 
             await ((CommunitiesCache()).matches()).expire()
 
@@ -128,7 +128,7 @@ class MatchAPI(HTTPEndpoint):
 
             await Sessions.websocket.emit(
                 "match_update",
-                scoreboard.match_api_schema,
+                data,
                 room="ws_room"
             )
 
@@ -174,7 +174,7 @@ class MatchAPI(HTTPEndpoint):
             except InvalidMatchID:
                 pass
             else:
-                data = scoreboard.scoreboard_api_schema
+                data = scoreboard.api_schema
 
                 await ((CommunitiesCache()).matches()).expire()
 
@@ -186,7 +186,7 @@ class MatchAPI(HTTPEndpoint):
 
                 await Sessions.websocket.emit(
                     "match_update",
-                    scoreboard.match_api_schema,
+                    data,
                     room="ws_room"
                 )
 
@@ -231,14 +231,14 @@ class MatchesAPI(HTTPEndpoint):
                 return response(cache_get)
 
             data = [
-                match.match_api_schema async for match, _ in
+                match.api_schema async for match, _ in
                 request.state.community.matches(**parameters)
             ]
 
             await cache.set(data)
         else:
             data = [
-                match.match_api_schema async for match, _ in
+                match.api_schema async for match, _ in
                 request.state.community.matches(**parameters)
             ]
 
@@ -278,7 +278,7 @@ class CreateMatchAPI(HTTPEndpoint):
             background=BackgroundTask(
                 WebhookPusher(
                     request.state.community.community_name,
-                    data.match_api_schema
+                    data.api_schema
                 ).match_start
             )
         )
@@ -334,7 +334,7 @@ class DemoUploadAPI(HTTPEndpoint):
                 await match.set_demo_status(3)
 
             scoreboard = await match.scoreboard()
-            data = scoreboard.scoreboard_api_schema
+            data = scoreboard.api_schema
 
             await (CommunityCache(
                 match.community_name
@@ -344,7 +344,7 @@ class DemoUploadAPI(HTTPEndpoint):
 
             await Sessions.websocket.emit(
                 "match_update",
-                scoreboard.match_api_schema,
+                data,
                 room="ws_room"
             )
 

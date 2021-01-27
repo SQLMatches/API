@@ -53,7 +53,7 @@ class CommunitiesAPI(HTTPEndpoint):
         """
 
         data = [
-            community.public_community_api_schema async for community, _ in
+            community.api_schema async for community, _ in
             communities(**parameters)
         ]
 
@@ -77,7 +77,7 @@ class CommunityMatchesAPI(HTTPEndpoint):
         """
 
         data = [
-            match.match_api_schema async for match, _ in
+            match.api_schema async for match, _ in
             matches(**parameters)
         ]
 
@@ -110,7 +110,7 @@ class MatchesCommunitiesAPI(HTTPEndpoint):
             data["communities"] = cache_get
         else:
             data["communities"] = [
-                community.public_community_api_schema async for community, _ in
+                community.api_schema async for community, _ in
                 communities()
             ]
 
@@ -121,7 +121,7 @@ class MatchesCommunitiesAPI(HTTPEndpoint):
             data["matches"] = matches_cache_get
         else:
             data["matches"] = [
-                match.match_api_schema async for match, _ in matches()
+                match.api_schema async for match, _ in matches()
             ]
 
             await matches_cache.set(data["matches"])
