@@ -87,5 +87,5 @@ class ServerCache(CacheBase):
 
 
 class ServersCache(CacheBase):
-    def __init__(self, key: str = "servers") -> None:
-        super().__init__(key)
+    def __init__(self, community_name: str) -> None:
+        super().__init__(community_name + "-servers")

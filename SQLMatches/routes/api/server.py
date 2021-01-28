@@ -46,7 +46,7 @@ class ServersAPI(HTTPEndpoint):
         response
         """
 
-        cache = ServersCache()
+        cache = ServersCache(request.state.community.community_name)
         cache_get = await cache.get()
 
         if cache_get:
@@ -72,7 +72,7 @@ class ServersAPI(HTTPEndpoint):
             parameters["ip"], parameters["port"]
         ).set(model.api_schema)
 
-        await ServersCache().expire()
+        await ServersCache(request.state.community.community_name).expire()
 
         await Sessions.websocket.emit(
             request.state.community.community_name,
@@ -116,7 +116,7 @@ class ServerAPI(HTTPEndpoint):
 
         await cache.set(data)
 
-        await ServersCache().expire()
+        await ServersCache(request.state.community.community_name).expire()
 
         return response(data)
 
@@ -145,7 +145,7 @@ class ServerAPI(HTTPEndpoint):
         data = (await server.get()).api_schema
 
         await ServerCache(ip, port).set(data)
-        await ServersCache().expire()
+        await ServersCache(request.state.community.community_name).expire()
 
         await Sessions.websocket.emit(
             request.state.community.community_name,
@@ -178,7 +178,7 @@ class ServerAPI(HTTPEndpoint):
         await (request.state.community.server(ip, port)).delete()
 
         await ServerCache(ip, port).expire()
-        await ServersCache().expire()
+        await ServersCache(request.state.community.community_name).expire()
 
         await Sessions.websocket.emit(
             request.state.community.community_name,
