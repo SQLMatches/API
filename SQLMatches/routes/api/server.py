@@ -74,6 +74,17 @@ class ServersAPI(HTTPEndpoint):
 
         await ServersCache().expire()
 
+        await Sessions.websocket.emit(
+            request.state.community.community_name,
+            {
+                "ip": parameters["ip"],
+                "port": parameters["port"],
+                "data": model.api_schema,
+                "state": "add"
+            },
+            room="ws_room"
+        )
+
         return response(model.api_schema)
 
 
@@ -113,7 +124,7 @@ class ServerAPI(HTTPEndpoint):
                "ip": fields.String(min=1, max=15), "port": fields.Integer(),
                "name": fields.String(min=3, max=64),
                "map_name": fields.String(max=24)})
-    @requires(["is_owner", "master"])
+    @requires("master")
     async def post(self, request: Request, parameters: dict) -> response:
         """Used to update server.
 
@@ -128,10 +139,12 @@ class ServerAPI(HTTPEndpoint):
         """
 
         ip, port = request.path_params["ip"], request.path_params["port"]
+        server = request.state.community.server(ip, port)
 
-        await (request.state.community.server(ip, port)).update(**parameters)
+        await server.update(**parameters)
+        data = (await server.get()).api_schema
 
-        await ServerCache(ip, port).expire()
+        await ServerCache(ip, port).set(data)
         await ServersCache().expire()
 
         await Sessions.websocket.emit(
@@ -139,7 +152,7 @@ class ServerAPI(HTTPEndpoint):
             {
                 "ip": ip,
                 "port": port,
-                "data": parameters,
+                "data": data,
                 "state": "update"
             },
             room="ws_room"

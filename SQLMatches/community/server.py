@@ -110,7 +110,7 @@ class Server:
         if name:
             values["name"] = name
         if map_name:
-            values["map_name"] = map_name
+            values["map"] = map_name
 
         if values:
             await Sessions.database.execute(
