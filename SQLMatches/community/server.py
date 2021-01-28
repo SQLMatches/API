@@ -79,7 +79,7 @@ class Server:
     async def update(self, players: int = None,
                      max_players: int = None,
                      ip: str = None, port: int = None,
-                     name: str = None) -> None:
+                     name: str = None, map_name: str = None) -> None:
         """Used to update server.
 
         Parameters
@@ -94,6 +94,8 @@ class Server:
             by default None
         name : str, optional
             by default None
+        map_name : str, optional
+            by default None
         """
 
         values = {}
@@ -107,6 +109,8 @@ class Server:
             values["ip"] = ip
         if name:
             values["name"] = name
+        if map_name:
+            values["map_name"] = map_name
 
         if values:
             await Sessions.database.execute(

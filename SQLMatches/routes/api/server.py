@@ -61,6 +61,21 @@ class ServersAPI(HTTPEndpoint):
 
         return response(data)
 
+    @use_args({"ip": fields.String(min=1, max=15, required=True),
+               "port": fields.Integer(required=True),
+               "name": fields.String(min=3, max=64, required=True)})
+    @requires("is_owner")
+    async def post(self, request: Request, parameters: dict) -> response:
+        model, _ = await request.state.community.create_server(**parameters)
+
+        await ServerCache(
+            parameters["ip"], parameters["port"]
+        ).set(model.api_schema)
+
+        await ServersCache().expire()
+
+        return response(model.api_schema)
+
 
 class ServerAPI(HTTPEndpoint):
     @requires("community")
@@ -95,8 +110,9 @@ class ServerAPI(HTTPEndpoint):
         return response(data)
 
     @use_args({"players": fields.Integer(), "max_players": fields.Integer(),
-               "ip": fields.String(), "port": fields.Integer(),
-               "name": fields.String()})
+               "ip": fields.String(min=1, max=15), "port": fields.Integer(),
+               "name": fields.String(min=3, max=64),
+               "map_name": fields.String(max=24)})
     @requires(["is_owner", "master"])
     async def post(self, request: Request, parameters: dict) -> response:
         """Used to update server.

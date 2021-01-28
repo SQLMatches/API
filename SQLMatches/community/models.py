@@ -289,13 +289,19 @@ class CommunityStatsModel:
 class ServerModel:
     def __init__(self, community_name: str, ip: str,
                  port: int, name: str, players: int,
-                 max_players: int) -> None:
+                 max_players: int, map: str) -> None:
         self.community_name = community_name
         self.ip = ip
         self.port = port
         self.name = name
         self.players = players
         self.max_players = max_players
+        self.map = map
+        self.cover_image = "{}maps/{}".format(
+            Config.url,
+            Config.map_images[self.map] if self.map in Config.map_images
+            else "invalid.png"
+        )
 
     @property
     def api_schema(self) -> dict:
@@ -305,5 +311,7 @@ class ServerModel:
             "players": self.players,
             "max_players": self.max_players,
             "ip": self.ip,
-            "port": self.port
+            "port": self.port,
+            "map": self.map,
+            "cover_image": self.cover_image
         }

@@ -85,7 +85,8 @@ class Community:
 
         self.community_name = community_name
 
-    async def create_server(self, ip: str, port: int, name: str) -> Server:
+    async def create_server(self, ip: str, port: int,
+                            name: str) -> Tuple[ServerModel, Server]:
         """Used to create server.
 
         Parameters
@@ -96,6 +97,7 @@ class Community:
 
         Returns
         -------
+        ServerModel
         Server
 
         Raises
@@ -103,20 +105,26 @@ class Community:
         ServerExists
         """
 
+        values = dict(
+            community_name=self.community_name,
+            ip=ip,
+            port=port,
+            name=name,
+            players=0,
+            max_players=0,
+            map=None
+        )
+
         try:
             await Sessions.database.execute(
                 server_table.insert().values(
-                  ip=ip,
-                  port=port,
-                  name=name,
-                  players=0,
-                  max_players=0
+                    **values
                 )
             )
         except Exception:
             raise ServerExists()
         else:
-            return self.server(ip, port)
+            return ServerModel(**values), self.server(ip, port)
 
     async def servers(self) -> AsyncGenerator[ServerModel, Server]:
         """Used to list servers.

@@ -217,6 +217,10 @@ server_table = Table(
         Integer,
         default=0
     ),
+    Column(
+        "map",
+        String(length=24)
+    ),
     PrimaryKeyConstraint(
         "community_name",
         "ip",
