@@ -70,6 +70,10 @@ class Config:
     # Type string, type ID
     community_types: Dict[str, int] = {}
     webhook_timeout: int
+    webhook_match_start: str
+    webhook_match_end: str
+    webhook_round_end: str
+    webhook_key: str
     match_max_length: timedelta
     demo_expires: timedelta
     subscription_length: timedelta

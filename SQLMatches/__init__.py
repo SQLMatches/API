@@ -52,7 +52,8 @@ from .settings import (
     B2UploadSettings,
     LocalUploadSettings,
     StripeSettings,
-    SmtpSettings
+    SmtpSettings,
+    WebhookSettings
 )
 from .middlewares import APIAuthentication
 
@@ -68,7 +69,7 @@ from .key_loader import KeyLoader
 from .constants import MAP_IMAGES, COMMUNITY_TYPES
 
 
-__version__ = "0.3.1"
+__version__ = "0.3.2"
 __url__ = "https://github.com/WardPearce/SQLMatches"
 __description__ = "SQLMatches, match & demos recorder."
 __author__ = "WardPearce"
@@ -96,7 +97,7 @@ class SQLMatches(Starlette):
                  max_upload_size: float = 100.0,
                  timestamp_format: str = "%m/%d/%Y-%H:%M:%S",
                  community_types: List[str] = COMMUNITY_TYPES,
-                 webhook_timeout: float = 3.0,
+                 webhook_settings: WebhookSettings = WebhookSettings(),
                  match_max_length: timedelta = timedelta(hours=3),
                  demo_expires: timedelta = timedelta(weeks=20),
                  subscription_length: timedelta = timedelta(days=31),
@@ -126,8 +127,8 @@ class SQLMatches(Starlette):
             by default "%m/%d/%Y-%H:%M:%S"
         community_types : List[str], optional
             by default COMMUNITY_TYPES
-        webhook_timeout : float, optional
-            by default 3.0
+        webhook_settings : WebhookSettings, optional
+            by default WebhookSettings()
         match_max_length : timedelta, optional
             by default timedelta(hours=3)
         clear_cache : bool, optional
@@ -188,7 +189,13 @@ class SQLMatches(Starlette):
         Config.root_webhook_key_hashed = bcrypt.hashpw(
             (KeyLoader("webhook").load()).encode(), bcrypt.gensalt()
         )
-        Config.webhook_timeout = webhook_timeout
+
+        Config.webhook_timeout = webhook_settings.timeout
+        Config.webhook_match_end = webhook_settings.match_end
+        Config.webhook_match_start = webhook_settings.match_start
+        Config.webhook_round_end = webhook_settings.round_end
+        Config.webhook_key = webhook_settings.key
+
         Config.match_max_length = match_max_length
         Config.system_email = system_email
         Config.frontend_url = frontend_url

@@ -37,13 +37,26 @@ class WebhookPusher:
         self.community_name = community_name
         self.data = data
 
-    async def __send(self, col: Any) -> None:
+    async def __post(self, url: str, key: str) -> None:
+        try:
+            await Sessions.aiohttp.post(
+                url,
+                timeout=Config.webhook_timeout,
+                json=self.data,
+                auth=BasicAuth("", key)
+            )
+        except ClientConnectionError:
+            pass
+
+    async def __send(self, col: Any, global_webhook: str = None) -> None:
         """Sends webhook request.
 
         Parameters
         ----------
         col : Any
             Column to select.
+        global_webhook : str, optional
+            by default None
         """
 
         query = select([
@@ -63,22 +76,18 @@ class WebhookPusher:
 
         row = await Sessions.database.fetch_one(query)
         if row and row[0]:
-            try:
-                await Sessions.aiohttp.post(
-                    row[0],
-                    timeout=Config.webhook_timeout,
-                    json=self.data,
-                    auth=BasicAuth("", row[1])
-                )
-            except ClientConnectionError:
-                pass
+            await self.__post(row[0], row[1])
+
+        if global_webhook:
+            await self.__post(global_webhook, Config.webhook_key)
 
     async def round_end(self) -> None:
         """Used to push round end webhook.
         """
 
         await self.__send(
-            community_table.c.round_end_webhook
+            community_table.c.round_end_webhook,
+            Config.webhook_round_end
         )
 
     async def match_end(self) -> None:
@@ -86,7 +95,8 @@ class WebhookPusher:
         """
 
         await self.__send(
-            community_table.c.match_end_webhook
+            community_table.c.match_end_webhook,
+            Config.webhook_match_end
         )
 
     async def match_start(self) -> None:
@@ -94,5 +104,6 @@ class WebhookPusher:
         """
 
         await self.__send(
-            community_table.c.match_start_webhook
+            community_table.c.match_start_webhook,
+            Config.webhook_match_start
         )

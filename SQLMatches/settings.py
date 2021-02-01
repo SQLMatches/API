@@ -178,3 +178,30 @@ class SmtpSettings:
         self.use_tls = use_tls
         self.username = username
         self.password = password
+
+
+class WebhookSettings:
+    def __init__(self, timeout: float = 3.0, match_start: str = None,
+                 match_end: str = None, round_end: str = None,
+                 key: str = None) -> None:
+        """Used to configure webhook.
+
+        Parameters
+        ----------
+        timeout : float, optional
+            by default 3.0
+        match_start : str, optional
+            Global webhook for match start, by default None
+        match_end : str, optional
+            Global webhook for match end, by default None
+        round_end : str, optional
+            Global webhook for round end, by default None
+        key : str, optional
+            Global webhook key.
+        """
+
+        self.timeout = timeout
+        self.match_start = match_start
+        self.match_end = match_end
+        self.round_end = round_end
+        self.key = key
