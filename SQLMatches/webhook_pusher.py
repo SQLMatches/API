@@ -34,6 +34,16 @@ from .resources import Sessions, Config
 
 class WebhookPusher:
     def __init__(self, community_name: str, data: dict) -> None:
+        """Used to push webhook.
+
+        Parameters
+        ----------
+        community_name : str
+            Community name.
+        data : dict
+            Data to push.
+        """
+
         self.community_name = community_name
         self.data = data
 
