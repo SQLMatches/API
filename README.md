@@ -33,6 +33,7 @@
 - [Woile](https://github.com/Woile) - [starlette apispec](https://github.com/Woile/starlette-apispec)
 - [Miguel Grinberg](https://github.com/miguelgrinberg) - [socketio](https://github.com/miguelgrinberg/python-socketio)
 - [aio-libs](https://github.com/aio-libs) - [aiocache](https://github.com/aio-libs/aiocache) - [aiohttp](https://github.com/aio-libs/aiohttp) - [aiomysql](https://github.com/aio-libs/aiomysql) - [aiojobs](https://github.com/aio-libs/aiojobs)
+- [cole](https://github.com/cole) - [aiosmtplib](https://github.com/cole/aiosmtplib)
 - [Martin Richard](https://github.com/Martiusweb) - [asynctest](https://github.com/Martiusweb/asynctest/)
 - [marshmallow code](https://github.com/marshmallow-code) - [marshmallow](https://github.com/marshmallow-code/marshmallow) - [webargs](https://github.com/marshmallow-code/webargs)
 - [Steven Loria](https://github.com/sloria) - [webargs starlette](https://github.com/sloria/webargs-starlette)
