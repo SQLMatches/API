@@ -305,7 +305,7 @@ class Match:
                 scoreboard_total_table.c.match_id == self.match_id,
                 scoreboard_total_table.c.community_name == self.community_name
             )
-        )
+        ).order_by(scoreboard_table.c.score.desc())
 
         scoreboard_data = {
             "match": None,
