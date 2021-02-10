@@ -60,7 +60,7 @@ from .api.admin import (
     AdminAPI
 )
 from .api.version import VersionAPI, VersionsAPI
-from .api.profile import ProfileAPI
+from .api.profile import ProfileAPI, SteamProfileCors
 from .api.server import ServerAPI, ServersAPI
 
 # A bit gross, but because socketio uses singletons, we
@@ -73,7 +73,11 @@ from .webhooks import (
 )
 
 from .download import DownloadPage
-from .steam import SteamValidate, SteamLogin, SteamLogout
+from .steam import (
+    SteamValidate,
+    SteamLogin,
+    SteamLogout
+)
 from .errors import (
     server_error,
     payload_error,
@@ -105,7 +109,10 @@ ROUTES = [
                 Route("/download/", DownloadPage, name="DownloadPage")
             ])
         ]),
-        Route("/profile/{steam_id}/", ProfileAPI),
+        Mount("/profile/{steam_id}", routes=[
+            Route("/cros/", SteamProfileCors),
+            Route("/", ProfileAPI)
+        ]),
         Mount("/version", routes=[
             Route("/{major:int}/{minor:int}/{patch:int}/", VersionAPI),
             Route("/", VersionsAPI)

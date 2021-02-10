@@ -24,10 +24,27 @@ DEALINGS IN THE SOFTWARE.
 from starlette.endpoints import HTTPEndpoint
 from starlette.authentication import requires
 from starlette.requests import Request
+from starlette.responses import (
+    PlainTextResponse,
+    Response
+)
 
 from ...responses import response
+from ...resources import Sessions
 
 from ...caches import CommunityCache
+
+
+class SteamProfileCors(HTTPEndpoint):
+    async def get(self, request: Request) -> PlainTextResponse:
+        async with Sessions.aiohttp.get(
+            "https://steamcommunity.com/profiles/{}?xml=1".format(
+                request.path_params["steam_id"])) as resp:
+
+            if resp.status == 200:
+                return PlainTextResponse(await resp.text())
+            else:
+                return Response(status_code=500)
 
 
 class ProfileAPI(HTTPEndpoint):
