@@ -36,6 +36,7 @@ from ...caches import CommunityCache
 
 
 class SteamProfileCors(HTTPEndpoint):
+    @requires("steam_login")
     async def get(self, request: Request) -> PlainTextResponse:
         async with Sessions.aiohttp.get(
             "https://steamcommunity.com/profiles/{}?xml=1".format(
