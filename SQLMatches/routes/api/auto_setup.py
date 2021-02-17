@@ -35,7 +35,8 @@ class AutoSetupAPI(HTTPEndpoint):
     @use_args({"host": fields.IPv4(required=True),
                "user": fields.String(required=True),
                "password": fields.String(required=True),
-               "port": fields.Integer()})
+               "port": fields.Integer(),
+               "csgo_folder": fields.String(missing="")})
     @requires(["is_owner", "active_subscription"])
     async def post(self, request: Request, paramters: dict) -> response:
         """Used to automatically upload plugin files over FTP.

@@ -99,7 +99,7 @@ class SavePluginAPI(HTTPEndpoint):
             with ZipFile(zip_pathway) as zf:
                 zf.extractall(path.join(Config.plugin_dir, "extracted"))
 
-            return response("Files unzipped and stored")
+            return response("Files unzipped and cached")
 
 
 class AdminAPI(HTTPEndpoint):
