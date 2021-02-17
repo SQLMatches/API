@@ -20,6 +20,10 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
+import aiofiles
+
+from os import path
+from zipfile import ZipFile
 
 from starlette.endpoints import HTTPEndpoint
 from starlette.authentication import requires
@@ -29,7 +33,8 @@ from starlette.background import BackgroundTask
 from webargs import fields
 from webargs_starlette import use_args
 
-from ...responses import response
+from ...responses import response, error_response
+from ...resources import Config, Sessions
 from ...communities import ban_communities
 from ...caches import CommunitiesCache, VersionCache, VersionsCache
 from ...misc import bulk_community_expire
@@ -60,6 +65,41 @@ class CommunitiesAdminAPI(HTTPEndpoint):
             bulk_community_expire,
             **parameters
         ))
+
+
+class SavePluginAPI(HTTPEndpoint):
+    @use_args({"zip_url": fields.Url(required=True)})
+    @requires("root_login")
+    async def post(self, request: Request, paramters: dict) -> response:
+        """Used to save a version of the plugins locally.
+
+        Parameters
+        ----------
+        request : Request
+        paramters : dict
+
+        Returns
+        -------
+        response
+        """
+
+        async with Sessions.aiohttp.get(paramters["zip_url"]) as resp:
+            if resp.status != 200:
+                return error_response(
+                    "Unable to download file",
+                    status_code=resp.status
+                )
+
+            zip_pathway = path.join(Config.plugin_dir, "plugins.zip")
+
+            async with aiofiles.open(zip_pathway, "w+") as file_:
+                await file_.truncate()
+                await file_.write(await resp.read())
+
+            with ZipFile(zip_pathway) as zf:
+                zf.extractall(path.join(Config.plugin_dir, "extracted"))
+
+            return response("Files unzipped and stored")
 
 
 class AdminAPI(HTTPEndpoint):

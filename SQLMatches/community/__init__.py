@@ -130,19 +130,21 @@ async def stripe_customer_to_community(customer_id: str) -> Community:
     return Community(community_name)
 
 
-async def get_community_from_owner(steam_id: str) -> Tuple[Community, bool]:
-    """[summary]
+async def get_community_from_owner(steam_id: str
+                                   ) -> Tuple[Community, bool, bool]:
+    """Used to get a community from owner.
 
     Parameters
     ----------
     steam_id : str
-        [description]
 
     Returns
     -------
     Community
     bool
         If banned.
+    bool
+        If active subscription.
 
     Raises
     ------
@@ -152,7 +154,8 @@ async def get_community_from_owner(steam_id: str) -> Tuple[Community, bool]:
 
     query = select([
         community_table.c.community_name,
-        community_table.c.banned
+        community_table.c.banned,
+        community_table.c.subscription_expires
     ]).select_from(
         community_table
     ).where(
@@ -164,7 +167,12 @@ async def get_community_from_owner(steam_id: str) -> Tuple[Community, bool]:
 
     row = await Sessions.database.fetch_one(query)
     if row:
-        return Community(row["community_name"]), row["banned"]
+        return (
+            Community(row["community_name"]),
+            row["banned"],
+            row["subscription_expires"] >= datetime.now()
+            if row["subscription_expires"] else False
+        )
     else:
         raise NoOwnership()
 

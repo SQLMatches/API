@@ -57,11 +57,13 @@ from .api.communities import (
 )
 from .api.admin import (
     CommunitiesAdminAPI,
-    AdminAPI
+    AdminAPI,
+    SavePluginAPI
 )
 from .api.version import VersionAPI, VersionsAPI
 from .api.profile import ProfileAPI, SteamProfileCors
 from .api.server import ServerAPI, ServersAPI
+from .api.auto_setup import AutoSetupAPI
 
 # A bit gross, but because socketio uses singletons, we
 # need to do this.
@@ -125,7 +127,8 @@ ROUTES = [
                 Route("/", CommunityOwnerAPI),
                 Route("/matches/", CommunityOwnerMatchesAPI),
                 Route("/update/", CommunityUpdateAPI),
-                Route("/stripe-session/", CommunitySessionAPI)
+                Route("/stripe-session/", CommunitySessionAPI),
+                Route("/autosetup/", AutoSetupAPI)
             ]),
             Route("/key/", KeyAPI),
             Route("/public/", PublicCommunityAPI),
@@ -138,6 +141,7 @@ ROUTES = [
         ]),
         Mount("/admin", routes=[
             Route("/communities/", CommunitiesAdminAPI),
+            Route("/plugins/", SavePluginAPI),
             Route("/", AdminAPI)
         ]),
         Route("/schema/", SchemaAPI, include_in_schema=False)

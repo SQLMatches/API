@@ -99,9 +99,12 @@ class APIAuthentication(AuthenticationBackend):
                         request.query_params["check_ownership"].lower()
                         == "true"):
                     try:
-                        community, banned = await get_community_from_owner(
-                            request.session["steam_id"]
-                        )
+                        (
+                            community,
+                            banned,
+                            active_subscription
+                        ) = await get_community_from_owner(
+                            request.session["steam_id"])
 
                         if banned:
                             return
@@ -113,15 +116,23 @@ class APIAuthentication(AuthenticationBackend):
                                 request.query_params["community_name"]):
                             scopes.append("is_owner")
 
+                            if ("check_subscription" in request.query_params
+                                and request.query_params["check_subscription"]
+                                .lower() == "true" and
+                                    active_subscription):
+
+                                scopes.append("active_subscription")
+
                 request.state.community = Community(
                     request.query_params["community_name"]
                 )
 
             if("check_root" in request.query_params and
-                    request.query_params["check_root"].lower() == "true"):
-                if bcrypt.checkpw(request.session["steam_id"].encode(),
-                                  Config.root_steam_id_hashed):
-                    scopes.append("root_login")
+               request.query_params["check_root"].lower() == "true" and
+               bcrypt.checkpw(request.session["steam_id"].encode(),
+                              Config.root_steam_id_hashed)):
+
+                scopes.append("root_login")
 
             return (
                 AuthCredentials(scopes),

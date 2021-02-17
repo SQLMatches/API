@@ -55,6 +55,10 @@ class Config:
         current_dir,
         "maps"
     )
+    plugin_dir = os.path.join(
+        current_dir,
+        "plugins"
+    )
     steam_openid_url = "https://steamcommunity.com/openid/login"
     upload_type: Any
     url: str

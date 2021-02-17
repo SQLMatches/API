@@ -31,12 +31,26 @@ from ...responses import response
 from ...resources import Sessions
 
 
-class FtpAPI(HTTPEndpoint):
+class AutoSetupAPI(HTTPEndpoint):
     @use_args({"host": fields.IPv4(required=True),
                "user": fields.String(required=True),
                "password": fields.String(required=True),
                "port": fields.Integer()})
-    @requires("is_owner")
+    @requires(["is_owner", "active_subscription"])
     async def post(self, request: Request, paramters: dict) -> response:
+        """Used to automatically upload plugin files over FTP.
+
+        Parameters
+        ----------
+        request : Request
+        paramters : dict
+
+        Returns
+        -------
+        response
+        """
+
         async with Sessions.ftp.context(**paramters) as _:
             pass
+
+        return response()
