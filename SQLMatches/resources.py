@@ -23,6 +23,7 @@ DEALINGS IN THE SOFTWARE.
 
 import os
 import socketio
+import aioftp
 
 from typing import Any, Dict
 
@@ -45,6 +46,7 @@ class Sessions:
     )
     stripe: Any
     smtp: SMTP
+    ftp: aioftp.Client
 
 
 class Config:

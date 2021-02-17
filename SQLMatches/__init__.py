@@ -24,6 +24,7 @@ DEALINGS IN THE SOFTWARE.
 import logging
 import bcrypt
 import backblaze
+import aioftp
 
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
@@ -69,7 +70,7 @@ from .key_loader import KeyLoader
 from .constants import MAP_IMAGES, COMMUNITY_TYPES
 
 
-__version__ = "0.3.3"
+__version__ = "0.3.4"
 __url__ = "https://github.com/WardPearce/SQLMatches"
 __description__ = "SQLMatches, match & demos recorder."
 __author__ = "WardPearce"
@@ -238,6 +239,8 @@ class SQLMatches(Starlette):
             stripe_settings.api_key,
             stripe_settings.testing
         )
+
+        Sessions.ftp = aioftp.Client()
 
         if upload_settings:
             Config.demo_pathway = upload_settings.pathway
