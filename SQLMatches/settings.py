@@ -107,10 +107,12 @@ class B2UploadSettings(__Extension):
         self.cdn_url = cdn_url if cdn_url[-1:] == "/" else cdn_url + "/"
 
         if pathway[-1:] == "/":
-            self.pathway = pathway[:-1]
+            pathway = pathway[:-1]
 
-        if pathway[0] == "/":
-            self.pathway = pathway[1:]
+        if pathway[0] != "/":
+            pathway = "/" + pathway
+
+        self.pathway = pathway
 
 
 class LocalUploadSettings(__Extension):
