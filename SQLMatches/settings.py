@@ -109,8 +109,8 @@ class B2UploadSettings(__Extension):
         if pathway[-1:] == "/":
             pathway = pathway[:-1]
 
-        if pathway[0] != "/":
-            pathway = "/" + pathway
+        if pathway[0] == "/":
+            pathway = pathway[1:]
 
         self.pathway = pathway
 
