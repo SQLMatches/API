@@ -165,23 +165,15 @@ class MatchModel:
         }
 
 
-class ProfileModel(_DepthStatsModel):
+class ProfileOverviewModel:
     def __init__(self, name: str, steam_id: str, kills: int, headshots: int,
-                 assists: int, deaths: int, shots_fired: int, shots_hit: int,
-                 mvps: int, timestamp: datetime) -> None:
-        super().__init__(kills, deaths,
-                         headshots, shots_hit, shots_fired)
-
+                 assists: int, deaths: int) -> None:
         self.name = name
         self.steam_id = steam_id
         self.kills = kills
         self.headshots = headshots
         self.assists = assists
         self.deaths = deaths
-        self.shots_fired = shots_fired
-        self.shots_hit = shots_hit
-        self.mvps = mvps
-        self.timestamp = timestamp
 
     @property
     def api_schema(self) -> dict:
@@ -192,6 +184,28 @@ class ProfileModel(_DepthStatsModel):
             "headshots": self.headshots,
             "assists": self.assists,
             "deaths": self.deaths,
+        }
+
+
+class ProfileModel(ProfileOverviewModel, _DepthStatsModel):
+    def __init__(self, shots_fired: int, shots_hit: int,
+                 mvps: int, timestamp: datetime, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+        _DepthStatsModel.__init__(
+            self, kwargs["kills"], kwargs["deaths"],
+            kwargs["headshots"], shots_hit, shots_fired
+        )
+
+        self.shots_fired = shots_fired
+        self.shots_hit = shots_hit
+        self.mvps = mvps
+        self.timestamp = timestamp
+
+    @property
+    def api_schema(self) -> dict:
+        return {
+            **super().api_schema,
             "kdr": self.kdr,
             "hs_percentage": self.hs_percentage,
             "hit_percentage": self.hit_percentage,

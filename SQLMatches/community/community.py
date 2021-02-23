@@ -61,7 +61,7 @@ from .models import (
     CommunityModel,
     MatchModel,
     ProfileModel,
-    CommunityStatsModel,
+    CommunityStatsModel, ProfileOverviewModel,
     PublicCommunityModel,
     ServerModel
 )
@@ -421,6 +421,59 @@ class Community:
             return ProfileModel(**row)
         else:
             raise InvalidSteamID()
+
+    async def players(self, search: str = None, page: int = 1,
+                      limit: int = 10, desc: bool = True
+                      ) -> AsyncGenerator[ProfileOverviewModel, None]:
+        """Used to list community players.
+
+        Parameters
+        ----------
+        search : str, optional
+            by default None
+        page : int, optional
+            by default 1
+        limit : int, optional
+            by default 10
+        desc : bool, optional
+            by default True
+
+        Yields
+        ------
+        ProfileOverviewModel
+        """
+
+        query = select([
+            user_table.c.name,
+            statistic_table.c.steam_id,
+            statistic_table.c.kills,
+            statistic_table.c.headshots,
+            statistic_table.c.assists,
+            statistic_table.c.deaths
+        ]).select_from(
+            statistic_table.join(
+                user_table,
+                user_table.c.steam_id == statistic_table.c.steam_id
+            )
+        ).where(
+            statistic_table.c.community_name == self.community_name
+        )
+
+        if search:
+            query = query.where(
+                or_(
+                    statistic_table.c.steamid == search,
+                    statistic_table.c.name == "%{}%".format(search)
+                )
+            )
+
+        query = query.order_by(
+            statistic_table.c.kills.desc() if desc
+            else statistic_table.c.kills.asc()
+        ).limit(limit).offset((page - 1) * limit if page > 1 else 0)
+
+        async for row in Sessions.database.iterate(query):
+            yield ProfileOverviewModel(**row)
 
     async def delete_matches(self, matches: List[str]) -> None:
         """Used to bulk delete matches.

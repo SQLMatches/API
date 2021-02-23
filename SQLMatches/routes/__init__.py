@@ -39,6 +39,7 @@ from .api.matches import (
     DemoUploadAPI,
     MatchesAPI
 )
+from .api.players import CommunityPlayersAPI
 from .api.misc import SchemaAPI
 from .api.community import (
     CommunityOwnerAPI,
@@ -111,6 +112,7 @@ ROUTES = [
                 Route("/download/", DownloadPage, name="DownloadPage")
             ])
         ]),
+        Route("/players/", CommunityPlayersAPI),
         Mount("/profile/{steam_id}", routes=[
             Route("/cros/", SteamProfileCors),
             Route("/", ProfileAPI)
