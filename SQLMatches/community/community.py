@@ -463,7 +463,7 @@ class Community:
             query = query.where(
                 or_(
                     statistic_table.c.steamid == search,
-                    statistic_table.c.name == "%{}%".format(search)
+                    statistic_table.c.name.like("%{}%".format(search))
                 )
             )
 
