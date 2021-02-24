@@ -27,7 +27,7 @@ from starlette.requests import Request
 from webargs import fields
 from webargs_starlette import use_args
 
-from ...responses import response
+from ...responses import response, error_response
 from ...resources import Sessions
 
 
@@ -50,6 +50,9 @@ class AutoSetupAPI(HTTPEndpoint):
         -------
         response
         """
+
+        # Temp
+        return error_response("Not implemented")
 
         async with Sessions.ftp.context(**paramters) as _:
             pass

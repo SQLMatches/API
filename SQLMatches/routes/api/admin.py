@@ -83,6 +83,9 @@ class SavePluginAPI(HTTPEndpoint):
         response
         """
 
+        # Temp
+        return error_response("Not implemented")
+
         async with Sessions.aiohttp.get(paramters["zip_url"]) as resp:
             if resp.status != 200:
                 return error_response(
@@ -103,10 +106,6 @@ class SavePluginAPI(HTTPEndpoint):
 
 
 class AdminAPI(HTTPEndpoint):
-    @requires("root_login")
-    async def get(self, request: Request) -> response:
-        return response()
-
     @use_args({"major": fields.Int(required=True),
                "minor": fields.Int(required=True),
                "patch": fields.Int(required=True),
