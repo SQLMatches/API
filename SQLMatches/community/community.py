@@ -423,7 +423,7 @@ class Community:
             raise InvalidSteamID()
 
     async def players(self, search: str = None, page: int = 1,
-                      limit: int = 10, desc: bool = True
+                      limit: int = 8, desc: bool = True
                       ) -> AsyncGenerator[ProfileOverviewModel, None]:
         """Used to list community players.
 
@@ -434,7 +434,7 @@ class Community:
         page : int, optional
             by default 1
         limit : int, optional
-            by default 10
+            by default 8
         desc : bool, optional
             by default True
 
