@@ -276,7 +276,7 @@ class CommunityCreateAPI(HTTPEndpoint):
         """
 
         try:
-            community, banned = await get_community_from_owner(
+            community, banned, _ = await get_community_from_owner(
                 request.session["steam_id"]
             )
 
