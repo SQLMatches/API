@@ -40,7 +40,7 @@ from ...exceptions import InvalidMatchID, DemoAlreadyUploaded
 
 class PlayersSchema(Schema):
     name = fields.Str(min=1, max=42, required=True)
-    steam_id = fields.Str(min=64, max=64)
+    steam_id = fields.Str(min=64, max=64, required=True)
     team = fields.Int(required=True)
     alive = fields.Bool(required=True)
     ping = fields.Int(required=True)
