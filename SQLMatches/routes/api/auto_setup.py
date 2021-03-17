@@ -51,10 +51,10 @@ class AutoSetupAPI(HTTPEndpoint):
         response
         """
 
-        # Temp
-        return error_response("Not implemented")
-
-        async with Sessions.ftp.context(**paramters) as _:
-            pass
+        try:
+            async with Sessions.ftp.context(**paramters) as _:
+                pass
+        except Exception:
+            return error_response("Unable to connect", status_code=400)
 
         return response()

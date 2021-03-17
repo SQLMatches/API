@@ -22,6 +22,7 @@ DEALINGS IN THE SOFTWARE.
 
 
 import binascii
+from datetime import datetime
 import bcrypt
 from base64 import b64decode
 
@@ -108,7 +109,6 @@ class APIAuthentication(AuthenticationBackend):
 
                         if banned:
                             return
-
                     except NoOwnership:
                         pass
                     else:
@@ -121,7 +121,10 @@ class APIAuthentication(AuthenticationBackend):
                                 .lower() == "true" and
                                     active_subscription):
 
-                                scopes.append("active_subscription")
+                                model = await community.get()
+                                if (model and model.subscription_expires >=
+                                        datetime.now()):
+                                    scopes.append("active_subscription")
 
                 request.state.community = Community(
                     request.query_params["community_name"]
