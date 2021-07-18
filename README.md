@@ -1,10 +1,6 @@
-# Help support SQLMatches development & hosting
-- [Subscribe](https://sqlmatches.com/) to SQLMatches on the 'Owner Panel' under the 'Subscriptions / Billing' tab.
-- [Donate via PayPal](https://www.paypal.com/donate?hosted_button_id=ZGS5RJ9FC94GQ)
-
-
-#### ✨ Help show support by starring this repo! Watch it to get notifications when updated. ✨
-![sellout](https://tinyurl.com/y6br8dx3)
+# SQLMatches 0.0.13 is no longer maintained
+Dear SQLMatches users, SQLMatches.com will be offline after the 20th of August 2021.
+We'll be returning whenever `1.0.0` is completed.
 
 ## Setup
 ### Hosted version
