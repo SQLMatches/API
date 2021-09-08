@@ -15,7 +15,7 @@ from .specs import (
 )
 from .responder import response
 
-from ..helpers.match import create_match
+from ..helpers.match import create_match, Match
 
 
 class MatchCreateRoute(HTTPEndpoint):
@@ -30,4 +30,12 @@ class MatchCreateRoute(HTTPEndpoint):
 
         payload = await request.json()
         model, _ = await create_match(**payload)
+        return response(model.api_schema)
+
+
+class MatchScoreboardRoute(HTTPEndpoint):
+    @requires("match.scoreboard")
+    @API.validate(tags=["Match", "Scoreboard"])
+    async def get(self, request: Request) -> JSONResponse:
+        model = await Match(request.path_params["match_id"]).get()
         return response(model.api_schema)
