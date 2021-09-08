@@ -11,7 +11,7 @@
 - [Python - 0.0.13 - 2019 to 2020](https://github.com/SQLMatches/API/tree/0.0.13)
 - [PHP - 2018 to 2019](https://github.com/SQLMatches/API/tree/Legacy-PHP)
 
-## Thanks to
+# Thanks to
 - [OpenQueue](https://github.com/OpenQueue/Base) - A lot of code was ported from this system to SQLMatches.
 - [WardPearce](https://github.com/WardPearce) - [backblaze](https://github.com/WardPearce/backblaze) - Contributor - Maintainer
 - [encode](https://www.encode.io/) - [databases](https://www.encode.io/databases/) - [uvicorn](http://www.uvicorn.org/) - [starlette](https://www.starlette.io/)
