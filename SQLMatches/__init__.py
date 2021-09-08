@@ -20,6 +20,7 @@ from .resources import Sessions, Config
 from .constants import MAP_IMAGES
 from .key_loader import KeyLoader
 from .tables import create_tables
+from .misc import add_slash
 
 ROUTES = []
 ERROR_HANDLERS = []
@@ -88,8 +89,9 @@ class SQLMatches(Starlette):
         Config.root_steam_id_hash = bcrypt.hashpw(
             root_steam_id.encode(), bcrypt.gensalt()
         )
-        Config.frontend_url = frontend_url
-        Config.backend_url = backend_url
+
+        Config.frontend_url = add_slash(frontend_url)
+        Config.backend_url = add_slash(backend_url)
 
         super().__init__(
             routes=routes,

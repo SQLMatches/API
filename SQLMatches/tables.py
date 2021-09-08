@@ -107,12 +107,6 @@ scoreboard_total_table = Table(
         primary_key=True
     ),
     Column(
-        "community_name",
-        String(length=32),
-        ForeignKey("community.community_name"),
-        primary_key=True
-    ),
-    Column(
         "file_id",
         String(length=200),
         nullable=True
@@ -130,7 +124,7 @@ scoreboard_total_table = Table(
         Integer
     ),
     Column(
-        "map",
+        "map_name",
         String(length=24)
     ),
     Column(
@@ -160,10 +154,6 @@ scoreboard_total_table = Table(
         "team_2_side",
         Integer,
         default=0
-    ),
-    PrimaryKeyConstraint(
-        "match_id",
-        "community_name"
     ),
     mysql_engine="InnoDB",
     mysql_charset="utf8mb4"
