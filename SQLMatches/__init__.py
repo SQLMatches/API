@@ -19,6 +19,7 @@ from aiohttp import ClientSession
 from .resources import Sessions, Config
 from .constants import MAP_IMAGES
 from .key_loader import KeyLoader
+from .tables import create_tables
 
 ROUTES = []
 ERROR_HANDLERS = []
@@ -41,6 +42,8 @@ class SQLMatches(Starlette):
                  map_images: Dict[str, str] = MAP_IMAGES,
                  **kwargs) -> None:
         self._database = database
+
+        create_tables(str(self._database.url))
 
         middlewares = [
             Middleware(
