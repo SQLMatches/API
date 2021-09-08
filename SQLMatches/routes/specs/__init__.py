@@ -5,12 +5,20 @@ GNU Affero General Public License v3.0
 https://github.com/SQLMatches/API/blob/Development/LICENSE
 """
 
-from spectree import SpecTree, Response
+from spectree import SpecTree, Response, SecurityScheme
 
 from .match import MatchCreateSpec
 
 
-API = SpecTree("SQLMatches")
+API = SpecTree(
+    "SQLMatches",
+    security_schemes=[
+        SecurityScheme(
+            name="auth_apiKey",
+            data={"type": "apiKey", "name": "Authorization", "in": "header"}
+        )
+    ]
+)
 
 
 __all__ = [
