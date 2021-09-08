@@ -22,8 +22,8 @@ from .key_loader import KeyLoader
 from .tables import create_tables
 from .misc import add_slash
 
-ROUTES = []
-ERROR_HANDLERS = []
+from .routes import ROUTES, ERROR_HANDLERS
+from .routes.specs import API
 
 
 __version__ = "1.0.0"
@@ -44,8 +44,10 @@ class SQLMatches(Starlette):
                  **kwargs) -> None:
         self._database = database
 
+        # Create needed tables.
         create_tables(str(self._database.url))
 
+        # Needed middlewares
         middlewares = [
             Middleware(
                 SessionMiddleware,
@@ -58,6 +60,7 @@ class SQLMatches(Starlette):
             )
         ]
 
+        # Check if any used kwargs passed
         if "middleware" in kwargs:
             middlewares += kwargs["middleware"]
             kwargs.pop("middleware")
@@ -85,6 +88,7 @@ class SQLMatches(Starlette):
             shutdown_tasks += kwargs["on_shutdown"]
             kwargs.pop("on_shutdown")
 
+        # Add some data into singletons
         Config.map_images = map_images
         Config.root_steam_id_hash = bcrypt.hashpw(
             root_steam_id.encode(), bcrypt.gensalt()
@@ -101,6 +105,9 @@ class SQLMatches(Starlette):
             on_shutdown=shutdown_tasks,
             **kwargs
         )
+
+        # Register spectree to app
+        API.register(self)
 
     async def __startup(self) -> None:
         """Creates needed sessions in context of event loop.

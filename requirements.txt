@@ -8,8 +8,8 @@ itsdangerous
 uvicorn
 sqlalchemy==1.3.20
 aiohttp
-webargs
-webargs-starlette
+spectree
+pydantic
 python-socketio
 cryptography
 aioftp

@@ -19,6 +19,11 @@ from sqlalchemy import (
     create_engine
 )
 
+from .constants import (
+    TEAM_NAME_LEN, MAP_LEN, MATCH_ID_LEN, STEAM_ID_LEN,
+    NAME_LEN, PFP_LEN, FILE_ID_LEN
+)
+
 
 metadata = MetaData()
 
@@ -29,16 +34,16 @@ user_table = Table(
     metadata,
     Column(
         "name",
-        String(length=36)
+        String(length=NAME_LEN)
     ),
     Column(
         "steam_id",
-        String(length=64),
+        String(length=STEAM_ID_LEN),
         primary_key=True
     ),
     Column(
         "pfp",
-        String(length=255)
+        String(length=PFP_LEN)
     ),
     Column(
         "timestamp",
@@ -103,12 +108,12 @@ scoreboard_total_table = Table(
     metadata,
     Column(
         "match_id",
-        String(length=36),
+        String(length=MATCH_ID_LEN),
         primary_key=True
     ),
     Column(
         "file_id",
-        String(length=200),
+        String(length=FILE_ID_LEN),
         nullable=True
     ),
     Column(
@@ -125,15 +130,15 @@ scoreboard_total_table = Table(
     ),
     Column(
         "map_name",
-        String(length=24)
+        String(length=MAP_LEN)
     ),
     Column(
         "team_1_name",
-        String(length=64)
+        String(length=TEAM_NAME_LEN)
     ),
     Column(
         "team_2_name",
-        String(length=64)
+        String(length=TEAM_NAME_LEN)
     ),
     Column(
         "team_1_score",
@@ -168,13 +173,13 @@ scoreboard_table = Table(
     metadata,
     Column(
         "match_id",
-        String(length=36),
+        String(length=MATCH_ID_LEN),
         ForeignKey("scoreboard_total.match_id", ondelete="CASCADE"),
         primary_key=True
     ),
     Column(
         "steam_id",
-        String(length=64),
+        String(length=TEAM_NAME_LEN),
         ForeignKey("user.steam_id"),
         primary_key=True
     ),

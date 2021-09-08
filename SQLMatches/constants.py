@@ -19,3 +19,12 @@ MAP_IMAGES = {
     "de_train": "assets/images/maps/train.jpg",
     "invalid": "assets/images/maps/invalid.png"
 }
+
+
+TEAM_NAME_LEN = 64
+MAP_LEN = 24
+MATCH_ID_LEN = 36
+STEAM_ID_LEN = 64
+NAME_LEN = 36
+PFP_LEN = 255
+FILE_ID_LEN = 200
