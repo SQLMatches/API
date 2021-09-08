@@ -2,10 +2,12 @@
 Dear SQLMatches users, SQLMatches.com will be offline after the 20th of August 2021.
 We'll be returning whenever `1.0.0` is completed.
 
+[Legacy Plugin](https://github.com/SQLMatches/Plugins/tree/Legacy-0.0.13)
+
 ## Setup
 ### Hosted version
 - Visit [SQLMatches.com](https://sqlmatches.com) & follow the video.
-- Follow the setup section on the [Plugin](https://github.com/SQLMatches/Plugins#setup) repo.
+- Follow the setup section on the [Plugin](https://github.com/SQLMatches/Plugins/tree/Legacy-0.0.13#setup) repo.
 
 ### Self-hosing
 - Install SQLMatches with ``pip3 install SQLMatches --upgrade``.
