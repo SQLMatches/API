@@ -63,6 +63,7 @@ class SQLMatches(Starlette):
 
         if "routes" in kwargs:
             routes = kwargs["routes"] + ROUTES
+            kwargs.pop("routes")
         else:
             routes = ROUTES
 
