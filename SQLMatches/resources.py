@@ -8,6 +8,7 @@ https://github.com/SQLMatches/API/blob/Development/LICENSE
 from aiohttp import ClientSession
 from databases import Database
 from typing import Dict
+from aiojobs import Scheduler
 
 
 class Sessions:
@@ -16,6 +17,7 @@ class Sessions:
 
     requests: ClientSession
     db: Database
+    scheduler: Scheduler
 
 
 class Config:

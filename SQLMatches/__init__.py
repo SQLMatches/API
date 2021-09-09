@@ -6,6 +6,7 @@ https://github.com/SQLMatches/API/blob/Development/LICENSE
 """
 
 import bcrypt
+import aiojobs
 
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
@@ -117,6 +118,7 @@ class SQLMatches(Starlette):
 
         Sessions.db = self._database
         Sessions.requests = ClientSession()
+        Sessions.scheduler = aiojobs.create_scheduler()
 
     async def __shutdown(self) -> None:
         """Closes created sessions.
@@ -124,3 +126,4 @@ class SQLMatches(Starlette):
 
         await self._database.disconnect()
         await Sessions.requests.close()
+        await Sessions.scheduler.close()
