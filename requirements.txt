@@ -17,3 +17,4 @@ python-dotenv
 zipstream
 aiozipstream>=0.4
 aiojobs
+asynctest
