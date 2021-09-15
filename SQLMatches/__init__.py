@@ -107,6 +107,9 @@ class SQLMatches(Starlette):
             **kwargs
         )
 
+        # Anything what requires the Starlette instance should be
+        # ran under neath super
+
         # Register spectree to app
         API.register(self)
 
