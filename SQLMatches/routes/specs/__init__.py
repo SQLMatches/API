@@ -11,7 +11,6 @@ from .match import MatchCreateSpec
 
 
 API = SpecTree(
-    "SQLMatches",
     security_schemes=[
         SecurityScheme(
             name="auth_apiKey",
