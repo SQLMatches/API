@@ -24,4 +24,21 @@ class TestMatch(TestBase):
             "map": "de_mirage"
         })
 
+        self.assertEqual(resp.status_code, 200)
         self.assertIsInstance(resp.json(), dict)
+
+    def test_create_match_invalid_payload(self) -> None:
+        resp = self.client.get("/api/match/create", json={
+            "team_1": {
+            },
+            "team_2": {
+                "name": "2",
+                "side": 0,
+                "score": 0
+            },
+            "map": "de_mirage",
+            "wow": False
+        })
+
+        print(resp.status_code)
+        print(resp.json())
