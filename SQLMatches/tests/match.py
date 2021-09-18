@@ -10,7 +10,7 @@ from .base import TestBase
 
 class TestMatch(TestBase):
     def test_match_create(self) -> None:
-        resp = self.client.get("/api/match/create", json={
+        resp = self.client.post("/api/match/create", json={
             "team_1": {
                 "name": "1",
                 "side": 0,
@@ -28,7 +28,7 @@ class TestMatch(TestBase):
         self.assertIsInstance(resp.json(), dict)
 
     def test_create_match_invalid_payload(self) -> None:
-        resp = self.client.get("/api/match/create", json={
+        resp = self.client.post("/api/match/create", json={
             "team_1": {
             },
             "team_2": {
