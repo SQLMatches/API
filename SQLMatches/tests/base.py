@@ -5,7 +5,9 @@ GNU Affero General Public License v3.0
 https://github.com/SQLMatches/API/blob/Development/LICENSE
 """
 
+import base64
 import asynctest
+
 from starlette.testclient import TestClient
 
 from .shared_vars import DATABASE, ROOT
@@ -18,7 +20,7 @@ class TestBase(asynctest.TestCase):
     client: TestClient
 
     headers = {
-        "Authorization": "basic community:password"
+        "Authorization": "Basic " + str(base64.b64encode(b"community:password"))  # noqa: E501
     }
 
     def setUp(self) -> None:
