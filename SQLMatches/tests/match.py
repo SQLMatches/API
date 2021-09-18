@@ -40,5 +40,5 @@ class TestMatch(TestBase):
             "wow": False
         }, headers=self.headers)
 
-        print(resp.status_code)
-        print(resp.json())
+        self.assertEqual(resp.status_code, 422)
+        self.assertIsInstance(resp.json(), dict)
