@@ -41,4 +41,4 @@ class TestMatch(TestBase):
         }, headers=self.headers)
 
         self.assertEqual(resp.status_code, 422)
-        self.assertIsInstance(resp.json(), dict)
+        self.assertIsInstance(resp.json(), list)
