@@ -5,8 +5,6 @@ GNU Affero General Public License v3.0
 https://github.com/SQLMatches/API/blob/Development/LICENSE
 """
 
-from __future__ import __annotations__
-
 from ..enums import TeamSides
 
 
