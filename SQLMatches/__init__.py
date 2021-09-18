@@ -29,6 +29,7 @@ from .authentication import BasicAuthBackend
 
 from .routes import ROUTES, ERROR_HANDLERS
 from .routes.specs import API
+from .routes.errors import auth_error
 
 
 __version__ = "1.0.0"
@@ -63,7 +64,11 @@ class SQLMatches(Starlette):
                 allow_origins=["*"],
                 allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
             ),
-            Middleware(AuthenticationMiddleware, backend=BasicAuthBackend())
+            Middleware(
+                AuthenticationMiddleware,
+                backend=BasicAuthBackend(),
+                on_error=auth_error
+            )
         ]
 
         # Check if any used kwargs passed

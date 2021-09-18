@@ -10,3 +10,10 @@ def server_error(request: Request, exc: HTTPException) -> JSONResponse:
         error=exc.detail,
         status_code=exc.status_code
     )
+
+
+def auth_error(request: Request, exc: Exception) -> JSONResponse:
+    return error_response(
+        error=str(exc),
+        status_code=401
+    )
