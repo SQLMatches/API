@@ -6,8 +6,15 @@ https://github.com/SQLMatches/API/blob/Development/LICENSE
 """
 
 from starlette.routing import Mount, Route
+from starlette.exceptions import HTTPException
 
 from .match import MatchCreateRoute, MatchScoreboardRoute
+from .errors import server_error
+
+
+ERROR_HANDLERS = {
+    HTTPException: server_error
+}
 
 
 ROUTES = [
@@ -18,6 +25,3 @@ ROUTES = [
         ])
     ])
 ]
-
-
-ERROR_HANDLERS = []

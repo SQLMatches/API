@@ -9,9 +9,11 @@ import bcrypt
 import aiojobs
 
 from starlette.applications import Starlette
+
 from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware.authentication import AuthenticationMiddleware
 
 from typing import Dict
 from databases import Database
@@ -22,6 +24,8 @@ from .constants import MAP_IMAGES
 from .key_loader import KeyLoader
 from .tables import create_tables
 from .misc import add_slash
+
+from .authentication import BasicAuthBackend
 
 from .routes import ROUTES, ERROR_HANDLERS
 from .routes.specs import API
@@ -58,7 +62,8 @@ class SQLMatches(Starlette):
                 CORSMiddleware,
                 allow_origins=["*"],
                 allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
-            )
+            ),
+            Middleware(AuthenticationMiddleware, backend=BasicAuthBackend())
         ]
 
         # Check if any used kwargs passed
@@ -73,7 +78,10 @@ class SQLMatches(Starlette):
             routes = ROUTES
 
         if "exception_handlers" in kwargs:
-            exception_handlers = kwargs["exception_handlers"] + ERROR_HANDLERS
+            exception_handlers = {
+                **kwargs["exception_handlers"],
+                **ERROR_HANDLERS
+            }
             kwargs.pop("exception_handlers")
         else:
             exception_handlers = ERROR_HANDLERS
