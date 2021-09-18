@@ -134,7 +134,7 @@ class SQLMatches(Starlette):
 
         Sessions.db = self._database
         Sessions.requests = ClientSession()
-        Sessions.scheduler = aiojobs.create_scheduler()
+        Sessions.scheduler = await aiojobs.create_scheduler()
 
     async def _shutdown(self) -> None:
         """Closes created sessions.

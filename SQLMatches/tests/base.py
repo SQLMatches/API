@@ -32,9 +32,9 @@ class TestBase(asynctest.TestCase):
             ))
         )
 
-        await self.sqlmatches._startup()
-
         self.client = TestClient(self.sqlmatches)
+
+        await self.sqlmatches._startup()
 
     async def tearDown(self) -> None:
         await self.sqlmatches._shutdown()
