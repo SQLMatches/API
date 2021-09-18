@@ -18,5 +18,4 @@ zipstream
 aiozipstream>=0.4
 aiojobs
 requests
-asynctest
 bcrypt
