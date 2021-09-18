@@ -11,6 +11,7 @@ from .match import MatchCreateSpec
 
 
 API = SpecTree(
+    backend_name="starlette",
     security_schemes=[
         SecurityScheme(
             name="auth_apiKey",
