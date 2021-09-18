@@ -24,7 +24,7 @@ class TestBase(asynctest.TestCase):
         ).decode()
     }
 
-    def setUp(self) -> None:
+    async def setUp(self) -> None:
         self.sqlmatches = SQLMatches(
             **ROOT,
             database=Database("mysql://{username}:{password}@{server}:{port}/{database}?charset=utf8mb4".format(  # noqa: E501
@@ -32,4 +32,9 @@ class TestBase(asynctest.TestCase):
             ))
         )
 
+        await self.sqlmatches._startup()
+
         self.client = TestClient(self.sqlmatches)
+
+    async def tearDown(self) -> None:
+        await self.sqlmatches._shutdown()

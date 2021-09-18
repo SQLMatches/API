@@ -91,8 +91,8 @@ class SQLMatches(Starlette):
         else:
             exception_handlers = ERROR_HANDLERS
 
-        startup_tasks = [self.__startup]
-        shutdown_tasks = [self.__shutdown]
+        startup_tasks = [self._startup]
+        shutdown_tasks = [self._shutdown]
 
         if "on_startup" in kwargs:
             startup_tasks += kwargs["on_startup"]
@@ -126,7 +126,7 @@ class SQLMatches(Starlette):
         # Register spectree to app
         API.register(self)
 
-    async def __startup(self) -> None:
+    async def _startup(self) -> None:
         """Creates needed sessions in context of event loop.
         """
 
@@ -136,7 +136,7 @@ class SQLMatches(Starlette):
         Sessions.requests = ClientSession()
         Sessions.scheduler = aiojobs.create_scheduler()
 
-    async def __shutdown(self) -> None:
+    async def _shutdown(self) -> None:
         """Closes created sessions.
         """
 
