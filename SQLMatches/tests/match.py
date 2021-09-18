@@ -9,7 +9,7 @@ from .base import TestBase
 
 
 class TestMatch(TestBase):
-    def test_match_create(self) -> None:
+    async def test_match_create(self) -> None:
         resp = self.client.post("/api/match/create", json={
             "team_1": {
                 "name": "1",
@@ -27,7 +27,7 @@ class TestMatch(TestBase):
         self.assertEqual(resp.status_code, 200)
         self.assertIsInstance(resp.json(), dict)
 
-    def test_create_match_invalid_payload(self) -> None:
+    async def test_create_match_invalid_payload(self) -> None:
         resp = self.client.post("/api/match/create", json={
             "team_1": {
             },

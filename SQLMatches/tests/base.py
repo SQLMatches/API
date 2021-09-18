@@ -15,6 +15,8 @@ from .. import SQLMatches, Database
 
 
 class TestBase(asynctest.TestCase):
+    use_default_loop = True
+
     sqlmatches: SQLMatches
     client: TestClient
 

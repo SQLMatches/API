@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+
+"""
+GNU Affero General Public License v3.0
+https://github.com/SQLMatches/API/blob/Development/LICENSE
+"""
+
 from starlette.requests import Request
 from starlette.exceptions import HTTPException
 from starlette.responses import JSONResponse
