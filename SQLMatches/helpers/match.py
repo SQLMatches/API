@@ -11,31 +11,22 @@ from sqlalchemy import select
 
 from ..resources import Sessions
 from ..tables import scoreboard_total_table, scoreboard_table, user_table
-from ..enums import MatchStatus, DemoStatus, TeamSides
+from ..enums import MatchStatus, DemoStatus
 from ..errors import MatchIdError
 
 from .misc import uuid4
+from .details import MatchDetails
 
 from .models.match import MatchModel
 from .models.scoreboard import ScoreboardPlayerModel, ScoreboardModel
 
 
-async def create_match(team_1_name: str, team_2_name: str,
-                       team_1_side: TeamSides, team_2_side: TeamSides,
-                       team_1_score: int, team_2_score: int,
-                       map_name: str
-                       ) -> Tuple["MatchModel", "Match"]:
-    """Create a new match.
+async def create_match(details: MatchDetails) -> Tuple["MatchModel", "Match"]:
+    """Create a new MatchRecord .
 
     Parameters
     ----------
-    team_1_name : str
-    team_2_name : str
-    team_1_side : TeamSides
-    team_2_side : TeamSides
-    team_1_score : int
-    team_2_score : int
-    map_name : str
+    details : MatchDetails
 
     Returns
     -------
@@ -45,16 +36,10 @@ async def create_match(team_1_name: str, team_2_name: str,
 
     values = {
         "match_id": uuid4(),
-        "team_1_name": team_1_name,
-        "team_2_name": team_2_name,
-        "team_1_side": team_1_side.value,
-        "team_2_side": team_2_side.value,
-        "team_1_score": team_1_score,
-        "team_2_score": team_2_score,
-        "map_name": map_name,
         "timestamp": datetime.now(),
         "status": MatchStatus.live.value,
-        "demo_status": DemoStatus.no_demo.value
+        "demo_status": DemoStatus.no_demo.value,
+        **details.values
     }
 
     await Sessions.db.execute(
@@ -68,7 +53,16 @@ async def create_match(team_1_name: str, team_2_name: str,
 
 class Match:
     def __init__(self, match_id: str) -> None:
+        """Initialize match .
+
+        Parameters
+        ----------
+        match_id : str
+        """
         self._match_id = match_id
+
+    async def update(self, details: MatchDetails) -> None:
+        pass
 
     async def get(self) -> ScoreboardModel:
         """Get the current scoreboard.

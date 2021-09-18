@@ -16,6 +16,7 @@ from .specs import (
 from .responder import response
 
 from ..helpers.match import create_match, Match
+from ..helpers.details import MatchDetails
 from ..enums import TeamSides
 
 
@@ -31,13 +32,17 @@ class MatchCreateRoute(HTTPEndpoint):
 
         payload = await request.json()
         model, _ = await create_match(
-            team_1_name=payload["team_1"]["name"],
-            team_2_name=payload["team_2"]["name"],
-            team_1_side=TeamSides(payload["team_1"]["side"]),
-            team_2_side=TeamSides(payload["team_2"]["side"]),
-            team_1_score=payload["team_1"]["score"],
-            team_2_score=payload["team_2"]["score"],
-            map_name=payload["map"]
+            MatchDetails(
+                payload["map"]
+            ).team_1(
+                payload["team_1"]["name"],
+                payload["team_1"]["score"],
+                TeamSides(payload["team_1"]["side"])
+            ).team_2(
+                payload["team_2"]["name"],
+                payload["team_2"]["score"],
+                TeamSides(payload["team_2"]["side"])
+            )
         )
         return response(model.api_schema)
 
