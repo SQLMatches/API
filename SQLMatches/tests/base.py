@@ -17,6 +17,10 @@ class TestBase(asynctest.TestCase):
     sqlmatches: SQLMatches
     client: TestClient
 
+    headers = {
+        "Authorization": "basic community:password"
+    }
+
     def setUp(self) -> None:
         self.sqlmatches = SQLMatches(
             **ROOT,

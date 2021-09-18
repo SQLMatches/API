@@ -22,7 +22,7 @@ class TestMatch(TestBase):
                 "score": 0
             },
             "map": "de_mirage"
-        })
+        }, headers=self.headers)
 
         self.assertEqual(resp.status_code, 200)
         self.assertIsInstance(resp.json(), dict)
@@ -38,7 +38,7 @@ class TestMatch(TestBase):
             },
             "map": "de_mirage",
             "wow": False
-        })
+        }, headers=self.headers)
 
         print(resp.status_code)
         print(resp.json())
