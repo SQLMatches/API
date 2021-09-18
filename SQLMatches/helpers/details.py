@@ -26,7 +26,7 @@ class MatchDetails:
         if score is not None:
             self.__values["team_1_score"] = score
         if side is not None:
-            self.__values["team_1_side"] = side
+            self.__values["team_1_side"] = side.value
         return self
 
     def team_2(self, name: str = None, score: int = None,
@@ -36,5 +36,5 @@ class MatchDetails:
         if score is not None:
             self.__values["team_2_score"] = score
         if side is not None:
-            self.__values["team_2_side"] = side
+            self.__values["team_2_side"] = side.value
         return self
