@@ -1,3 +1,6 @@
+# 1.0.0 will be released whenever I'm ready to work on this project again
+For the past 4 years I've been coding CS: GO systems, for now i need a break.
+
 # SQLMatches new direction
 - Always open source
 - Only self hosted
