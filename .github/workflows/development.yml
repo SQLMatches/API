@@ -33,15 +33,3 @@ jobs:
         run: npm install pyright -g
       - name: Run pyright
         run: pyright SQLMatches/*
-      - name: MySQL server
-        uses: mirromutth/mysql-action@v1.1
-        with:
-          mysql database: ${{ secrets.DATABASE_DB }}
-          mysql user: ${{ secrets.DATABASE_USER }}
-          mysql password: ${{ secrets.DATABASE_PASS }}
-          host port: 3800
-          container port: 3800
-      - name: Wait for MySQL to startup
-        run: sleep 15
-      - name: Run unit tests
-        run: python run_tests.py --root_steam_id ${{ secrets.ROOT_STEAM_ID }} --db_username ${{ secrets.DATABASE_USER }} --db_password ${{ secrets.DATABASE_PASS }} --db_server 127.0.0.1 --db_port 3800 --db_database ${{ secrets.DATABASE_DB }}
