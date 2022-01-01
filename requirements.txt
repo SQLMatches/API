@@ -1,0 +1,6 @@
+falcon
+jsonschema
+uvicorn
+bcrypt
+aiofiles
+colorama

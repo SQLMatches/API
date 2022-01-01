@@ -1,30 +1,8 @@
-# 1.0.0 will be released whenever I'm ready to work on this project again
-For the past 4 years I've been coding CS: GO systems, for now i need a break.
-
-# SQLMatches new direction
-- Always open source
-- Only self hosted
-- Simple
-- API
-- Demo Saving
-- Player statistics
-- Match recording
+## Setup
+### Using RClone to store demos remotely ([Supported services](https://rclone.org/overview/))
+- Follow [this guide](https://rclone.org/commands/rclone_mount/) for mounting a remote resource as a file system.
+- Configure `DemoSettings` to point towards the mount.
 
 # Legacy versions of SQLMatches
 - [Python - 0.0.13 - 2019 to 2020](https://github.com/SQLMatches/API/tree/0.0.13)
 - [PHP - 2018 to 2019](https://github.com/SQLMatches/API/tree/Legacy-PHP)
-
-# Thanks to
-- [OpenQueue](https://github.com/OpenQueue/Base) - A lot of code was ported from this system to SQLMatches.
-- [WardPearce](https://github.com/WardPearce) - [backblaze](https://github.com/WardPearce/backblaze) - Contributor - Maintainer
-- [encode](https://www.encode.io/) - [databases](https://www.encode.io/databases/) - [uvicorn](http://www.uvicorn.org/) - [starlette](https://www.starlette.io/)
-- [Miguel Grinberg](https://github.com/miguelgrinberg) - [socketio](https://github.com/miguelgrinberg/python-socketio)
-- [aio-libs](https://github.com/aio-libs) - [aiocache](https://github.com/aio-libs/aiocache) - [aiohttp](https://github.com/aio-libs/aiohttp) - [aiomysql](https://github.com/aio-libs/aiomysql) - [aiojobs](https://github.com/aio-libs/aiojobs)
-- [cole](https://github.com/cole) - [aiosmtplib](https://github.com/cole/aiosmtplib)
-- [Martin Richard](https://github.com/Martiusweb) - [asynctest](https://github.com/Martiusweb/asynctest/)
-- [0b01001001](https://github.com/0b01001001) - [spectree](https://github.com/0b01001001/spectree)
-- [sqlalchemy](https://www.sqlalchemy.org/)
-- [Tin Tvrtković](https://github.com/Tinche) - [aiofiles](https://github.com/Tinche/aiofiles)
-- [Omnilib](https://github.com/omnilib) - [aiosqlite](https://github.com/omnilib/aiosqlite)
-- [MagicStack](https://github.com/MagicStack) - [asyncpg](https://github.com/MagicStack/asyncpg)
-- To all the developers who helped to make these packages!
