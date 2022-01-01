@@ -4,3 +4,8 @@ uvicorn
 bcrypt
 aiofiles
 colorama
+sqlalchemy
+databases
+asyncpg
+aiomysql
+aiosqlite
