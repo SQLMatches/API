@@ -19,7 +19,7 @@ class DemoSettings:
             self._pathway = pathway
         else:
             self._pathway = path.join(
-                path.abspath(path.dirname(__file__)),
+                path.abspath(path.dirname(__name__)),
                 "demos"
             )
 

@@ -5,17 +5,27 @@ from bcrypt import gensalt, hashpw
 from secrets import token_urlsafe
 from colorama import init, Fore
 from os import get_terminal_size
+from databases import Database
 
-from .settings import DemoSettings
-from .resources import Config
+from .settings import DemoSettings, DatabaseSettings
+from .resources import Config, Session
 from .http import APP
 
 init()
 
 
+__all__ = [
+    "SQLMatches",
+    "DatabaseSettings",
+    "DemoSettings"
+]
+
+
 class SQLMatches:
-    def __init__(self, demo_settings: DemoSettings) -> None:
+    def __init__(self, demo_settings: DemoSettings,
+                 database_settings: DatabaseSettings) -> None:
         Config.demo = demo_settings
+        Session.db = Database(database_settings._url)
 
         self.__root_generate_pass = token_urlsafe(64)
         Config.root_generate_hash = hashpw(
