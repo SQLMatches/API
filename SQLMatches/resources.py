@@ -9,3 +9,6 @@ class Session:
 class Config:
     demo: DemoSettings
     root_generate_hash: bytes
+    error_codes = {
+        "match_file_not_found": 1000
+    }

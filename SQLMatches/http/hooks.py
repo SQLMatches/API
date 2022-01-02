@@ -37,7 +37,9 @@ def required_scopes(scopes: Union[List[str], str]) -> Callable:
         steam_id, api_key = request_to_basic_auth(req)
 
         row = await Session.db.fetch_one(
-            select([api_key_table.c.scopes, api_key_table.c.api_key]).where(
+            select(
+                [api_key_table.c.scopes, api_key_table.c.api_key]
+            ).select_from(api_key_table).where(
                 api_key_table.c.steam_id == steam_id
             )
         )

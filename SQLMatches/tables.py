@@ -163,6 +163,10 @@ scoreboard_total_table = Table(
         Integer
     ),
     Column(
+        "demo_size",  # Size of demo in bytes
+        Integer
+    ),
+    Column(
         "map",
         String(length=24)
     ),
