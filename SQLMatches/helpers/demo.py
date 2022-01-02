@@ -1,7 +1,7 @@
 import aiofiles
 import aiofiles.os
 
-from falcon import Request
+from falcon import Request, Response
 from falcon.errors import HTTPNotFound
 
 from os import path
@@ -10,7 +10,7 @@ from ..resources import Config
 
 
 class DemoFile:
-    def __init__(self, match_id: str, req: Request) -> None:
+    def __init__(self, match_id: str) -> None:
         """Interact with the demo file.
 
         Parameters
@@ -20,7 +20,6 @@ class DemoFile:
         """
 
         self._match_id = match_id
-        self._req = req
         self._pathway = path.join(
             Config.demo._pathway,
             match_id + Config.demo._extension
@@ -36,13 +35,16 @@ class DemoFile:
 
         return await aiofiles.os.path.exists(self._pathway)  # type: ignore
 
-    async def save(self) -> None:
+    async def download(self, resp: Response) -> None:
+        resp.stream = await aiofiles.open(self._pathway, "rb")
+
+    async def save(self, req: Request) -> None:
         """Save the demo to disk.
         """
 
         size = 0
         async with aiofiles.open(self._pathway, "wb") as f_:
-            async for chunk in self._req.stream:
+            async for chunk in req.stream:
                 size += len(chunk)
                 await f_.write(chunk)
 
