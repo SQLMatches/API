@@ -10,7 +10,6 @@ from .settings import DemoSettings
 from .resources import Config
 from .http import APP
 
-
 init()
 
 

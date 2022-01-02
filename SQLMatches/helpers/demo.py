@@ -27,17 +27,33 @@ class DemoFile:
         )
 
     async def exists(self) -> bool:
+        """Return True if the path exists False otherwise.
+
+        Returns
+        -------
+        bool
+        """
+
         return await aiofiles.os.path.exists(self._pathway)  # type: ignore
 
     async def save(self) -> None:
-        size = 0
+        """Save the demo to disk.
+        """
 
+        size = 0
         async with aiofiles.open(self._pathway, "wb") as f_:
             async for chunk in self._req.stream:
                 size += len(chunk)
                 await f_.write(chunk)
 
     async def delete(self) -> None:
+        """Delete the match from disk.
+
+        Raises
+        ------
+        HTTPNotFound
+        """
+
         if not await self.exists():
             raise HTTPNotFound(
                 title="Match ID not found",

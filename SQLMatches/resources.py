@@ -1,4 +1,9 @@
+from databases import Database
 from .settings import DemoSettings
+
+
+class Session:
+    db: Database
 
 
 class Config:

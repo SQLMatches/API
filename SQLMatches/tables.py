@@ -103,6 +103,31 @@ statistic_table = Table(
     mysql_charset="utf8mb4"
 )
 
+api_key_table = Table(
+    "api_key",
+    metadata,
+    Column(
+        "api_key",
+        String(length=70),
+        primary_key=True
+    ),
+    Column(
+        "steam_id",
+        String(length=64),
+        ForeignKey("statistic.steam_id")
+    ),
+    Column(
+        "timestamp",
+        TIMESTAMP
+    ),
+    Column(
+        "scopes",
+        String(length=556)
+    ),
+    mysql_engine="InnoDB",
+    mysql_charset="utf8mb4"
+)
+
 # Scoreboard total table
 # Status codes
 # 0 - Finished
@@ -172,7 +197,6 @@ scoreboard_total_table = Table(
     mysql_engine="InnoDB",
     mysql_charset="utf8mb4"
 )
-
 
 # Team Codes
 # 0 = Team 1
