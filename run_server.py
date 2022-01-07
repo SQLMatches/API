@@ -4,9 +4,11 @@ from SQLMatches import SQLMatches, DemoSettings, DatabaseSettings
 app = SQLMatches(
     DemoSettings(),
     DatabaseSettings(
-        username="...",
-        password="...",
-        database="sqlmatches"
+        username="greg",
+        password="b@Y6ah*955l&A5p$!B",
+        database="sqlmatchesDb",
+        server="localhost",
+        port=3306
     )
 )
 

@@ -10,6 +10,7 @@ from databases import Database
 from .settings import DemoSettings, DatabaseSettings
 from .resources import Config, Session
 from .http import APP
+from .tables import create_tables
 
 init()
 
@@ -32,6 +33,19 @@ class SQLMatches:
             self.__root_generate_pass.encode(), gensalt()
         )
 
+        create_tables(database_settings._url)
+
+    @property
+    def root_password(self) -> str:
+        """The password for the root user.
+
+        Returns
+        -------
+        str
+        """
+
+        return self.__root_generate_pass
+
     @property
     def app(self) -> asgi.App:
         """Return the asgi application.
@@ -44,6 +58,9 @@ class SQLMatches:
         return APP
 
     def serve(self, **kwargs) -> None:
+        """Serve the HTTP server.
+        """
+
         def print_line() -> None:
             try:
                 terminal_size = get_terminal_size()
