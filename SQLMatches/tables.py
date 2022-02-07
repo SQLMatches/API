@@ -222,6 +222,31 @@ scoreboard_total_table = Table(
     mysql_charset="utf8mb4"
 )
 
+demo_log_table = Table(
+    "demo_log",
+    metadata,
+    Column(
+        "log_id",
+        String(length=36),
+        primary_key=True
+    ),
+    Column(
+        "match_id",
+        String(length=36),
+        ForeignKey("scoreboard_total.match_id", ondelete="CASCADE")
+    ),
+    Column(
+        "steam_id",  # No a forign key because ID might not in stats.
+        String(length=64)
+    ),
+    Column(
+        "downloaded",
+        TIMESTAMP
+    ),
+    mysql_engine="InnoDB",
+    mysql_charset="utf8mb4"
+)
+
 # Team Codes (Who they can spectate, if a specific team they'll be coach)
 # 0 = Any
 # 1 = Team 1
@@ -244,7 +269,14 @@ spectator_table = Table(
     Column(
         "team",
         Integer
-    )
+    ),
+    PrimaryKeyConstraint(
+        "steam_id",
+        "match_id",
+        sqlite_on_conflict="REPLACE"
+    ),
+    mysql_engine="InnoDB",
+    mysql_charset="utf8mb4"
 )
 
 # Team Codes

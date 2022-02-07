@@ -1,4 +1,3 @@
-from typing import TYPE_CHECKING
 import aiofiles
 import aiofiles.os
 
@@ -6,9 +5,12 @@ from falcon import Request, Response
 
 from sqlalchemy import select
 from os import path
+from typing import TYPE_CHECKING
+from datetime import datetime
+from uuid import uuid4
 
 from ...resources import Config, Session
-from ...tables import scoreboard_total_table
+from ...tables import scoreboard_total_table, demo_log_table
 from ...errors import DemoNotFound
 
 
@@ -59,12 +61,14 @@ class DemoFile:
 
         return await aiofiles.os.path.exists(self._pathway)  # type: ignore
 
-    async def download(self, resp: Response) -> None:
+    async def download(self, resp: Response, steam_id: str = None) -> None:
         """Stream the demo to client.
 
         Parameters
         ----------
         resp : Response
+        steam_id : str, optional
+            If provided download will be logged, by default None
 
         Raises
         ------
@@ -72,6 +76,14 @@ class DemoFile:
         """
 
         await self.__exist_raise()
+
+        if steam_id is not None:
+            await Session.db.execute(demo_log_table.insert().values(
+                match_id=self.__upper.match_id,
+                steam_id=steam_id,
+                downloaded=datetime.now(),
+                log_id=str(uuid4())
+            ))
 
         demo_size = await Session.db.fetch_val(
             select([scoreboard_total_table.c.demo_size]).select_from(
