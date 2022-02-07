@@ -184,17 +184,14 @@ class MatchPlayers:
         List[str]
         """
 
-        steam_ids = await Session.db.fetch_all(
-            select([scoreboard_table.c.steam_id]).select_from(
-                scoreboard_table
-            ).where(scoreboard_table.c.steam_id.in_(
-                self.__player_in_match_query
-            ))
-        )
+        query = select([scoreboard_table.c.steam_id]).select_from(
+            scoreboard_table
+        ).where(scoreboard_table.c.steam_id.in_(
+            self.__player_in_match_query
+        ))
 
-        if not steam_ids:
-            return []
+        steam_ids = []
+        async for player in Session.db.iterate(query):
+            steam_ids.append(player["steam_id"])
 
-        return [
-            row["steam_id"] for row in steam_ids
-        ]
+        return steam_ids

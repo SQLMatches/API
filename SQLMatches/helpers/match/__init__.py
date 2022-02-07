@@ -1,11 +1,11 @@
 from uuid import uuid4
 from sqlalchemy import select, func
-from typing import List
+from typing import Dict, List
 from datetime import datetime
 
 from sqlalchemy.sql.elements import ClauseElement
 
-from ...tables import scoreboard_total_table
+from ...tables import scoreboard_total_table, spectator_table
 from ...resources import Session
 
 from .players import MatchPlayers
@@ -33,6 +33,13 @@ class Match:
 
     @property
     def demo(self) -> DemoFile:
+        """Interact with your demo.
+
+        Returns
+        -------
+        DemoFile
+        """
+
         return DemoFile(self)
 
     def players(self, players: List[str]) -> MatchPlayers:
@@ -49,6 +56,26 @@ class Match:
         """
 
         return MatchPlayers(self, players)
+
+    async def spectators(self) -> Dict[str, int]:
+        """Return a dictionary of spectator IDs with team.
+
+        Returns
+        -------
+        Dict[str, int]
+            Key is SteamID64, value is team they're spectating.
+        """
+
+        query = select([
+            spectator_table.c.steam_id, spectator_table.c.team
+        ]).select_from(spectator_table).where(
+            spectator_table.c.match_id == self.match_id
+        )
+        spectators = {}
+        async for spectator in Session.db.iterate(query):
+            spectators[spectator["steam_id"]] = spectator["team"]
+
+        return spectators
 
     async def exists(self) -> bool:
         """Returns True if the current match exists.
