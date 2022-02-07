@@ -159,7 +159,7 @@ scoreboard_total_table = Table(
         primary_key=True
     ),
     Column(
-        "timestamp",
+        "created",
         TIMESTAMP
     ),
     Column(
@@ -205,6 +205,18 @@ scoreboard_total_table = Table(
         "team_2_side",
         Integer,
         default=0
+    ),
+    Column(
+        "pre_setup",
+        Boolean
+    ),
+    Column(
+        "require_ready",
+        Boolean
+    ),
+    Column(
+        "connect_wait",
+        Integer
     ),
     mysql_engine="InnoDB",
     mysql_charset="utf8mb4"

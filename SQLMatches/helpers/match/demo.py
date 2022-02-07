@@ -1,3 +1,4 @@
+from typing import TYPE_CHECKING
 import aiofiles
 import aiofiles.os
 
@@ -6,30 +7,34 @@ from falcon import Request, Response
 from sqlalchemy import select
 from os import path
 
-from ..resources import Config, Session
-from ..tables import scoreboard_total_table
-from ..errors import DemoNotFound
+from ...resources import Config, Session
+from ...tables import scoreboard_total_table
+from ...errors import DemoNotFound
+
+
+if TYPE_CHECKING:
+    from . import Match
 
 
 class DemoFile:
-    def __init__(self, match_id: str) -> None:
+    def __init__(self, upper: "Match") -> None:
         """Interact with the demo file.
 
         Parameters
         ----------
-        match_id : str
+        upper : Match
         """
 
-        self._match_id = match_id
+        self.__upper = upper
         self._pathway = path.join(
             Config.demo._pathway,
-            match_id + Config.demo._extension
+            self.__upper.match_id + Config.demo._extension
         )
 
     async def __update_match(self, **kwargs) -> None:
         await Session.db.execute(
             scoreboard_total_table.update(**kwargs).where(
-                scoreboard_total_table.c.match_id == self._match_id
+                scoreboard_total_table.c.match_id == self.__upper.match_id
             )
         )
 
@@ -72,7 +77,7 @@ class DemoFile:
             select([scoreboard_total_table.c.demo_size]).select_from(
                 scoreboard_total_table
             ).where(
-                scoreboard_total_table.c.match_id == self._match_id
+                scoreboard_total_table.c.match_id == self.__upper.match_id
             )
         )
 

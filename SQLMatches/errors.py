@@ -55,7 +55,7 @@ class MatchIdTaken(MatchError):
         super().__init__(msg, status_code, error_code, *args)
 
 
-class DemoError(SQLMatchesError):
+class DemoError(MatchError):
     pass
 
 

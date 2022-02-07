@@ -1,20 +1,20 @@
 from falcon import Request, Response, before
 
 from ..hooks import required_scopes
-from ...helpers.demo import DemoFile
+from ...helpers.match import Match
 
 
 class DemoResource:
     async def on_get(self, req: Request, resp: Response,
                      match_id: str) -> None:
-        await DemoFile(match_id).download(resp)
+        await Match(match_id).demo.download(resp)
 
     @before(required_scopes("demo.upload"), is_async=True)
     async def on_put(self, req: Request, resp: Response,
                      match_id: str) -> None:
-        await DemoFile(match_id).save(req)
+        await Match(match_id).demo.save(req)
 
     @before(required_scopes("demo.delete"), is_async=True)
     async def on_delete(self, req: Request, resp: Response,
                         match_id: str) -> None:
-        await DemoFile(match_id).delete()
+        await Match(match_id).demo.delete()
