@@ -222,6 +222,31 @@ scoreboard_total_table = Table(
     mysql_charset="utf8mb4"
 )
 
+# Team Codes (Who they can spectate, if a specific team they'll be coach)
+# 0 = Any
+# 1 = Team 1
+# 2 = Team 2
+spectator_table = Table(
+    "spectator",
+    metadata,
+    Column(
+        "match_id",
+        String(length=36),
+        ForeignKey("scoreboard_total.match_id", ondelete="CASCADE"),
+        primary_key=True
+    ),
+    Column(
+        "steam_id",
+        String(length=64),
+        ForeignKey("statistic.steam_id"),
+        primary_key=True
+    ),
+    Column(
+        "team",
+        Integer
+    )
+)
+
 # Team Codes
 # 1 = Team 1
 # 2 = Team 2
