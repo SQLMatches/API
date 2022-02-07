@@ -2,13 +2,13 @@ import aiofiles
 import aiofiles.os
 
 from falcon import Request, Response
-from falcon.errors import HTTPNotFound
 
 from sqlalchemy import select
 from os import path
 
 from ..resources import Config, Session
 from ..tables import scoreboard_total_table
+from ..errors import DemoNotFound
 
 
 class DemoFile:
@@ -18,7 +18,6 @@ class DemoFile:
         Parameters
         ----------
         match_id : str
-        req : Request
         """
 
         self._match_id = match_id
@@ -35,13 +34,15 @@ class DemoFile:
         )
 
     async def __exist_raise(self) -> None:
+        """Raise a DemoNotFound if the demo doesn't exist.
+
+        Raises
+        ------
+        DemoNotFound
+        """
+
         if not await self.exists():
-            raise HTTPNotFound(
-                title="Match demo with ID not found",
-                description=("Match demo with ID "
-                             f"{self._match_id} doesn't exist"),
-                code=Config.error_codes["match_file_not_found"]
-            )
+            raise DemoNotFound()
 
     async def exists(self) -> bool:
         """Return True if the path exists False otherwise.
@@ -59,6 +60,10 @@ class DemoFile:
         Parameters
         ----------
         resp : Response
+
+        Raises
+        ------
+        DemoNotFound
         """
 
         await self.__exist_raise()
@@ -72,10 +77,14 @@ class DemoFile:
         )
 
         resp.content_length = str(demo_size) if demo_size is not None else None
-        resp.stream = await aiofiles.open(self._pathway, "rb")
+        resp.stream = await aiofiles.open(self._pathway, "rb")  # falcon magic
 
     async def save(self, req: Request) -> None:
-        """Save the demo to disk.
+        """Save the match to the local path.
+
+        Parameters
+        ----------
+        req : Request
         """
 
         size = 0
@@ -91,7 +100,7 @@ class DemoFile:
 
         Raises
         ------
-        HTTPNotFound
+        DemoNotFound
         """
 
         await self.__exist_raise()

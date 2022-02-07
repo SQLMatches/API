@@ -65,6 +65,10 @@ statistic_table = Table(
         String(length=42)
     ),
     Column(
+        "pfp",
+        String(length=70)
+    ),
+    Column(
         "kills",
         Integer,
         default=0
@@ -98,6 +102,10 @@ statistic_table = Table(
         "mvps",
         Integer,
         default=0
+    ),
+    Column(
+        "created",
+        TIMESTAMP
     ),
     mysql_engine="InnoDB",
     mysql_charset="utf8mb4"
@@ -203,8 +211,8 @@ scoreboard_total_table = Table(
 )
 
 # Team Codes
-# 0 = Team 1
-# 1 = Team 2
+# 1 = Team 1
+# 2 = Team 2
 scoreboard_table = Table(
     "scoreboard",
     metadata,

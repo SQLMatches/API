@@ -7,7 +7,7 @@ from colorama import init, Fore
 from os import get_terminal_size
 from databases import Database
 
-from .settings import DemoSettings, DatabaseSettings
+from .settings import DemoSettings, DatabaseSettings, SteamSettings
 from .resources import Config, Session
 from .http import APP
 from .tables import create_tables
@@ -24,8 +24,11 @@ __all__ = [
 
 class SQLMatches:
     def __init__(self, demo_settings: DemoSettings,
-                 database_settings: DatabaseSettings) -> None:
+                 database_settings: DatabaseSettings,
+                 steam_settings: SteamSettings) -> None:
         Config.demo = demo_settings
+        Config.steam = steam_settings
+
         Session.db = Database(database_settings._url)
 
         self.__root_generate_pass = token_urlsafe(64)

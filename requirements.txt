@@ -9,3 +9,4 @@ databases
 asyncpg
 aiomysql
 aiosqlite
+aiohttp
