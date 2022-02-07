@@ -6,6 +6,7 @@ from sqlalchemy.sql.elements import ClauseElement
 
 from ...tables import scoreboard_table
 from ...resources import Session, Config
+from ...errors import MatchNotFound
 
 from ..sql_on_conflict import on_scoreboard_conflict, on_statistic_conflict
 
@@ -37,7 +38,14 @@ class MatchPlayers:
         ----------
         team : int
             Team number, normally 1 or 2.
+
+        Raises
+        ------
+        MatchNotFound
         """
+
+        if not await self.__upper.exists():
+            raise MatchNotFound()
 
         steam_data = {}
         async with Session.requests.get(
