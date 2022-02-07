@@ -51,6 +51,13 @@ class Match:
         return MatchPlayers(self, players)
 
     async def exists(self) -> bool:
+        """Returns True if the current match exists.
+
+        Returns
+        -------
+        bool
+        """
+
         return await Session.db.fetch_val(
             select([func.count()]).select_from(
                 scoreboard_total_table
