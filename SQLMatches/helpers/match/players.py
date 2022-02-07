@@ -83,7 +83,7 @@ class MatchPlayers:
             scoreboard.append({
                 "steam_id": player,
                 "match_id": self.__upper.match_id,
-                "team": 0,
+                "team": team,
                 "alive": 0,
                 "ping": 0,
                 "kills": 0,
