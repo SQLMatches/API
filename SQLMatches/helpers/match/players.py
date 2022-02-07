@@ -151,7 +151,6 @@ class MatchPlayers:
             on_statistic_conflict(),
             stats
         )
-
         await Session.db.execute_many(
             on_scoreboard_conflict(),
             scoreboard

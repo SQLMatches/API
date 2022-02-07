@@ -145,7 +145,7 @@ api_key_table = Table(
 # 0 - No demo
 # 1 - Processing
 # 2 - Ready for Download
-# 3 - Expired
+# 3 - Deleted
 
 # Team Sides
 # 0 - CT

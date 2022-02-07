@@ -92,13 +92,15 @@ class DemoFile:
         req : Request
         """
 
+        await self.__update_match(demo_status=1)
+
         size = 0
         async with aiofiles.open(self._pathway, "wb") as f_:
             async for chunk in req.stream:
                 size += len(chunk)
                 await f_.write(chunk)
 
-        await self.__update_match(demo_size=size)
+        await self.__update_match(demo_size=size, demo_status=2)
 
     async def delete(self) -> None:
         """Delete the match from disk.
@@ -110,3 +112,4 @@ class DemoFile:
 
         await self.__exist_raise()
         await aiofiles.os.remove(self._pathway)
+        await self.__update_match(demo_size=0, demo_status=3)

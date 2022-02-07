@@ -19,7 +19,7 @@ class Match:
         Parameters
         ----------
         match_id : str, optional
-            [description], by default None
+            If not provided random one will be generated, by default None
         """
 
         if match_id is None:
@@ -30,6 +30,18 @@ class Match:
     @property
     def __match_id_query(self) -> ClauseElement:
         return scoreboard_total_table.c.match_id == self.match_id
+
+    @property
+    def match_id(self) -> str:
+        """The ID of the match.
+
+        Returns
+        -------
+        str
+            ID of match
+        """
+
+        return self.__match_id
 
     @property
     def demo(self) -> DemoFile:
@@ -93,6 +105,9 @@ class Match:
             )
         ) > 0
 
+    async def scoreboard(self) -> None:
+        pass
+
     async def update(self, team_1_name: str = None, map_: str = None,
                      status: int = None, demo_status: int = None,
                      team_2_name: str = None, team_1_score: int = None,
@@ -136,15 +151,3 @@ class Match:
             scoreboard_total_table.insert(
                 **values
             )
-
-    @property
-    def match_id(self) -> str:
-        """The ID of the match.
-
-        Returns
-        -------
-        str
-            ID of match
-        """
-
-        return self.__match_id
