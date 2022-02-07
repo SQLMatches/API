@@ -182,6 +182,7 @@ class MatchPlayers:
         Returns
         -------
         List[str]
+            SteamID64
         """
 
         query = select([scoreboard_table.c.steam_id]).select_from(
