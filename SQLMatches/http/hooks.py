@@ -45,9 +45,13 @@ def required_scopes(scopes: Union[List[str], str]) -> Callable:
         )
 
         if (not row or not row["scopes"] or
-            not checkpw(api_key.encode(), row["api_key"].encode())
-                or row["scopes"].strip(",") not in scopes):
+                not checkpw(api_key.encode(), row["api_key"].encode())):
             raise HTTPUnauthorized()
+        else:
+            user_scopes = row["scopes"].strip(",")
+            for scope in scopes:
+                if scope not in user_scopes:
+                    raise HTTPUnauthorized()
 
         req.context.steam_id = steam_id
 
