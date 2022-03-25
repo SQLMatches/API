@@ -5,8 +5,9 @@ from datetime import datetime
 from sqlalchemy.sql.elements import ClauseElement
 
 from ...tables import scoreboard_table, spectator_table
-from ...resources import Session, Config
+from ...resources import Session
 from ...errors import MatchNotFound
+from ...env import STEAM_SETTINGS
 
 from ..sql_on_conflict import on_scoreboard_conflict, on_statistic_conflict
 
@@ -34,8 +35,8 @@ class MatchPlayers:
     async def __format_stats(self) -> dict:
         steam_data = {}
         async with Session.requests.get(
-            Config.steam._api_url +
-            (f"ISteamUser/GetPlayerSummaries/v2/?key={Config.steam._api_key}"
+            STEAM_SETTINGS._api_url +
+            (f"ISteamUser/GetPlayerSummaries/v2/?key={STEAM_SETTINGS._api_key}"
              f"&steamids={','.join(self.players)}")
         ) as resp:
             if resp.status == 200:

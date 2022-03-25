@@ -3,16 +3,14 @@ from os import path, mkdir
 
 
 class DemoSettings:
-    def __init__(self, pathway: Optional[str] = None,
-                 extension: str = ".dem.bz2") -> None:
+    def __init__(self, pathway: Optional[str],
+                 extension: str) -> None:
         """Initialize the demo directory.
 
         Parameters
         ----------
-        pathway : Optional[str], optional
-            by default None
-        extension: str,
-            by default ".dem.bz2"
+        pathway : Optional[str]
+        extension: str
         """
 
         if pathway:
@@ -23,7 +21,10 @@ class DemoSettings:
                 "demos"
             )
 
-        if not path.exists(self._pathway):
-            mkdir(self._pathway)
+        try:
+            if not path.exists(self._pathway):
+                mkdir(self._pathway)
+        except Exception:
+            pass
 
         self._extension = extension

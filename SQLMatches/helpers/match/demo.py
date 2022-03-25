@@ -5,13 +5,14 @@ from falcon import Request, Response
 
 from sqlalchemy import select
 from os import path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from datetime import datetime
 from uuid import uuid4
 
-from ...resources import Config, Session
+from ...resources import Session
 from ...tables import scoreboard_total_table, demo_log_table
 from ...errors import DemoNotFound
+from ...env import DEMO_SETTINGS
 
 
 if TYPE_CHECKING:
@@ -29,8 +30,8 @@ class DemoFile:
 
         self.__upper = upper
         self._pathway = path.join(
-            Config.demo._pathway,
-            self.__upper.match_id + Config.demo._extension
+            DEMO_SETTINGS._pathway,
+            self.__upper.match_id + DEMO_SETTINGS._extension
         )
 
     async def __update_match(self, **kwargs) -> None:
@@ -61,7 +62,8 @@ class DemoFile:
 
         return await aiofiles.os.path.exists(self._pathway)  # type: ignore
 
-    async def download(self, resp: Response, steam_id: str = None) -> None:
+    async def download(self, resp: Response,
+                       steam_id: Optional[str] = None) -> None:
         """Stream the demo to client.
 
         Parameters

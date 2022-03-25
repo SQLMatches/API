@@ -10,4 +10,4 @@ asyncpg
 aiomysql
 aiosqlite
 aiohttp
-FalconSignedSessions
+python-dotenv

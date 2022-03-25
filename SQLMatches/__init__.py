@@ -7,36 +7,31 @@ from colorama import init, Fore
 from os import get_terminal_size
 from databases import Database
 
-from .settings import DemoSettings, DatabaseSettings, SteamSettings
 from .resources import Config, Session
 from .http import APP
 from .tables import create_tables
+
+from .env import DATABASE_SETTINGS, FRONTEND_URL
+
 
 init()
 
 
 __all__ = [
-    "SQLMatches",
-    "DatabaseSettings",
-    "DemoSettings"
+    "SQLMatches"
 ]
 
 
 class SQLMatches:
-    def __init__(self, demo_settings: DemoSettings,
-                 database_settings: DatabaseSettings,
-                 steam_settings: SteamSettings) -> None:
-        Config.demo = demo_settings
-        Config.steam = steam_settings
+    def __init__(self) -> None:
+        Session.db = Database(DATABASE_SETTINGS._url)
 
-        Session.db = Database(database_settings._url)
-
-        self.__root_generate_pass = token_urlsafe(64)
+        self.__root_generate_pass = token_urlsafe(44)
         Config.root_generate_hash = hashpw(
             self.__root_generate_pass.encode(), gensalt()
         )
 
-        create_tables(database_settings._url)
+        create_tables(DATABASE_SETTINGS._url)
 
     @property
     def root_password(self) -> str:
@@ -87,8 +82,8 @@ _\ \/ \_/ / /___/ /\/\ \ (_| | || (__| | | |  __/\__ \
 
         print((f"\nVisit URL below to generate new {Fore.YELLOW}root accounts"
               f" {Fore.RED}(NEVER SHARE THIS URL WITH ANYONE){Fore.RESET}:"))
-        print(f"<url>/root/{self.__root_generate_pass}")
-        print((Fore.YELLOW + "Simply restart the app to invalidate the"
+        print(f"{FRONTEND_URL}/root/{self.__root_generate_pass}")
+        print((Fore.YELLOW + "Simply restart the web server to invalidate the"
                " current link & to generate a new one."), Fore.RESET)
 
         print_line()

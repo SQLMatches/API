@@ -1,6 +1,6 @@
 from uuid import uuid4
 from sqlalchemy import select, func
-from typing import Dict, List
+from typing import Dict, List, Optional
 from datetime import datetime
 
 from sqlalchemy.sql.elements import ClauseElement
@@ -19,7 +19,7 @@ from .demo import DemoFile
 
 
 class Match:
-    def __init__(self, match_id: str = None) -> None:
+    def __init__(self, match_id: Optional[str] = None) -> None:
         """Interact / create a match.
 
         Parameters
@@ -212,12 +212,18 @@ class Match:
         else:
             raise MatchNotFound()
 
-    async def update(self, team_1_name: str = None, map_: str = None,
-                     status: int = None, demo_status: int = None,
-                     team_2_name: str = None, team_1_score: int = None,
-                     team_2_score: int = None, team_1_side: int = None,
-                     team_2_side: int = None, pre_setup: bool = None,
-                     require_ready: bool = None, connect_wait: int = None
+    async def update(self, team_1_name: Optional[str] = None,
+                     map_: Optional[str] = None,
+                     status: Optional[int] = None,
+                     demo_status: Optional[int] = None,
+                     team_2_name: Optional[str] = None,
+                     team_1_score: Optional[int] = None,
+                     team_2_score: Optional[int] = None,
+                     team_1_side: Optional[int] = None,
+                     team_2_side: Optional[int] = None,
+                     pre_setup: Optional[bool] = None,
+                     require_ready: Optional[bool] = None,
+                     connect_wait: Optional[int] = None
                      ) -> ScoreboardModel:
         """Update / create the match.
 
@@ -284,7 +290,7 @@ class Match:
                 self.__match_id_query
             ).values(**values)
         else:
-            values["match_id"] == self.match_id
+            values["match_id"] = self.match_id
             values["created"] = datetime.now()
             scoreboard_total_table.insert(
                 **values

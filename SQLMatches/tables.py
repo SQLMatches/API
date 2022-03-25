@@ -387,5 +387,5 @@ def create_tables(url: str) -> None:
         assert False, "Invalid database URL engine."
 
     metadata.create_all(
-        create_engine(url.replace(old_engine, f"{old_engine}+{engine}"))
+        create_engine(url.replace(old_engine, f"{old_engine}+{engine}", 1))
     )

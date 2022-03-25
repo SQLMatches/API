@@ -1,16 +1,7 @@
-from SQLMatches import SQLMatches, DemoSettings, DatabaseSettings
+from SQLMatches import SQLMatches
 
 
-app = SQLMatches(
-    DemoSettings(),
-    DatabaseSettings(
-        username="greg",
-        password="b@Y6ah*955l&A5p$!B",
-        database="sqlmatchesDb",
-        server="localhost",
-        port=3306
-    )
-)
+app = SQLMatches()
 
 
 if __name__ == "__main__":
